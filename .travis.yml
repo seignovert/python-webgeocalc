@@ -1,0 +1,33 @@
+sudo: false
+language: python
+cache: pip
+
+python: 3.6
+
+stages:
+  - name: test
+  - name: deploy
+    if: tag IS present
+
+jobs:
+  include:
+    - stage: test
+      install:
+          - pip install tox-travis python-coveralls
+      script:
+          - tox
+      after_success:
+          - coveralls
+
+    - stage: deploy
+      script: echo 'Deploy to PyPi...'    
+      env: PBR_VERSION=$TRAVIS_TAG
+      deploy:
+        provider: pypi
+        user: seignovert
+        password:
+            secure: RnvVK0k/25wCMAx/3B0umMm3F/jMTU+LQ7phFlt8fpvjP4EvZ0nxHcf7++RM8fQpWcLneY6MneLh1yZoKlkL9QadjEC9zqvqp+12hJqPrfpqhQmKE8kiuAiVZ3/uJJa6SVPNxVDHYQ0w4TUe4KYzNWQVOyXkt4tbtX60DKgKCWVWSnCFqCHNtdPrgaYoMDm+Koq0fHOLMHU4K64rWk10eo3O1w2QHmurYqxvcDwup7t7T2MKgkjfEu5iCsS5VvQTNlRCE86gxSha2xiJcU1MSx1+hGHxadPlPFuPAZVGgGyj3tplJkjvUfnaxoZedHJ5HPvmrlmFvexstXi8tOubkn2ognPf4VOrTKxnqAdYCkiLs/RARe6e3krVxgwGRbV3LsPR4YH6fSnrLvA73oDEHicumZdFIrZXe4PrXi41XMELqkMPHX/S3BbizNKbzXZzryVEXdCIP5zKywDzBfMbCgX9WrIag6QWDvUtBqfK9Z70ICqlGLlogTLEHdsyAGaRzOJYRn7SQ0VyETVE/Z53b0WbRbuDYrmDUWOZoGAIv96YgurfWwBQbpMAN5z1qMGXfAI2qj22NUzoJzbJoWrd1L0EaR/Ohe6SQHpddR+O6GNJ/tM4/6w/cWdpivhJ/K/6A2EGrsd7lddrzMRKs3DlKEX+6ul2BmHDD35ZRNupXH0=
+        skip_cleanup: true
+        distributions: sdist bdist_wheel
+        on:
+          tags: true
