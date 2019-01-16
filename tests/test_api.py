@@ -18,7 +18,7 @@ def solar_system_kernel_set():
     }
 
 @pytest.fixture
-def cassini_huygens_kernel_set():
+def cassini_kernel_set():
     return {
         'caption': 'Cassini Huygens',
         'sclkId': '-82',
@@ -32,6 +32,22 @@ def cassini_body():
     return {
         'id': -82,
         'name': 'CASSINI',
+    }
+
+@pytest.fixture
+def cassini_frame():
+    return {
+        'id': -82905,
+        'name': 'CASSINI_KSO',
+        'centerBodyID': 699,
+        'frameClass': 5,
+    }
+
+@pytest.fixture
+def cassini_instrument():
+    return {
+        'id': -82898,
+        'name': 'CASSINI_CIRS_RAD',
     }
 
 def test_api_default_url():
@@ -80,9 +96,9 @@ def test_kernel_set_not_found():
         assert str(API.kernel_set('Missing kernel'))
 
 
-def test_kernel_set_id_for_str(cassini_huygens_kernel_set):
-    kernel_set_id = int(cassini_huygens_kernel_set['kernelSetId'])
-    kernel_set_caption = cassini_huygens_kernel_set['caption']
+def test_kernel_set_id_for_str(cassini_kernel_set):
+    kernel_set_id = int(cassini_kernel_set['kernelSetId'])
+    kernel_set_caption = cassini_kernel_set['caption']
 
     assert API.kernel_set_id(kernel_set_caption) == kernel_set_id
     
@@ -92,9 +108,26 @@ def test_kernel_set_id_for_str(cassini_huygens_kernel_set):
     with pytest.raises(TypeError):
         API.kernel_set_id(1.23)
 
-def test_bodies(cassini_huygens_kernel_set, cassini_body):
-    kernel_set_id = int(cassini_huygens_kernel_set['kernelSetId'])
+def test_bodies(cassini_kernel_set, cassini_body):
+    kernel_set_id = int(cassini_kernel_set['kernelSetId'])
     body = API.bodies(kernel_set_id)[0]
 
     assert int(body) == cassini_body['id']
     assert str(body) == cassini_body['name']
+
+def test_frames(cassini_kernel_set, cassini_frame):
+    kernel_set_id = int(cassini_kernel_set['kernelSetId'])
+    frame = API.frames(kernel_set_id)[58]
+
+    assert int(frame) == cassini_frame['id']
+    assert str(frame) == cassini_frame['name']
+
+    for value in frame.values():
+        assert value in cassini_frame.values()
+
+def test_instruments(cassini_kernel_set, cassini_instrument):
+    kernel_set_id = int(cassini_kernel_set['kernelSetId'])
+    instrument = API.instruments(kernel_set_id)[0]
+
+    assert int(instrument) == cassini_instrument['id']
+    assert str(instrument) == cassini_instrument['name']

@@ -15,6 +15,12 @@ class ResultType(object):
     def __init__(self, json):
         self._json = json
 
+    def __int__(self):
+        return int(self.id)
+
+    def __str__(self):
+        return self.name
+
     def __repr__(self):
         return f"<{self.__class__.__name__}> {str(self)} (id: {int(self)})"
 
@@ -56,10 +62,16 @@ class BodyData(ResultType):
     def __init__(self, json):
         super().__init__(json)
 
-    def __int__(self):
-        return int(self.id)
+class FrameData(ResultType):
+    '''Frame data'''
 
-    def __str__(self):
-        return self.name
+    def __init__(self, json):
+        super().__init__(json)
+
+class InstrumentData(ResultType):
+    '''Instrument data'''
+
+    def __init__(self, json):
+        super().__init__(json)
 
 TYPES = globals()

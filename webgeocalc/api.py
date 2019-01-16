@@ -65,5 +65,21 @@ class Api(object):
         kernelSetId = self.kernel_set_id(kernel_set)
         return self.get(f'/kernel-set/{kernelSetId}/bodies')
 
+    def frames(self, kernel_set):
+        '''
+            Get list of frames available in a kernel set.
+            GET: /kernel-set/{kernelSetId}/frames
+        '''
+        kernelSetId = self.kernel_set_id(kernel_set)
+        return self.get(f'/kernel-set/{kernelSetId}/frames')
+
+    def instruments(self, kernel_set):
+        '''
+            Get list of instruments available in a kernel set.
+            GET: /kernel-set/{kernelSetId}/instruments
+        '''
+        kernelSetId = self.kernel_set_id(kernel_set)
+        return self.get(f'/kernel-set/{kernelSetId}/instruments')
+
 # Export default API object
 API = Api()
