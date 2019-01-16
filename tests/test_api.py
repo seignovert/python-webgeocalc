@@ -6,6 +6,7 @@ from webgeocalc import API
 from requests import HTTPError
 from webgeocalc.vars import API_URL
 from webgeocalc.types import ResultAttributeError
+from webgeocalc.errors import TooManyKernelSets, KernelSetNotFound
 
 @pytest.fixture
 def solar_system_kernel():
@@ -19,6 +20,9 @@ def solar_system_kernel():
 
 def test_api_default_url():
     assert API.url == API_URL
+def test_response_err():
+    with pytest.raises(HTTPError):
+        API.get('/') # 404 error
 
 def test_kernel_sets(solar_system_kernel):
     kernel = API.kernel_sets()[0]
@@ -40,6 +44,22 @@ def test_kernel_sets(solar_system_kernel):
         kernel.wrong_attr
 
 
-def test_response_err():
-    with pytest.raises(HTTPError):
-        API.get('/') # 404 error
+def test_kernel_by_id():
+    assert int(API.kernel(1)) == 1
+
+def test_kernel_by_full_name():
+    assert str(API.kernel('Solar System Kernels')) == 'Solar System Kernels'
+
+def test_kernel_by_name_not_case_sensitive():
+    assert str(API.kernel('solar system kernels')) == 'Solar System Kernels'
+
+def test_kernel_by_name_partial():
+    assert str(API.kernel('Solar')) == 'Solar System Kernels'
+
+def test_kernel_too_many_found():
+    with pytest.raises(TooManyKernelSets):
+        assert str(API.kernel('Cassini'))
+
+def test_kernel_not_found():
+    with pytest.raises(KernelSetNotFound):
+        assert str(API.kernel('Missing kernel'))

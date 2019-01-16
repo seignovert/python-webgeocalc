@@ -57,5 +57,10 @@ class KernelSetDetails(ResultType):
     def __str__(self):
         return self.caption
 
+    def __contains__(self, item):
+        if isinstance(item, int):
+            return item == int(self)
+        return item.lower() in str(self).lower()
+
 
 TYPES = globals()
