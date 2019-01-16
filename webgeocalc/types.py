@@ -1,19 +1,6 @@
 # -*- coding: utf-8 -*-
 
-class ResultTypeError(TypeError):
-    '''This exception is raised when the class is not available'''
-    
-    def __init__(self, classname):
-        msg = f"ResultType '{classname}' is not implemented"
-        super().__init__(msg)
-
-class ResultAttributeError(AttributeError):
-    '''This exception is raised when the attribute is missing'''
-    
-    def __init__(self, obj, attr):
-        msg = f"'{obj.__class__.__name__}' object has no attribute '{attr}'"
-        super().__init__(msg)
-
+from .errors import ResultTypeError, ResultAttributeError
 
 def get_type(classname):
     '''Get type based on classname'''
@@ -45,6 +32,12 @@ class ResultType(object):
     def items(self):
         return self._json.items()
 
+    def __contains__(self, item):
+        '''Check int or str'''
+        if isinstance(item, int):
+            return item == int(self)
+        return item.lower() in str(self).lower()
+
 class KernelSetDetails(ResultType):
     '''Kernel set details'''
 
@@ -57,10 +50,16 @@ class KernelSetDetails(ResultType):
     def __str__(self):
         return self.caption
 
-    def __contains__(self, item):
-        if isinstance(item, int):
-            return item == int(self)
-        return item.lower() in str(self).lower()
+class BodyData(ResultType):
+    '''Body data'''
 
+    def __init__(self, json):
+        super().__init__(json)
+
+    def __int__(self):
+        return int(self.id)
+
+    def __str__(self):
+        return self.name
 
 TYPES = globals()

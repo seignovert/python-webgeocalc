@@ -5,11 +5,10 @@ from webgeocalc import API
 
 from requests import HTTPError
 from webgeocalc.vars import API_URL
-from webgeocalc.types import ResultAttributeError
-from webgeocalc.errors import TooManyKernelSets, KernelSetNotFound
+from webgeocalc.errors import ResultAttributeError, TooManyKernelSets, KernelSetNotFound
 
 @pytest.fixture
-def solar_system_kernel():
+def solar_system_kernel_set():
     return {
         'caption': 'Solar System Kernels',
         'sclkId': '0',
@@ -18,48 +17,84 @@ def solar_system_kernel():
         'missionId': 'gen',
     }
 
+@pytest.fixture
+def cassini_huygens_kernel_set():
+    return {
+        'caption': 'Cassini Huygens',
+        'sclkId': '-82',
+        'description': 'rchived CASSINI kernels covering from 1997-10-15 to 2017-09-15.',
+        'kernelSetId': '5',
+        'missionId': 'cassini',
+    }
+
+@pytest.fixture
+def cassini_body():
+    return {
+        'id': -82,
+        'name': 'CASSINI',
+    }
+
 def test_api_default_url():
     assert API.url == API_URL
 def test_response_err():
     with pytest.raises(HTTPError):
         API.get('/') # 404 error
 
-def test_kernel_sets(solar_system_kernel):
-    kernel = API.kernel_sets()[0]
+def test_kernel_sets(solar_system_kernel_set):
+    kernel_set = API.kernel_sets()[0]
 
-    assert int(kernel) == int(solar_system_kernel['kernelSetId'])
-    assert str(kernel) == solar_system_kernel['caption']
+    assert int(kernel_set) == int(solar_system_kernel_set['kernelSetId'])
+    assert str(kernel_set) == solar_system_kernel_set['caption']
     
-    for key in kernel.keys():
-        assert key in solar_system_kernel.keys()
+    for key in kernel_set.keys():
+        assert key in solar_system_kernel_set.keys()
 
-    for value in kernel.values():
-        assert value in solar_system_kernel.values()
+    for value in kernel_set.values():
+        assert value in solar_system_kernel_set.values()
     
-    for key, values in kernel.items():
-        assert key in solar_system_kernel.keys()
-        assert value in solar_system_kernel.values()
+    for key, values in kernel_set.items():
+        assert key in solar_system_kernel_set.keys()
+        assert value in solar_system_kernel_set.values()
 
     with pytest.raises(ResultAttributeError):
-        kernel.wrong_attr
+        kernel_set.wrong_attr
 
+def test_kernel_set_by_id():
+    assert int(API.kernel_set(1)) == 1
 
-def test_kernel_by_id():
-    assert int(API.kernel(1)) == 1
+def test_kernel_set_by_full_name():
+    assert str(API.kernel_set('Solar System Kernels')) == 'Solar System Kernels'
 
-def test_kernel_by_full_name():
-    assert str(API.kernel('Solar System Kernels')) == 'Solar System Kernels'
+def test_kernel_set_by_name_not_case_sensitive():
+    assert str(API.kernel_set('solar system kernels')) == 'Solar System Kernels'
 
-def test_kernel_by_name_not_case_sensitive():
-    assert str(API.kernel('solar system kernels')) == 'Solar System Kernels'
+def test_kernel_set_by_name_partial():
+    assert str(API.kernel_set('Solar')) == 'Solar System Kernels'
 
-def test_kernel_by_name_partial():
-    assert str(API.kernel('Solar')) == 'Solar System Kernels'
-
-def test_kernel_too_many_found():
+def test_kernel_set_too_many_found():
     with pytest.raises(TooManyKernelSets):
-        assert str(API.kernel('Cassini'))
+        assert str(API.kernel_set('Cassini'))
 
-def test_kernel_not_found():
+def test_kernel_set_not_found():
     with pytest.raises(KernelSetNotFound):
-        assert str(API.kernel('Missing kernel'))
+        assert str(API.kernel_set('Missing kernel'))
+
+
+def test_kernel_set_id_for_str(cassini_huygens_kernel_set):
+    kernel_set_id = int(cassini_huygens_kernel_set['kernelSetId'])
+    kernel_set_caption = cassini_huygens_kernel_set['caption']
+
+    assert API.kernel_set_id(kernel_set_caption) == kernel_set_id
+    
+    kernel_set = API.kernel_set(kernel_set_caption)
+    assert API.kernel_set_id(kernel_set) == kernel_set_id
+
+    with pytest.raises(TypeError):
+        API.kernel_set_id(1.23)
+
+def test_bodies(cassini_huygens_kernel_set, cassini_body):
+    kernel_set_id = int(cassini_huygens_kernel_set['kernelSetId'])
+    body = API.bodies(kernel_set_id)[0]
+
+    assert int(body) == cassini_body['id']
+    assert str(body) == cassini_body['name']
