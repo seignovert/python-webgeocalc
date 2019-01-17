@@ -35,6 +35,18 @@ make SPICE calculation through this API.
 .. _Documentation: https://wgc2.jpl.nasa.gov:8443/webgeocalc/documents/api-info.html
 .. _`JavaScript examples`: https://wgc2.jpl.nasa.gov:8443/webgeocalc/example/perform-calculation.html
 
+Note the user
+-------------
+
+    `WebGeoCalc`_ is not design to handle heavy calculation.
+    If you need to make intensive queries, use `Spiceypy`_ or `SpiceMiner`_
+    package with locally hosted kernels.
+
+.. _`WebGeocalc`: https://wgc.jpl.nasa.gov:8443/webgeocalc
+.. _`Spiceypy`: https://github.com/AndrewAnnex/Spiceypy
+.. _`SpiceMiner`: https://github.com/DaRasch/spiceminer
+
+
 Install
 -------
 With ``pip``:
