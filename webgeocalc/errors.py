@@ -18,9 +18,9 @@ class TooManyKernelSets(ValueError):
     '''This exception is raised when more than one kernel is found'''
     def __init__(self, kernel_set_name, kernel_sets):
         msg = '\n - '.join(
-                [f"Too many kernel sets contains '{kernel_set_name}' in their names:"] + \
-                [str(kernel) for kernel in kernel_sets]
-            )
+            [f"Too many kernel sets contains '{kernel_set_name}' in their names:"] +
+            [str(kernel) for kernel in kernel_sets]
+        )
         super().__init__(msg)
 
 class KernelSetNotFound(ValueError):
@@ -29,4 +29,33 @@ class KernelSetNotFound(ValueError):
         msg = f"Kernel set '{kernel_set_name}' not found"
         super().__init__(msg)
 
+class CalculationRequiredAttr(AttributeError):
+    '''This exception is raised when a calculation attribute is required'''
+    def __init__(self, name):
+        msg = f"Attribute '{name}' required."
+        super().__init__(msg)
 
+class CalculationInvalidAttr(AttributeError):
+    '''This exception is raised when a calculation attribute is invalid'''
+
+    def __init__(self, name, attr, valids):
+        msg = '\n - '.join([f"Attribute '{name}'='{attr}' is only applicable with:"] + valids)
+        super().__init__(msg)
+
+class CalculationUndefinedAttr(AttributeError):
+    '''This exception is raised when a calculation attribute is undefined'''
+    def __init__(self, attr, value, missing):
+        msg = f"Attribute '{attr}' is set to '{value}' but '{missing}' attribute is undefined."
+        super().__init__(msg)
+
+class CalculationIncompatibleAttr(AttributeError):
+    '''This exception is raised when a calculation attribute is not applicable with an other attribute'''
+    def __init__(self, attr1, value1, attr2, value2, choices):
+        msg = '\n - '.join([f"Attribute '{attr1}' is set to '{value1}' but '{attr2}'='{value2}' is only applicable with:"] + choices)
+        super().__init__(msg)
+
+class CalculationConflictAttr(AttributeError):
+    '''This exception is raised when two calculation attributes are in conflict'''
+    def __init__(self, attr1, attr2):
+        msg = f"Attribute '{attr1}' is in conflict with attribute '{attr2}'"
+        super().__init__(msg)
