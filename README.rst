@@ -72,30 +72,96 @@ Usage
     >>> API.url
     'https://wgc2.jpl.nasa.gov:8443/webgeocalc/api'
 
-    >>> kernels = API.kernel_sets() # /kernel-sets
+    >>> API.kernel_sets() # /kernel-sets
     [
         <KernelSetDetails> Solar System Kernels (id: 1),
-        <KernelSetDetails> Latest Leapseconds Kernel (id: 2),
+        ...
+        <KernelSetDetails> Cassini Huygens (id: 5),
         ...
         <KernelSetDetails> SPICE Class -- Binary PCK Lesson Kernels (Earth) (id: 39)
     ]
 
-    >>> kernel = kernels[0]
-    >>> int(kernel) # kernelSetId
-    1
+    >>> API.bodies(5) # /kernel-sets/{kernelSetId}/bodies
+    [
+        <BodyData> CASSINI (id: -82),
+        <BodyData> CAS (id: -82),
+        ...
+        <BodyData> SOLAR SYSTEM BARYCENTER (id: 0)
+    ]
 
-    >>> str(kernel) # Caption
-    'Solar System Kernels'
+    >>> API.frames('Cassini Huygens') # /kernel-sets/{kernelSetId}/frames
+    [
+        <FrameData> CASSINI_SATURN_SKR4N_LOCK (id: -82982),
+        ...
+        <FrameData> ITRF93 (id: 13000)
+    ]
 
-    >>> kernel.description
-    'Generic kernels for planets, satellites, and some asteroids covering from 1950-01-01 to 2050-01-01.'
+    >>> API.instruments('Cassini Huygens') # /kernel-set/{kernelSetId}/intruments
+    [
+        <InstrumentData> CASSINI_CIRS_RAD (id: -82898),
+        ...
+        <InstrumentData> CASSINI_SRU-A (id: -82001)
+    ]
 
-    >>> kernel.keys()
-    dict_keys(['caption', 'sclkId', 'description', 'kernelSetId', 'missionId'])
 
-    >>> kernel.values()
-    dict_values(['Solar System Kernels', '0', 'Generic kernels for planets, satellites, and some asteroids covering from 1950-01-01 to 2050-01-01.', '1', 'gen'])
+Prepare calculation payload:
 
+.. code:: python
+
+    >>> from webgeocalc import Calculation
+
+    >>> calc = Calculation(
+        kernels = 'Cassini Huygens',
+        times = '2012-10-19T08:24:00.000',
+        calculation_type = 'STATE_VECTOR',
+        target = 'CASSINI',
+        observer = 'SATURN',
+        reference_frame = 'IAU_SATURN',
+        aberration_correction = 'NONE',
+        state_representation = 'PLANETOGRAPHIC',
+    )
+
+    >>> calc.payload
+    {
+        'kernels': [{'type': 'KERNEL_SET', 'id': 5}],
+        'times': ['2012-10-19T08:24:00.000'],
+        'calculationType': 'STATE_VECTOR',
+        'target': 'CASSINI',
+        'observer': 'SATURN',
+        'referenceFrame': 'IAU_SATURN',
+        'aberrationCorrection': 'NONE',
+        'stateRepresentation': 'PLANETOGRAPHIC',
+        'timeSystem': 'UTC',
+        'timeFormat': 'CALENDAR'
+    }
+
+Run calculation:
+
+.. code:: python
+
+    >>> calc.submit()
+    [Calculation submitted] Status: LOADING_KERNELS (id: 19fd1c05-3bfe-47c7-bd16-28612249ae89)
+
+    >>> calc.update()
+    [Calculation update] Status: COMPLETE (id: 19fd1c05-3bfe-47c7-bd16-28612249ae89)
+
+    >>> calc.results
+    {
+        'DATE': '2012-10-19 08:24:00.000000 UTC',
+        'LONGITUDE': 46.18900522,
+        'LATITUDE': 21.26337134,
+        'ALTITUDE': 694259.8921163,
+        'D_LONGITUDE_DT': 0.00888655,
+        'D_LATITUDE_DT': -0.00031533,
+        'D_ALTITUDE_DT': 4.77080305,
+        'SPEED': 109.34997994,
+        'TIME_AT_TARGET': '2012-10-19 08:24:00.000000 UTC',
+        'LIGHT_TIME': 2.51438831
+    }
+
+More details can be found in the `Jupyter Notebooks`_.
+
+.. _`Jupyter Notebooks`: https://nbviewer.jupyter.org/github/seignovert/python-webgeocalc/blob/master/examples/api.ipynb
 
 Disclaimer
 ----------
