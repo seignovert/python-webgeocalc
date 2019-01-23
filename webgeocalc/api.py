@@ -2,7 +2,7 @@
 import requests
 
 from .vars import API_URL
-from .errors import APIError, TooManyKernelSets, KernelSetNotFound
+from .errors import APIError, APIReponseError, TooManyKernelSets, KernelSetNotFound
 from .types import get_type, ColumnResult, KernelSetDetails
 
 class Api(object):

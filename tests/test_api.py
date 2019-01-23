@@ -5,7 +5,7 @@ from webgeocalc import API
 
 from requests import HTTPError
 from webgeocalc.vars import API_URL
-from webgeocalc.errors import ResultAttributeError, TooManyKernelSets, KernelSetNotFound
+from webgeocalc.errors import ResultAttributeError, TooManyKernelSets, KernelSetNotFound, APIError, APIReponseError
 
 @pytest.fixture
 def solar_system_kernel_set():
@@ -50,11 +50,30 @@ def cassini_instrument():
         'name': 'CASSINI_CIRS_RAD',
     }
 
+@pytest.fixture
+def api_error():
+    return {
+        "status": "ERROR",
+        "message": None,
+        "calculationId": "0788aba2-d4e5-4028-9ef1-4867ad5385e0"
+    }
+
+@pytest.fixture
+def api_invalid_response():
+    return {
+        "status": "OK",
+        "message": "The operation was successful.",
+        "calculationId": "0788aba2-d4e5-4028-9ef1-4867ad5385e0",
+    }
+
 def test_api_default_url():
     assert API.url == API_URL
 def test_response_err():
     with pytest.raises(HTTPError):
         API.get('/') # 404 error
+
+    with pytest.raises(HTTPError):
+        API.post('/', payload={}) # 404 error
 
 def test_kernel_sets(solar_system_kernel_set):
     kernel_set = API.kernel_sets()[0]
@@ -131,3 +150,11 @@ def test_instruments(cassini_kernel_set, cassini_instrument):
 
     assert int(instrument) == cassini_instrument['id']
     assert str(instrument) == cassini_instrument['name']
+
+def test_api_read_error(api_error):
+    with pytest.raises(APIError):
+        API.read(api_error)
+
+def test_api_read_invalid(api_invalid_response):
+    with pytest.raises(APIReponseError):
+        API.read(api_invalid_response)

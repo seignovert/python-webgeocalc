@@ -8,7 +8,7 @@ class APIError(IOError):
 class APIReponseError(NotImplementedError):
     '''This exception is raised when the format of the API reponse is not implemented.'''
     def __init__(self, json):
-        f'This API JSON response is not implemented yet:\n{json}'
+        msg = f'This API JSON response is not implemented yet:\n{json}'
         super().__init__(msg)
 
 class ResultTypeError(TypeError):

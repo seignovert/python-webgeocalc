@@ -73,17 +73,17 @@ class Calculation(object):
     def resubmit(self):
         '''Re-submit calculation'''
         self.id = None
-        return self.submit()
+        self.submit()
 
     def update(self):
         '''Update calculation status phase and progress'''
         if self.id is None:
-            return self.submit()
-
-        _, self.status, self.progress = API.status_calculation(self.id)
-        
-        if self.verbose:
-            print(f'[Calculation update] Status: {self.status} (id: {self.id})')
+            self.submit()
+        else:
+            _, self.status, self.progress = API.status_calculation(self.id)
+            
+            if self.verbose:
+                print(f'[Calculation update] Status: {self.status} (id: {self.id})')
 
     def run(self):
         '''Run calculation'''

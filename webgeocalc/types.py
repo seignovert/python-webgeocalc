@@ -34,9 +34,6 @@ class ColumnResult(object):
     def items(self):
         return self._json.items()
 
-    def __contains__(self, item):
-        return item.lower() in str(self).lower()
-
 class ResultType(ColumnResult):
     '''Result Type object for item generic interface'''
 
@@ -111,9 +108,6 @@ class ColumnResult(object):
 
     def items(self):
         return self._json.items()
-
-    def __contains__(self, item):
-        return item.lower() in str(self).lower()
 
     
 TYPES = globals()
