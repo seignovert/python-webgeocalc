@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 import pytest
+import requests_mock
 
 from webgeocalc import StateVector
 from webgeocalc.errors import CalculationRequiredAttr
+from webgeocalc.vars import API_URL
 
 @pytest.fixture
 def kernels():
@@ -66,11 +68,31 @@ def payload(kernels, target, observer, frame, time, corr, state):
         "stateRepresentation": state
     }
 
+@pytest.fixture
+def new_calculation_response():
+    return {
+        "status": "OK",
+        "message": "The operation was successful.",
+        "calculationId": "0788aba2-d4e5-4028-9ef1-4867ad5385e0",
+        "result": {
+            "phase": "COMPLETE",
+            "progress": 0
+        }
+    }
 
-def test_state_vector_parameters(params, payload):
-    assert StateVector(**params).parameters == payload
+def test_state_vector_payload(params, payload):
+    assert StateVector(**params).payload == payload
 
 
 def test_state_vector_required_err(params, payload):
     with pytest.raises(CalculationRequiredAttr):
         StateVector()
+
+
+def test_state_vector_submit(requests_mock, params, new_calculation_response):
+    requests_mock.post(API_URL + '/calculation/new', json=new_calculation_response)
+    calculation = StateVector(**params)
+    
+    calculation.submit()
+    assert calculation.id == new_calculation_response['calculationId']
+

@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
-import json
-
 from .api import API
-from .errors import CalculationRequiredAttr, CalculationInvalidAttr, CalculationUndefinedAttr, CalculationIncompatibleAttr, CalculationConflictAttr
+from .errors import CalculationRequiredAttr, CalculationInvalidAttr, CalculationUndefinedAttr, \
+                    CalculationIncompatibleAttr, CalculationConflictAttr, CalculationAlreadySubmitted, \
+                    CalculationNotCompleted
 from .types import KernelSetDetails
-from .vars import CALCULATION_TYPE, TIME_SYSTEM, TIME_FORMAT, TIME_STEP_UNITS, INTERVALS, ABERRATION_CORRECTION, STATE_REPRESENTATION
+from .vars import CALCULATION_TYPE, TIME_SYSTEM, TIME_FORMAT, TIME_STEP_UNITS, \
+                  INTERVALS, ABERRATION_CORRECTION, STATE_REPRESENTATION
 
 
 class SetterProperty(object):
@@ -19,7 +20,7 @@ class SetterProperty(object):
 class Calculation(object):
     '''Calculation class'''
 
-    def __init__(self, time_system='UTC', time_format='CALENDAR', **kwargs):
+    def __init__(self, time_system='UTC', time_format='CALENDAR', verbose=True, **kwargs):
         # Add default parameters to kwargs
         kwargs['time_system'] = time_system
         kwargs['time_format'] = time_format
@@ -27,6 +28,11 @@ class Calculation(object):
         # Init parameters
         self.params = kwargs
         self.__kernels = []
+        self.id = None
+        self.status = 'NOT SUBMITED'
+        self.columns = None
+        self.values = None
+        self.verbose = verbose
 
         # Required parameters
         for required in ['calculation_type', 'time_system', 'time_format']:
@@ -43,13 +49,68 @@ class Calculation(object):
         for key, value in kwargs.items():
             setattr(self, key, value)
 
-    @property
-    def parameters(self):
-        return {k.split('__')[-1]: v for k, v in vars(self).items() if k.startswith('_')}
+    def __repr__(self):
+        return '\n'.join(
+            [f"<{self.__class__.__name__}> Status: {self.status} (id: {self.id})"] +
+            [f' - {k.capitalize()}: {v}' for k, v in self.payload.items()]
+        )
 
     @property
     def payload(self):
-        return json.dumps(self.parameters, separators=(',', ':'))
+        '''Calculation payload parameters'''
+        return {k.split('__')[-1]: v for k, v in vars(self).items() if k.startswith('_')}
+
+    def submit(self):
+        '''Submit calculation parameters and get calculation id, phase and progress'''
+        if not self.id is None:
+            raise CalculationAlreadySubmitted(self.id)
+
+        self.id, self.status, self.progress = API.new_calculation(self.payload)
+
+        if self.verbose:
+            print(f'[Calculation submitted] Status: {self.status} (id: {self.id})')
+
+    def resubmit(self):
+        '''Re-submit calculation'''
+        self.id = None
+        return self.submit()
+
+    def update(self):
+        '''Update calculation status phase and progress'''
+        if self.id is None:
+            return self.submit()
+
+        _, self.status, self.progress = API.status_calculation(self.id)
+        
+        if self.verbose:
+            print(f'[Calculation update] Status: {self.status} (id: {self.id})')
+
+    def run(self):
+        '''Run calculation'''
+        if not self.columns is None and not self.values is None:
+            return self.results
+        else:
+            self.update()
+
+        if self.status == 'COMPLETE':
+            return self.results
+
+    @property
+    def results(self):
+        '''Gets the results of a calculation.'''
+        if self.status != 'COMPLETE':
+            raise CalculationNotCompleted(self.status)
+
+        if self.columns is None or self.values is None:
+            self.columns, self.values = API.results_calculation(self.id)
+
+        if len(self.values) == 1:
+            data = self.values[0]
+        else:
+            # Transpose values array
+            data = [[row[i] for row in self.values] for i in range(len(self.columns))]
+
+        return {column.outputID: value for column, value in zip(self.columns, data)}
 
     @SetterProperty
     def calculation_type(self, val):

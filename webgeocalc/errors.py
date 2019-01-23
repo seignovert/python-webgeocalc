@@ -1,15 +1,24 @@
 # -*- coding: utf-8 -*-
 
+class APIError(IOError):
+    '''This exception is raised when the status of the API reponse is not OK.'''
+    def __init__(self, msg):
+        super().__init__(msg)
+
+class APIReponseError(NotImplementedError):
+    '''This exception is raised when the format of the API reponse is not implemented.'''
+    def __init__(self, json):
+        f'This API JSON response is not implemented yet:\n{json}'
+        super().__init__(msg)
+
 class ResultTypeError(TypeError):
     '''This exception is raised when the class is not available'''
-
     def __init__(self, classname):
         msg = f"ResultType '{classname}' is not implemented"
         super().__init__(msg)
 
 class ResultAttributeError(AttributeError):
     '''This exception is raised when the attribute is missing'''
-
     def __init__(self, obj, attr):
         msg = f"'{obj.__class__.__name__}' object has no attribute '{attr}'"
         super().__init__(msg)
@@ -58,4 +67,16 @@ class CalculationConflictAttr(AttributeError):
     '''This exception is raised when two calculation attributes are in conflict'''
     def __init__(self, attr1, attr2):
         msg = f"Attribute '{attr1}' is in conflict with attribute '{attr2}'"
+        super().__init__(msg)
+
+class CalculationAlreadySubmitted(IOError):
+    '''This exception is raised when calculation was already submited'''
+    def __init__(self, calculation_id):
+        msg = f"Calculation already submitted with the id: '{calculation_id}'"
+        super().__init__(msg)
+
+class CalculationNotCompleted(IOError):
+    '''This exception is raised when calculation status is not complete.'''
+    def __init__(self, status):
+        msg = f"Calculation is status: '{status}'"
         super().__init__(msg)

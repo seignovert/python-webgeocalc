@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
 import requests
-import json
 
 from .vars import API_URL
-from .errors import TooManyKernelSets, KernelSetNotFound
-from .types import get_type, KernelSetDetails
+from .errors import APIError, TooManyKernelSets, KernelSetNotFound
+from .types import get_type, ColumnResult, KernelSetDetails
 
 class Api(object):
     '''WebGeoCalc API object'''
@@ -14,18 +13,41 @@ class Api(object):
         self._kernel_sets = None
 
     def get(self, url):
-        '''Parsed get request'''
+        '''Parsed GET request'''
         response = requests.get(self.url + url)
         if response.ok:
-            return self.loads(response.content)
+            return self.read(response.json())
         else:
             response.raise_for_status()
 
-    def loads(self, json_content):
-        '''Load json content based on result type'''
-        data = json.loads(json_content)
-        dtype = get_type(data['resultType'])
-        return [dtype(item) for item in data['items']]
+    def post(self, url, payload):
+        '''Parsed POST request'''
+        response = requests.post(self.url + url, json=payload)
+        if response.ok:
+            return self.read(response.json())
+        else:
+            response.raise_for_status()
+
+    def read(self, json):
+        '''Read content from json reponse'''
+        if json['status'] != 'OK':
+            raise APIError(json['message'])
+        
+        keys = json.keys()
+
+        if 'resultType' in keys and 'items' in json:
+            dtype = get_type(json['resultType'])
+            return [dtype(item) for item in json['items']]
+
+        elif 'result' in keys:
+            return json['calculationId'], json['result']['phase'], json['result']['progress']
+
+        elif 'columns' in keys and 'rows' in keys:
+            cols = [ ColumnResult(col) for col in json['columns'] ]
+            return cols, json['rows']
+        
+        else:
+            raise APIReponseError(json)
 
     def kernel_sets(self):
         '''
@@ -80,6 +102,27 @@ class Api(object):
         '''
         kernelSetId = self.kernel_set_id(kernel_set)
         return self.get(f'/kernel-set/{kernelSetId}/instruments')
+
+    def new_calculation(self, payload):
+        '''
+            Starts a new calculation.
+            POST: /calculation/new 
+        '''
+        return self.post('/calculation/new', payload)
+
+    def status_calculation(self, id):
+        '''
+            Gets the status of a calculation.
+            GET: /calculation/{id} 
+        '''
+        return self.get(f'/calculation/{id}')
+
+    def results_calculation(self, id):
+        '''
+            Gets the results of a calculation.
+            GET: /calculation/{id}/results
+        '''
+        return self.get(f'/calculation/{id}/results')
 
 # Export default API object
 API = Api()

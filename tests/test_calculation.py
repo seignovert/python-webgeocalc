@@ -30,8 +30,16 @@ def params(calc, path, time):
 
 @pytest.fixture
 def payload(path, calc, time):
-    return '{"kernels":[{"type":"KERNEL","path":"%s"}],"calculationType":"%s","times":["%s"],"timeSystem":"UTC","timeFormat":"CALENDAR"}' % (
-        path, calc, time)
+    return {
+        "kernels": [{
+            "type": "KERNEL",
+            "path": path,
+        }],
+        "calculationType": calc,
+        "times": [time],
+        "timeSystem": "UTC",
+        "timeFormat": "CALENDAR",
+        }
 
 @pytest.fixture
 def start():
@@ -101,19 +109,19 @@ def test_calculation_intervals(params, start, end, interval):
     params['time_step_units'] = 'DAYS'
 
     params['intervals'] = [start, end]
-    assert Calculation(**params).parameters['intervals'] == [interval]
+    assert Calculation(**params).payload['intervals'] == [interval]
 
     params['intervals'] = {"startTime": start, "endTime": end}
-    assert Calculation(**params).parameters['intervals'] == [interval]
+    assert Calculation(**params).payload['intervals'] == [interval]
 
     params['intervals'] = [interval]
-    assert Calculation(**params).parameters['intervals'] == [interval]
+    assert Calculation(**params).payload['intervals'] == [interval]
 
     params['intervals'] = [interval, interval]
-    assert Calculation(**params).parameters['intervals'] == [interval, interval]
+    assert Calculation(**params).payload['intervals'] == [interval, interval]
 
     params['intervals'] = [interval, interval, interval]
-    assert Calculation(**params).parameters['intervals'] == [interval, interval, interval]
+    assert Calculation(**params).payload['intervals'] == [interval, interval, interval]
 
 def test_calculation_intervals_errors(params, start, end, interval):
     params['intervals'] = interval
