@@ -73,3 +73,8 @@ STATE_REPRESENTATION = [
     'CYLINDRICAL',
     'SPHERICAL',
 ]
+
+SHAPE = [
+    'POINT',
+    'SPHERE',
+]

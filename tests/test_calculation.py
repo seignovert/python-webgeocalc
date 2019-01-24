@@ -190,3 +190,13 @@ def test_calculation_state_representation_error(params):
     params['state_representation'] = 'WRONG'
     with pytest.raises(CalculationInvalidAttr):
         Calculation(**params)
+
+def test_calculation_shape_error(params):
+    params['shape_1'] = 'WRONG'
+    with pytest.raises(CalculationInvalidAttr):
+        Calculation(**params)
+
+    del params['shape_1']
+    params['shape_2'] = 'WRONG'
+    with pytest.raises(CalculationInvalidAttr):
+        Calculation(**params)

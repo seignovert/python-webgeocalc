@@ -159,6 +159,19 @@ Run calculation:
         'LIGHT_TIME': 2.51438831
     }
 
+    >>> from webgeocalc import AngularSeparation
+
+    >>> AngularSeparation(
+        kernel_paths = ['pds/wgc/kernels/lsk/naif0012.tls', 'pds/wgc/kernels/spk/de430.bsp'],
+        times = '2012-10-19T08:24:00.000',
+        target_1 = 'VENUS',
+        target_2 = 'MERCURY',
+        observer = 'SUN',
+    ).run()
+    [Calculation submitted] Status: COMPLETE (id: 24739881-c068-45a1-8e52-b3cd87f47866)
+    {'DATE': '2012-10-19 08:24:00.000000 UTC', 'ANGULAR_SEPARATION': 175.17072258}
+
+
 More details can be found in the `Jupyter Notebooks`_.
 
 .. _`Jupyter Notebooks`: https://nbviewer.jupyter.org/github/seignovert/python-webgeocalc/blob/master/examples/api.ipynb

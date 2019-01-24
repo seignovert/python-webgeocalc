@@ -5,7 +5,7 @@ from .errors import CalculationRequiredAttr, CalculationInvalidAttr, Calculation
                     CalculationNotCompleted
 from .types import KernelSetDetails
 from .vars import CALCULATION_TYPE, TIME_SYSTEM, TIME_FORMAT, TIME_STEP_UNITS, \
-                  INTERVALS, ABERRATION_CORRECTION, STATE_REPRESENTATION
+                  INTERVALS, ABERRATION_CORRECTION, STATE_REPRESENTATION, SHAPE
 
 
 class SetterProperty(object):
@@ -313,6 +313,44 @@ class Calculation(object):
         self.__target = val if isinstance(val, int) else val.upper()
 
     @SetterProperty
+    def target_1(self, val):
+        '''
+        The target body name or ID of the first body.
+        '''
+        self.__target1 = val if isinstance(val, int) else val.upper()
+
+    @SetterProperty
+    def shape_1(self, val):
+        '''
+        The shape to use for the first body. One of:
+            - POINT
+            - SPHERE
+        '''
+        if val in SHAPE:
+            self.__shape1 = val
+        else:
+            raise CalculationInvalidAttr('shape_1', val, SHAPE)
+
+    @SetterProperty
+    def target_2(self, val):
+        '''
+        The target body name or ID of the second body.
+        '''
+        self.__target2 = val if isinstance(val, int) else val.upper()
+
+    @SetterProperty
+    def shape_2(self, val):
+        '''
+        The shape to use for the second body. One of:
+            - POINT
+            - SPHERE
+        '''
+        if val in SHAPE:
+            self.__shape2 = val
+        else:
+            raise CalculationInvalidAttr('shape_2', val, SHAPE)
+
+    @SetterProperty
     def observer(self, val):
         '''
         The observing body name or ID from API.bodies(kernel_set).
@@ -363,6 +401,7 @@ class Calculation(object):
             raise CalculationInvalidAttr('state_representation', val, STATE_REPRESENTATION)
 
 
+
 class StateVector(Calculation):
     '''Calculates the position of one body relative to another, calculated in a desired reference frame.'''
 
@@ -375,5 +414,21 @@ class StateVector(Calculation):
         kwargs['calculation_type'] = 'STATE_VECTOR'
         kwargs['aberration_correction'] = aberration_correction
         kwargs['state_representation'] = state_representation
+
+        super().__init__(**kwargs)
+
+class AngularSeparation(Calculation):
+    '''Calculates the angular separation of two bodies as seen by an observer body..'''
+
+    def __init__(self, shape_1='POINT', shape_2='POINT', aberration_correction='CN', **kwargs):
+
+        for required in ['target_1', 'target_2', 'observer']:
+            if required not in kwargs.keys():
+                raise CalculationRequiredAttr(required)
+        
+        kwargs['calculation_type'] = 'ANGULAR_SEPARATION'
+        kwargs['shape_1'] = shape_1
+        kwargs['shape_2'] = shape_2
+        kwargs['aberration_correction'] = aberration_correction
 
         super().__init__(**kwargs)
