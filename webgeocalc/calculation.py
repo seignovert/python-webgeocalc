@@ -403,7 +403,24 @@ class Calculation(object):
 
 
 class StateVector(Calculation):
-    '''Calculates the position of one body relative to another, calculated in a desired reference frame.'''
+    '''
+    Calculates the position of one body relative to another, calculated in a desired reference frame.
+    
+    Required parameters:
+    --------------------
+        - `kernels` | `kernel_paths`
+        - `times` | `intervals` + `time_step` + time_step_units`
+        - `target`: The target body name or ID.
+        - `observer`: The observing body name or ID.
+        - `reference_frame`: The reference frame name.
+
+    Optionnal parameters (with default):
+    ------------------------------------
+        - `time_system` (UTC)
+        - `time_format` (CALENDAR)
+        - `aberration_correction` (CN) [NONE|LT|LT+S|CN|CN+S|XLT|XLT+S|XCN|XCN+S]
+        - `state_representation` (RECTANGULAR) [RECTANGULAR|RA_DEC|LATITUDINAL|PLANETODETIC|PLANETOGRAPHIC|CYLINDRICAL|SPHERICAL]
+    '''
 
     def __init__(self, aberration_correction='CN', state_representation='RECTANGULAR', **kwargs):
 
@@ -418,7 +435,25 @@ class StateVector(Calculation):
         super().__init__(**kwargs)
 
 class AngularSeparation(Calculation):
-    '''Calculates the angular separation of two bodies as seen by an observer body.'''
+    '''
+    Calculates the angular separation of two bodies as seen by an observer body.
+    
+    Required parameters:
+    --------------------
+        - `kernels` | `kernel_paths`
+        - `times` | `intervals` + `time_step` + time_step_units`
+        - `target_1`: The target body name or ID of the first body.
+        - `target_2`: The target body name or ID of the second body.
+        - `observer`: The observing body name or ID.
+
+    Optionnal parameters (with default):
+    ------------------------------------
+        - `time_system` (UTC)
+        - `time_format` (CALENDAR)
+        - `shape_1`: The shape to use for the first body. (POINT) [POINT|SPHERE]
+        - `shape_2`: The shape to use for the second body. (POINT) [POINT|SPHERE]
+        - `aberration_correction` (CN) [NONE|LT|LT+S|CN|CN+S|XLT|XLT+S|XCN|XCN+S]
+    '''
 
     def __init__(self, shape_1='POINT', shape_2='POINT', aberration_correction='CN', **kwargs):
 
@@ -434,7 +469,22 @@ class AngularSeparation(Calculation):
         super().__init__(**kwargs)
 
 class AngularSize(Calculation):
-    '''Calculates the angular size of a target as seen by an observer..'''
+    '''
+    Calculates the angular size of a target as seen by an observer.
+    
+    Required parameters:
+    --------------------
+        - `kernels` | `kernel_paths`
+        - `times` | `intervals` + `time_step` + time_step_units`
+        - `target`: The target body name or ID.
+        - `observer`: The observing body name or ID.
+
+    Optionnal parameters (with default):
+    ------------------------------------
+        - `time_system` (UTC)
+        - `time_format` (CALENDAR)
+        - `aberration_correction` (CN) [NONE|LT|LT+S|CN|CN+S|XLT|XLT+S|XCN|XCN+S]
+    '''
 
     def __init__(self, aberration_correction='CN', **kwargs):
 
