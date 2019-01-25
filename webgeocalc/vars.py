@@ -77,6 +77,8 @@ STATE_REPRESENTATION = [
 SHAPE = [
     'POINT',
     'SPHERE',
+    'ELLIPSOID',
+    'DSK ',
 ]
 
 TIME_LOCATION = [
@@ -118,4 +120,10 @@ ANGULAR_VELOCITY_UNITS = [
     'rad/s',
     'RPM',
     'Unitary',
+]
+
+COORDINATE_REPRESENTATION = [
+    'LATITUDINAL',
+    'PLANETODETIC',
+    'PLANETOGRAPHIC',
 ]

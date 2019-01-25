@@ -80,3 +80,9 @@ class CalculationNotCompleted(IOError):
     def __init__(self, status):
         msg = f"Calculation is status: '{status}'"
         super().__init__(msg)
+
+class CalculationInvalidValue(ValueError):
+    '''This exception is raised when calculation attribute is outside a valid range'''
+    def __init__(self, attr, value, vmin, vmax):
+        msg = f"Attribute '{attr}'={value} is not included in [ {vmin} ; {vmax} ]."
+        super().__init__(msg)

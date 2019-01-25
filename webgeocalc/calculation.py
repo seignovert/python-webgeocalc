@@ -2,11 +2,12 @@
 from .api import API
 from .errors import CalculationRequiredAttr, CalculationInvalidAttr, CalculationUndefinedAttr, \
                     CalculationIncompatibleAttr, CalculationConflictAttr, CalculationAlreadySubmitted, \
-                    CalculationNotCompleted
+    CalculationNotCompleted, CalculationInvalidValue
 from .types import KernelSetDetails
 from .vars import CALCULATION_TYPE, TIME_SYSTEM, TIME_FORMAT, TIME_STEP_UNITS, \
                   INTERVALS, ABERRATION_CORRECTION, STATE_REPRESENTATION, SHAPE, TIME_LOCATION, \
-                  ORIENTATION_REPRESENTATION, ANGULAR_VELOCITY_REPRESENTATION, AXIS, ANGULAR_UNITS, ANGULAR_VELOCITY_UNITS
+                  ORIENTATION_REPRESENTATION, ANGULAR_VELOCITY_REPRESENTATION, AXIS, ANGULAR_UNITS, ANGULAR_VELOCITY_UNITS, \
+                  COORDINATE_REPRESENTATION
 
 
 class SetterProperty(object):
@@ -314,6 +315,13 @@ class Calculation(object):
         self.__target = val if isinstance(val, int) else val.upper()
 
     @SetterProperty
+    def target_frame(self, val):
+        '''
+        The target body-fixed reference frame name.
+        '''
+        self.__targetFrame = val
+
+    @SetterProperty
     def target_1(self, val):
         '''
         The target body name or ID of the first body.
@@ -557,6 +565,38 @@ class Calculation(object):
             raise CalculationIncompatibleAttr('angular_velocity_units', val, 'angular_velocity_representation',
                                               self.params['angular_velocity_representation'], ['VECTOR_IN_FRAME1', 'VECTOR_IN_FRAME2'])
 
+    @SetterProperty
+    def coordinate_representation(self, val):
+        '''
+        Coordinate Representation. One of:
+            - LATITUDINAL (planetocentric)
+            - PLANETODETIC
+            - PLANETOGRAPHIC
+        '''
+        if val in COORDINATE_REPRESENTATION:
+            self.__coordinateRepresentation = val
+        else:
+            raise CalculationInvalidAttr('coordinate_representation', val, COORDINATE_REPRESENTATION)
+
+    @SetterProperty
+    def latitude(self, val):
+        '''
+        Latitude of the surface point, in degrees, from -90 to +90.
+        '''
+        if val >= -90 and val <= 90:
+            self.__latitude = val
+        else:
+            raise CalculationInvalidValue('latitude', val, -90, 90)
+
+    @SetterProperty
+    def longitude(self, val):
+        '''
+        Longitude of the surface point, in degrees, from -180 to +180.
+        '''
+        if val >= -180 and val <= 180:
+            self.__longitude = val
+        else:
+            raise CalculationInvalidValue('longitude', val, -180, 180)
 
 
 class StateVector(Calculation):
@@ -703,7 +743,7 @@ class FrameTransformation(Calculation):
 
         ABERRATION_CORRECTION_ALLOWED = list(filter(lambda x: '+S' not in x, ABERRATION_CORRECTION))
         if aberration_correction not in ABERRATION_CORRECTION_ALLOWED:
-            raise CalculationInvalidAttr('aberration_correction', aberration_correction, ABERRATION_CORRECTION_ALLOWED)            
+            raise CalculationInvalidAttr('aberration_correction', aberration_correction, ABERRATION_CORRECTION_ALLOWED)
 
         kwargs['calculation_type'] = 'FRAME_TRANSFORMATION'
         kwargs['aberration_correction'] = aberration_correction
@@ -721,5 +761,45 @@ class FrameTransformation(Calculation):
 
         if angular_velocity_representation in ['VECTOR_IN_FRAME1', 'VECTOR_IN_FRAME2', 'EULER_ANGLE_DERIVATIVES']:
             kwargs['angular_velocity_units'] = angular_velocity_units
+
+        super().__init__(**kwargs)
+
+
+class IlluminationAngles(Calculation):
+    '''
+    Calculate the emission, phase and solar incidence angles at a point on a target as seen from an observer.
+    
+    Required parameters:
+    --------------------
+        - `kernels` | `kernel_paths`
+        - `times` | `intervals` + `time_step` + `time_step_units`
+        - `target`: The target body name or ID.
+        - `target_frame`: The target body-fixed reference frame name.
+        - `observer`: The observing body name or ID.
+        - `latitude`: Latitude of the surface point, in degrees, from -90 to +90.
+        - `longitude`: Longitude of the surface point, in degrees, from -180 to +180.
+
+    Optionnal parameters (with default):
+    ------------------------------------
+        - `time_system` (UTC)
+        - `time_format` (CALENDAR)
+        - `shape_1`: The shape to use for the target body. (ELLIPSOID) [ELLIPSOID|DSK]
+        - `aberration_correction` (CN) [NONE|LT|LT+S|CN|CN+S|XLT|XLT+S|XCN|XCN+S]
+    '''
+
+    def __init__(self, shape_1='ELLIPSOID', coordinate_representation='LATITUDINAL', aberration_correction='CN', **kwargs):
+
+        for required in ['target', 'target_frame', 'observer', 'latitude', 'longitude']:
+            if required not in kwargs.keys():
+                raise CalculationRequiredAttr(required)
+
+        kwargs['calculation_type'] = 'ILLUMINATION_ANGLES'
+        kwargs['coordinate_representation'] = coordinate_representation
+        kwargs['aberration_correction'] = aberration_correction
+
+        if shape_1 in ['ELLIPSOID', 'DSK']:
+            kwargs['shape_1'] = shape_1
+        else:
+            raise CalculationInvalidAttr('shape_1', shape_1, ['ELLIPSOID', 'DSK'])
 
         super().__init__(**kwargs)
