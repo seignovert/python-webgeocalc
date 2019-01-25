@@ -4,7 +4,7 @@ import requests_mock
 
 from webgeocalc import Calculation, StateVector
 from webgeocalc.vars import API_URL
-from webgeocalc.errors import CalculationNotCompleted, CalculationAlreadySubmitted, ResultAttributeError
+from webgeocalc.errors import CalculationNotCompleted, CalculationAlreadySubmitted, ResultAttributeError, CalculationTimeOut
 
 @pytest.fixture
 def params():
@@ -34,7 +34,6 @@ def response():
             "progress": 0
         }
     }
-
 
 @pytest.fixture
 def results():
@@ -246,6 +245,19 @@ def results_sv():
         ]
     }
 
+@pytest.fixture
+def loading_kernels():
+    return {
+        "status": "OK",
+        "message": "Loading kernels…",
+        "calculationId": "824e983c-f75f-4f49-89bd-b487a77da65c",
+        "result": {
+            "phase": "LOADING_KERNELS",
+            "progress": 0
+        }
+    }
+
+
 
 def test_calculation_run(requests_mock, params, response, results):
     calc = Calculation(**params)
@@ -300,3 +312,10 @@ def test_state_vector_single_time(requests_mock, params_sv, response_sv, results
 
     with pytest.raises(ResultAttributeError):
         column.wrong_attr
+
+def test_calculation_timeout(requests_mock, params, loading_kernels):
+
+    requests_mock.post(API_URL + '/calculation/new', json=loading_kernels)
+
+    with pytest.raises(CalculationTimeOut):
+        Calculation(**params).run(timeout=0.001, sleep=0.001)

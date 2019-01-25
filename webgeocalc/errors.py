@@ -69,6 +69,12 @@ class CalculationConflictAttr(AttributeError):
         msg = f"Attribute '{attr1}' is in conflict with attribute '{attr2}'"
         super().__init__(msg)
 
+class CalculationInvalidValue(ValueError):
+    '''This exception is raised when calculation attribute is outside a valid range'''
+    def __init__(self, attr, value, vmin, vmax):
+        msg = f"Attribute '{attr}'={value} is not included in [ {vmin} ; {vmax} ]."
+        super().__init__(msg)
+
 class CalculationAlreadySubmitted(IOError):
     '''This exception is raised when calculation was already submited'''
     def __init__(self, calculation_id):
@@ -81,8 +87,9 @@ class CalculationNotCompleted(IOError):
         msg = f"Calculation is status: '{status}'"
         super().__init__(msg)
 
-class CalculationInvalidValue(ValueError):
-    '''This exception is raised when calculation attribute is outside a valid range'''
-    def __init__(self, attr, value, vmin, vmax):
-        msg = f"Attribute '{attr}'={value} is not included in [ {vmin} ; {vmax} ]."
+class CalculationTimeOut(IOError):
+    '''This exception is raised when calculation time-out'''
+    def __init__(self, timeout, sleep):
+        msg = f"Calculation time-out after {timeout} secondes ({int(timeout/sleep)} attempts)"
         super().__init__(msg)
+

@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
+import time
+
 from .api import API
 from .errors import CalculationRequiredAttr, CalculationInvalidAttr, CalculationUndefinedAttr, \
                     CalculationIncompatibleAttr, CalculationConflictAttr, CalculationAlreadySubmitted, \
-    CalculationNotCompleted, CalculationInvalidValue
+                    CalculationNotCompleted, CalculationInvalidValue, CalculationTimeOut
 from .types import KernelSetDetails
 from .vars import CALCULATION_TYPE, TIME_SYSTEM, TIME_FORMAT, TIME_STEP_UNITS, \
                   INTERVALS, ABERRATION_CORRECTION, STATE_REPRESENTATION, SHAPE, TIME_LOCATION, \
@@ -74,7 +76,7 @@ class Calculation(object):
         self.id, self.status, self.progress = API.new_calculation(self.payload)
 
         if self.verbose:
-            print(f'[Calculation submitted] Status: {self.status} (id: {self.id})')
+            print(f'[Calculation submit] Status: {self.status} (id: {self.id})')
 
     def resubmit(self):
         '''Re-submit calculation'''
@@ -91,15 +93,24 @@ class Calculation(object):
             if self.verbose:
                 print(f'[Calculation update] Status: {self.status} (id: {self.id})')
 
-    def run(self):
-        '''Run calculation'''
+    def run(self, timeout=30, sleep=1):
+        '''
+        Run calculation: submit and update calculation status to get the results.
+        Sleep time is 1 second between each update.
+        Timeout is send after 30 secondes.
+        '''
         if not self.columns is None and not self.values is None:
             return self.results
-        else:
-            self.update()
 
-        if self.status == 'COMPLETE':
-            return self.results
+        for i in range(int(timeout/sleep)):
+            self.update()
+            
+            if self.status == 'COMPLETE':
+                return self.results
+            else:
+                time.sleep(sleep)
+        else:
+            raise CalculationTimeOut(timeout, sleep)
 
     @property
     def results(self):
