@@ -2,7 +2,7 @@
 import pytest
 import requests_mock
 
-from webgeocalc import SubSolarPoint
+from webgeocalc import SubObserverPoint
 from webgeocalc.errors import CalculationInvalidAttr
 
 @pytest.fixture
@@ -52,7 +52,7 @@ def payload(kernels, time, target, target_frame, observer, corr):
         "times": [
             time,
         ],
-        "calculationType": "SUB_SOLAR_POINT",
+        "calculationType": "SUB_OBSERVER_POINT",
         "target": target,
         "targetFrame": target_frame,
         "observer": observer,
@@ -61,14 +61,5 @@ def payload(kernels, time, target, target_frame, observer, corr):
         "stateRepresentation": "RECTANGULAR",
     }
 
-def test_sub_solar_point_payload(params, payload):
-    assert SubSolarPoint(**params).payload == payload
-
-
-def test_sub_solar_point_attr_error(params, payload):
-    with pytest.raises(CalculationInvalidAttr):
-        SubSolarPoint(sub_point_type='WRONG', **params)
-
-    del params['aberration_correction']
-    with pytest.raises(CalculationInvalidAttr):
-        SubSolarPoint(aberration_correction='XCN', **params)
+def test_sub_observer_point_payload(params, payload):
+    assert SubObserverPoint(**params).payload == payload

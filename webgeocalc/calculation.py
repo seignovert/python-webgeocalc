@@ -839,6 +839,42 @@ class SubSolarPoint(Calculation):
 
         self.required(['target', 'target_frame', 'observer'], kwargs)
 
+        ABERRATION_CORRECTION_ALLOWED = list(filter(lambda x: 'X' not in x, ABERRATION_CORRECTION))
+        if aberration_correction not in ABERRATION_CORRECTION_ALLOWED:
+            raise CalculationInvalidAttr('aberration_correction', aberration_correction, ABERRATION_CORRECTION_ALLOWED)
+
+        kwargs['calculation_type'] = 'SUB_SOLAR_POINT'
+        kwargs['sub_point_type'] = sub_point_type
+        kwargs['aberration_correction'] = aberration_correction
+        kwargs['state_representation'] = state_representation
+
+        super().__init__(**kwargs)
+
+class SubObserverPoint(Calculation):
+    '''
+    Calculate the sub-observer point on a target as seen from an observer.
+    
+    Required parameters:
+    --------------------
+        - `kernels` | `kernel_paths`
+        - `times` | `intervals` + `time_step` + `time_step_units`
+        - `target`: The target body name or ID.
+        - `target_frame`: The target body-fixed reference frame name.
+        - `observer`: The observing body name or ID.
+
+    Optionnal parameters (with default):
+    ------------------------------------
+        - `time_system` (UTC)
+        - `time_format` (CALENDAR)
+        - `sub_point_type`: The method of finding the sub-observer point. (Near point: ellipsoid) [Near point: ellipsoid|Intercept: ellipsoid|NADIR/DSK/UNPRIORITIZED|INTERCEPT/DSK/UNPRIORITIZED]
+        - `aberration_correction` (CN) [NONE|LT|LT+S|CN|CN+S|XLT|XLT+S|XCN|XCN+S]
+        - `state_representation` (RECTANGULAR) [RECTANGULAR|RA_DEC|LATITUDINAL|PLANETODETIC|PLANETOGRAPHIC|CYLINDRICAL|SPHERICAL]
+    '''
+
+    def __init__(self, sub_point_type='Near point: ellipsoid', aberration_correction='CN', state_representation='RECTANGULAR', **kwargs):
+
+        self.required(['target', 'target_frame', 'observer'], kwargs)
+
         kwargs['calculation_type'] = 'SUB_OBSERVER_POINT'
         kwargs['sub_point_type'] = sub_point_type
         kwargs['aberration_correction'] = aberration_correction
