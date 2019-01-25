@@ -5,7 +5,8 @@ from .errors import CalculationRequiredAttr, CalculationInvalidAttr, Calculation
                     CalculationNotCompleted
 from .types import KernelSetDetails
 from .vars import CALCULATION_TYPE, TIME_SYSTEM, TIME_FORMAT, TIME_STEP_UNITS, \
-                  INTERVALS, ABERRATION_CORRECTION, STATE_REPRESENTATION, SHAPE
+                  INTERVALS, ABERRATION_CORRECTION, STATE_REPRESENTATION, SHAPE, TIME_LOCATION, \
+                  ORIENTATION_REPRESENTATION, ANGULAR_VELOCITY_REPRESENTATION, AXIS, ANGULAR_UNITS, ANGULAR_VELOCITY_UNITS
 
 
 class SetterProperty(object):
@@ -52,7 +53,7 @@ class Calculation(object):
     def __repr__(self):
         return '\n'.join(
             [f"<{self.__class__.__name__}> Status: {self.status} (id: {self.id})"] +
-            [f' - {k.capitalize()}: {v}' for k, v in self.payload.items()]
+            [f' - {k}: {v}' for k, v in self.payload.items()]
         )
 
     @property
@@ -365,6 +366,20 @@ class Calculation(object):
         self.__referenceFrame = val if isinstance(val, int) else val.upper()
 
     @SetterProperty
+    def frame_1(self, val):
+        '''
+        The first reference frame name.        
+        '''
+        self.__frame1 = val if isinstance(val, int) else val.upper()
+
+    @SetterProperty
+    def frame_2(self, val):
+        '''
+        The second reference frame name.        
+        '''
+        self.__frame2 = val if isinstance(val, int) else val.upper()
+
+    @SetterProperty
     def aberration_correction(self, val):
         '''
         The SPICE aberration correction string. One of:
@@ -400,6 +415,148 @@ class Calculation(object):
         else:
             raise CalculationInvalidAttr('state_representation', val, STATE_REPRESENTATION)
 
+    @SetterProperty
+    def time_location(self, val):
+        '''
+        The frame for the input times. On of:
+            - FRAME1
+            - FRAME2
+        
+        (API doc: "Only needed if aberrationCorrection is not NONE"
+        => WRONG: required even for aberrationCorrection = NONE.
+        '''
+        if val in TIME_LOCATION:
+            self.__timeLocation = val
+        else:
+            raise CalculationInvalidAttr('time_location', val, TIME_LOCATION)
+
+    @SetterProperty
+    def orientation_representation(self, val):
+        '''
+        The representation of the result transformation. One of:
+            - EULER_ANGLES
+            - ANGLE_AND_AXIS
+            - SPICE_QUATERNION
+            - OTHER_QUATERNION
+            - MATRIX_ROW_BY_ROW
+            - MATRIX_FLAGGED
+            - MATRIX_ALL_ONE_ROW
+        '''
+        if val in ORIENTATION_REPRESENTATION:
+            self.__orientationRepresentation = val
+        else:
+            raise CalculationInvalidAttr('orientation_representation', val, ORIENTATION_REPRESENTATION)
+
+    @SetterProperty
+    def axis_1(self, val):
+        '''
+        The first axis for Euler angle rotation.
+        '''
+        self.__axis1 = self.axis('axis_1', val)
+
+    @SetterProperty
+    def axis_2(self, val):
+        '''
+        The second axis for Euler angle rotation.
+        '''
+        self.__axis2 = self.axis('axis_2', val)
+
+    @SetterProperty
+    def axis_3(self, val):
+        '''
+        The third axis for Euler angle rotation.
+        '''
+        self.__axis3 = self.axis('axis_3', val)
+    
+    def axis(self, name, val):
+        '''
+        Axis for Euler angle rotation. One of:
+            - X
+            - Y
+            - Z
+
+        Note: Only needed if `orientation_representation` is `EULER_ANGLES`.
+        '''
+        if 'orientation_representation' not in self.params.keys():
+            raise CalculationUndefinedAttr(name, val, 'orientation_representation')
+
+        if self.params['orientation_representation'] != 'EULER_ANGLES':
+            raise CalculationIncompatibleAttr(name, val, 'orientation_representation', self.params['orientation_representation'], ['EULER_ANGLES'])
+
+        if val in AXIS:
+            return val
+        else:
+            raise CalculationInvalidAttr(name, val, AXIS)
+
+    @SetterProperty
+    def angular_units(self, val):
+        '''
+        The angular units used for the angle of rotation. One of:
+            - deg
+            - rad 
+
+        Note: Only needed if `orientation_representation` is `EULER_ANGLES` or `ANGLE_AND_AXIS`.
+        '''
+        if val in ANGULAR_UNITS:
+            self.__angularUnits = val
+        else:
+            raise CalculationInvalidAttr('angular_units', val, ANGULAR_UNITS)
+
+        if 'orientation_representation' not in self.params.keys():
+            raise CalculationUndefinedAttr('angular_units', val, 'orientation_representation')
+
+        if not self.params['orientation_representation'] in ['EULER_ANGLES', 'ANGLE_AND_AXIS']:
+            raise CalculationIncompatibleAttr('angular_units', val, 'orientation_representation', \
+                                              self.params['orientation_representation'], ['EULER_ANGLES', 'ANGLE_AND_AXIS'])
+
+    @SetterProperty
+    def angular_velocity_representation(self, val):
+        '''
+        The representation of angular velocity in the output. One of:
+            - NOT_INCLUDED
+            - VECTOR_IN_FRAME1
+            - VECTOR_IN_FRAME2
+            - EULER_ANGLE_DERIVATIVES
+            - MATRIX 
+        '''
+        if val in ANGULAR_VELOCITY_REPRESENTATION:
+            self.__angularVelocityRepresentation = val
+        else:
+            raise CalculationInvalidAttr('angular_velocity_representation', val, ANGULAR_VELOCITY_REPRESENTATION)
+
+    @SetterProperty
+    def angular_velocity_units(self, val):
+        '''
+        The units for the angular velocity. One of:
+            - deg/s
+            - rad/s
+            - RPM
+            - Unitary
+
+        Note: Only needed if `angular_velocity_representation` is one of:
+            - VECTOR_IN_FRAME1
+            - VECTOR_IN_FRAME2
+            - EULER_ANGLE_DERIVATIVES
+
+        Note 2: `Unitary` = Unit vector, only applicable for `VECTOR_IN_FRAME1` and `VECTOR_IN_FRAME2`.
+        '''
+        if val in ANGULAR_VELOCITY_UNITS:
+            self.__angularVelocityUnits = val
+        else:
+            raise CalculationInvalidAttr('angular_velocity_units', val, ANGULAR_VELOCITY_UNITS)
+
+        if 'angular_velocity_representation' not in self.params.keys():
+            raise CalculationUndefinedAttr('angular_velocity_units', val, 'angular_velocity_representation')
+
+        CHOICES = ['VECTOR_IN_FRAME1', 'VECTOR_IN_FRAME2', 'EULER_ANGLE_DERIVATIVES']
+        if not self.params['angular_velocity_representation'] in CHOICES:
+            raise CalculationIncompatibleAttr('angular_velocity_units', val, 'angular_velocity_representation',
+                                              self.params['angular_velocity_representation'], CHOICES)
+        
+        if val == 'Unitary' and not self.params['angular_velocity_representation'] in ['VECTOR_IN_FRAME1', 'VECTOR_IN_FRAME2']:
+            raise CalculationIncompatibleAttr('angular_velocity_units', val, 'angular_velocity_representation',
+                                              self.params['angular_velocity_representation'], ['VECTOR_IN_FRAME1', 'VECTOR_IN_FRAME2'])
+
 
 
 class StateVector(Calculation):
@@ -409,7 +566,7 @@ class StateVector(Calculation):
     Required parameters:
     --------------------
         - `kernels` | `kernel_paths`
-        - `times` | `intervals` + `time_step` + time_step_units`
+        - `times` | `intervals` + `time_step` + `time_step_units`
         - `target`: The target body name or ID.
         - `observer`: The observing body name or ID.
         - `reference_frame`: The reference frame name.
@@ -441,7 +598,7 @@ class AngularSeparation(Calculation):
     Required parameters:
     --------------------
         - `kernels` | `kernel_paths`
-        - `times` | `intervals` + `time_step` + time_step_units`
+        - `times` | `intervals` + `time_step` + `time_step_units`
         - `target_1`: The target body name or ID of the first body.
         - `target_2`: The target body name or ID of the second body.
         - `observer`: The observing body name or ID.
@@ -475,7 +632,7 @@ class AngularSize(Calculation):
     Required parameters:
     --------------------
         - `kernels` | `kernel_paths`
-        - `times` | `intervals` + `time_step` + time_step_units`
+        - `times` | `intervals` + `time_step` + `time_step_units`
         - `target`: The target body name or ID.
         - `observer`: The observing body name or ID.
 
@@ -494,5 +651,75 @@ class AngularSize(Calculation):
         
         kwargs['calculation_type'] = 'ANGULAR_SIZE'
         kwargs['aberration_correction'] = aberration_correction
+
+        super().__init__(**kwargs)
+
+
+class FrameTransformation(Calculation):
+    '''
+    Calculate the transformation from one reference frame (Frame 1) to another reference frame (Frame 2).
+    
+    Required parameters:
+    --------------------
+        - `kernels` | `kernel_paths`
+        - `times` | `intervals` + `time_step` + `time_step_units`
+        - `frame_1`: The first reference frame name.
+        - `frame_2`: The second reference frame name.
+
+    Optionnal parameters (with default):
+    ------------------------------------
+        - `time_system` (UTC)
+        - `time_format` (CALENDAR)
+        - `aberration_correction` (CN) [NONE|LT|CN|XLT|XCN]
+        - `time_location`: The frame for the input times. (FRAME1) [FRAME1|FRAME2]
+        - `orientation_representation`: The representation of the result transformation. (EULER_ANGLES) [EULER_ANGLES|ANGLE_AND_AXIS|SPICE_QUATERNION|OTHER_QUATERNION|MATRIX_ROW_BY_ROW|MATRIX_FLAGGED|MATRIX_ALL_ONE_ROW]
+        - `angular_velocity_representation`: The representation of angular velocity in the output. (VECTOR_IN_FRAME1) [NOT_INCLUDED|VECTOR_IN_FRAME1|VECTOR_IN_FRAME2|EULER_ANGLE_DERIVATIVES|MATRIX]
+    
+    Only needed if `orientation_representation` is `EULER_ANGLES`:
+        - `axis_1`: The first axis for Euler angle rotation. (X) [X|Y|Z]
+        - `axis_2`: The second axis for Euler angle rotation (X) [X|Y|Z]
+        - `axis_3`: The third axis for Euler angle rotation (X) [X|Y|Z]
+
+    Only needed if `orientation_representation` is `EULER_ANGLES` or `ANGLE_AND_AXIS`:
+        - `angular_units`: The angular units used for the angle of rotation. (deg) [deg|rad]
+    
+    Only needed if `angular_velocity_representation` is one of: `VECTOR_IN_FRAME1`, `VECTOR_IN_FRAME2`, or `EULER_ANGLE_DERIVATIVES`:
+        - `angular_velocity_units`: The units for the angular velocity. (deg/s) [deg/s|rad/s|RPM|Unitary]
+    
+    Note: `Unitary` = Unit vector, only applicable for `VECTOR_IN_FRAME1` and `VECTOR_IN_FRAME2`.
+    '''
+
+    def __init__(self, aberration_correction='CN', time_location='FRAME1',
+                 orientation_representation='EULER_ANGLES',
+                 axis_1='X', axis_2='Y', axis_3='Z',
+                 angular_units='deg',
+                 angular_velocity_representation='VECTOR_IN_FRAME1',
+                 angular_velocity_units='deg/s',
+                 **kwargs):
+
+        for required in ['frame_1', 'frame_2']:
+            if required not in kwargs.keys():
+                raise CalculationRequiredAttr(required)
+
+        ABERRATION_CORRECTION_ALLOWED = list(filter(lambda x: '+S' not in x, ABERRATION_CORRECTION))
+        if aberration_correction not in ABERRATION_CORRECTION_ALLOWED:
+            raise CalculationInvalidAttr('aberration_correction', aberration_correction, ABERRATION_CORRECTION_ALLOWED)            
+
+        kwargs['calculation_type'] = 'FRAME_TRANSFORMATION'
+        kwargs['aberration_correction'] = aberration_correction
+        kwargs['time_location'] = time_location
+        kwargs['orientation_representation'] = orientation_representation
+        kwargs['angular_velocity_representation'] = angular_velocity_representation
+
+        if orientation_representation == 'EULER_ANGLES':
+            kwargs['axis_1'] = axis_1
+            kwargs['axis_2'] = axis_2
+            kwargs['axis_3'] = axis_3
+
+        if orientation_representation in ['EULER_ANGLES', 'ANGLE_AND_AXIS']:
+            kwargs['angular_units'] = angular_units
+
+        if angular_velocity_representation in ['VECTOR_IN_FRAME1', 'VECTOR_IN_FRAME2', 'EULER_ANGLE_DERIVATIVES']:
+            kwargs['angular_velocity_units'] = angular_velocity_units
 
         super().__init__(**kwargs)

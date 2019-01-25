@@ -182,21 +182,40 @@ def test_calculation_time_step_units_errors(params, interval):
         Calculation(**params)
 
 def test_calculation_aberration_correction_error(params):
-    params['aberration_correction'] = 'WRONG'
     with pytest.raises(CalculationInvalidAttr):
-        Calculation(**params)
+        Calculation(aberration_correction='WRONG', **params)
 
 def test_calculation_state_representation_error(params):
-    params['state_representation'] = 'WRONG'
     with pytest.raises(CalculationInvalidAttr):
-        Calculation(**params)
+        Calculation(state_representation='WRONG', **params)
 
 def test_calculation_shape_error(params):
-    params['shape_1'] = 'WRONG'
     with pytest.raises(CalculationInvalidAttr):
-        Calculation(**params)
+        Calculation(shape_1='WRONG', **params)
 
-    del params['shape_1']
-    params['shape_2'] = 'WRONG'
     with pytest.raises(CalculationInvalidAttr):
-        Calculation(**params)
+        Calculation(shape_2='WRONG', **params)
+
+def test_calculation_axis_error(params):
+    with pytest.raises(CalculationUndefinedAttr):
+        Calculation(axis_1='X', **params) # Missing `orientation_representation`
+
+    with pytest.raises(CalculationIncompatibleAttr):
+        # Wrong `orientation_representation` with `axis`
+        Calculation(orientation_representation='SPICE_QUATERNION', axis_1='X', **params)
+
+def test_calculation_angular_units_error(params):
+    with pytest.raises(CalculationUndefinedAttr):
+        Calculation(angular_units='deg', **params) # Missing `orientation_representation`
+
+    with pytest.raises(CalculationIncompatibleAttr):
+        # Wrong `orientation_representation` with `angular_units`
+        Calculation(orientation_representation='SPICE_QUATERNION', angular_units='deg', **params)
+
+def test_calculation_angular_velocity_units_error(params):
+    with pytest.raises(CalculationUndefinedAttr):
+        Calculation(angular_velocity_units='deg/s', **params) # Missing `angular_velocity_representation`
+
+    with pytest.raises(CalculationIncompatibleAttr):
+        # Wrong `angular_velocity_representation` with `angular_velocity_units`
+        Calculation(angular_velocity_representation='NOT_INCLUDED', angular_velocity_units='deg/s', **params)

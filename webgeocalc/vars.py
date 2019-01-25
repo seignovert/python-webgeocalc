@@ -78,3 +78,44 @@ SHAPE = [
     'POINT',
     'SPHERE',
 ]
+
+TIME_LOCATION = [
+    'FRAME1',
+    'FRAME2',
+]
+
+ORIENTATION_REPRESENTATION = [
+    'EULER_ANGLES',
+    'ANGLE_AND_AXIS',
+    'SPICE_QUATERNION',
+    'OTHER_QUATERNION',
+    'MATRIX_ROW_BY_ROW',
+    'MATRIX_FLAGGED',
+    'MATRIX_ALL_ONE_ROW',
+]
+
+ANGULAR_VELOCITY_REPRESENTATION = [
+    'NOT_INCLUDED',
+    'VECTOR_IN_FRAME1',
+    'VECTOR_IN_FRAME2',
+    'EULER_ANGLE_DERIVATIVES',
+    'MATRIX',
+]
+
+AXIS = [
+    'X',
+    'Y',
+    'Z',
+]
+
+ANGULAR_UNITS = [
+    'deg',
+    'rad',
+]
+
+ANGULAR_VELOCITY_UNITS = [
+    'deg/s',
+    'rad/s',
+    'RPM',
+    'Unitary',
+]
