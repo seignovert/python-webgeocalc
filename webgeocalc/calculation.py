@@ -418,7 +418,7 @@ class StateVector(Calculation):
         super().__init__(**kwargs)
 
 class AngularSeparation(Calculation):
-    '''Calculates the angular separation of two bodies as seen by an observer body..'''
+    '''Calculates the angular separation of two bodies as seen by an observer body.'''
 
     def __init__(self, shape_1='POINT', shape_2='POINT', aberration_correction='CN', **kwargs):
 
@@ -429,6 +429,20 @@ class AngularSeparation(Calculation):
         kwargs['calculation_type'] = 'ANGULAR_SEPARATION'
         kwargs['shape_1'] = shape_1
         kwargs['shape_2'] = shape_2
+        kwargs['aberration_correction'] = aberration_correction
+
+        super().__init__(**kwargs)
+
+class AngularSize(Calculation):
+    '''Calculates the angular size of a target as seen by an observer..'''
+
+    def __init__(self, aberration_correction='CN', **kwargs):
+
+        for required in ['target', 'observer']:
+            if required not in kwargs.keys():
+                raise CalculationRequiredAttr(required)
+        
+        kwargs['calculation_type'] = 'ANGULAR_SIZE'
         kwargs['aberration_correction'] = aberration_correction
 
         super().__init__(**kwargs)
