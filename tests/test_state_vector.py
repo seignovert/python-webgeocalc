@@ -3,7 +3,6 @@ import pytest
 import requests_mock
 
 from webgeocalc import StateVector
-from webgeocalc.errors import CalculationRequiredAttr
 
 @pytest.fixture
 def kernels():
@@ -69,8 +68,3 @@ def payload(kernels, target, observer, frame, time, corr, state):
 
 def test_state_vector_payload(params, payload):
     assert StateVector(**params).payload == payload
-
-
-def test_state_vector_required_err(params, payload):
-    with pytest.raises(CalculationRequiredAttr):
-        StateVector()

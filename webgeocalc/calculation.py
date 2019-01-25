@@ -7,7 +7,7 @@ from .types import KernelSetDetails
 from .vars import CALCULATION_TYPE, TIME_SYSTEM, TIME_FORMAT, TIME_STEP_UNITS, \
                   INTERVALS, ABERRATION_CORRECTION, STATE_REPRESENTATION, SHAPE, TIME_LOCATION, \
                   ORIENTATION_REPRESENTATION, ANGULAR_VELOCITY_REPRESENTATION, AXIS, ANGULAR_UNITS, ANGULAR_VELOCITY_UNITS, \
-                  COORDINATE_REPRESENTATION
+                  COORDINATE_REPRESENTATION, SUB_POINT_TYPE
 
 
 class SetterProperty(object):
@@ -37,9 +37,7 @@ class Calculation(object):
         self.verbose = verbose
 
         # Required parameters
-        for required in ['calculation_type', 'time_system', 'time_format']:
-            if required not in kwargs.keys():
-                raise CalculationRequiredAttr(required)
+        self.required(['calculation_type', 'time_system', 'time_format'], kwargs)
 
         if 'kernels' not in kwargs.keys() and 'kernel_paths' not in kwargs.keys():
             raise CalculationRequiredAttr('kernels\' or \'kernel_paths')
@@ -56,6 +54,12 @@ class Calculation(object):
             [f"<{self.__class__.__name__}> Status: {self.status} (id: {self.id})"] +
             [f' - {k}: {v}' for k, v in self.payload.items()]
         )
+
+    @staticmethod
+    def required(attrs, kwargs):
+        for required in attrs:
+            if required not in kwargs.keys():
+                raise CalculationRequiredAttr(required)
 
     @property
     def payload(self):
@@ -598,6 +602,20 @@ class Calculation(object):
         else:
             raise CalculationInvalidValue('longitude', val, -180, 180)
 
+    @SetterProperty
+    def sub_point_type(self, val):
+        '''
+        The method of finding the sub-observer point, as in the SPICE subpnt() API call. One of:
+            - Near point: ellipsoid
+            - Intercept: ellipsoid
+            - NADIR/DSK/UNPRIORITIZED
+            - INTERCEPT/DSK/UNPRIORITIZED
+        '''
+        if val in SUB_POINT_TYPE:
+            self.__subPointType = val
+        else:
+            raise CalculationInvalidAttr('coordinate_representation', val, SUB_POINT_TYPE)
+
 
 class StateVector(Calculation):
     '''
@@ -621,9 +639,7 @@ class StateVector(Calculation):
 
     def __init__(self, aberration_correction='CN', state_representation='RECTANGULAR', **kwargs):
 
-        for required in ['target', 'observer', 'reference_frame']:
-            if required not in kwargs.keys():
-                raise CalculationRequiredAttr(required)
+        self.required(['target', 'observer', 'reference_frame'], kwargs)
         
         kwargs['calculation_type'] = 'STATE_VECTOR'
         kwargs['aberration_correction'] = aberration_correction
@@ -654,9 +670,7 @@ class AngularSeparation(Calculation):
 
     def __init__(self, shape_1='POINT', shape_2='POINT', aberration_correction='CN', **kwargs):
 
-        for required in ['target_1', 'target_2', 'observer']:
-            if required not in kwargs.keys():
-                raise CalculationRequiredAttr(required)
+        self.required(['target_1', 'target_2', 'observer'], kwargs)
         
         kwargs['calculation_type'] = 'ANGULAR_SEPARATION'
         kwargs['shape_1'] = shape_1
@@ -685,9 +699,7 @@ class AngularSize(Calculation):
 
     def __init__(self, aberration_correction='CN', **kwargs):
 
-        for required in ['target', 'observer']:
-            if required not in kwargs.keys():
-                raise CalculationRequiredAttr(required)
+        self.required(['target', 'observer'], kwargs)
         
         kwargs['calculation_type'] = 'ANGULAR_SIZE'
         kwargs['aberration_correction'] = aberration_correction
@@ -737,9 +749,7 @@ class FrameTransformation(Calculation):
                  angular_velocity_units='deg/s',
                  **kwargs):
 
-        for required in ['frame_1', 'frame_2']:
-            if required not in kwargs.keys():
-                raise CalculationRequiredAttr(required)
+        self.required(['frame_1', 'frame_2'], kwargs)
 
         ABERRATION_CORRECTION_ALLOWED = list(filter(lambda x: '+S' not in x, ABERRATION_CORRECTION))
         if aberration_correction not in ABERRATION_CORRECTION_ALLOWED:
@@ -784,14 +794,13 @@ class IlluminationAngles(Calculation):
         - `time_system` (UTC)
         - `time_format` (CALENDAR)
         - `shape_1`: The shape to use for the target body. (ELLIPSOID) [ELLIPSOID|DSK]
+        - `coordinate_representation` (LATITUDINAL) [LATITUDINAL|PLANETODETIC|PLANETOGRAPHIC]
         - `aberration_correction` (CN) [NONE|LT|LT+S|CN|CN+S|XLT|XLT+S|XCN|XCN+S]
     '''
 
     def __init__(self, shape_1='ELLIPSOID', coordinate_representation='LATITUDINAL', aberration_correction='CN', **kwargs):
 
-        for required in ['target', 'target_frame', 'observer', 'latitude', 'longitude']:
-            if required not in kwargs.keys():
-                raise CalculationRequiredAttr(required)
+        self.required(['target', 'target_frame', 'observer', 'latitude', 'longitude'], kwargs)
 
         kwargs['calculation_type'] = 'ILLUMINATION_ANGLES'
         kwargs['coordinate_representation'] = coordinate_representation
@@ -801,5 +810,38 @@ class IlluminationAngles(Calculation):
             kwargs['shape_1'] = shape_1
         else:
             raise CalculationInvalidAttr('shape_1', shape_1, ['ELLIPSOID', 'DSK'])
+
+        super().__init__(**kwargs)
+
+
+class SubSolarPoint(Calculation):
+    '''
+    Calculates the sub-solar point on a target as seen from an observer.
+    
+    Required parameters:
+    --------------------
+        - `kernels` | `kernel_paths`
+        - `times` | `intervals` + `time_step` + `time_step_units`
+        - `target`: The target body name or ID.
+        - `target_frame`: The target body-fixed reference frame name.
+        - `observer`: The observing body name or ID.
+
+    Optionnal parameters (with default):
+    ------------------------------------
+        - `time_system` (UTC)
+        - `time_format` (CALENDAR)
+        - `sub_point_type`: The method of finding the sub-solar point. (Near point: ellipsoid) [Near point: ellipsoid|Intercept: ellipsoid|NADIR/DSK/UNPRIORITIZED|INTERCEPT/DSK/UNPRIORITIZED]
+        - `aberration_correction` (CN) [NONE|LT|LT+S|CN|CN+S|XLT|XLT+S|XCN|XCN+S]
+        - `state_representation` (RECTANGULAR) [RECTANGULAR|RA_DEC|LATITUDINAL|PLANETODETIC|PLANETOGRAPHIC|CYLINDRICAL|SPHERICAL]
+    '''
+
+    def __init__(self, sub_point_type='Near point: ellipsoid', aberration_correction='CN', state_representation='RECTANGULAR', **kwargs):
+
+        self.required(['target', 'target_frame', 'observer'], kwargs)
+
+        kwargs['calculation_type'] = 'SUB_OBSERVER_POINT'
+        kwargs['sub_point_type'] = sub_point_type
+        kwargs['aberration_correction'] = aberration_correction
+        kwargs['state_representation'] = state_representation
 
         super().__init__(**kwargs)

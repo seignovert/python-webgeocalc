@@ -2,7 +2,8 @@
 import pytest
 import requests_mock
 
-from webgeocalc import AngularSize
+from webgeocalc import SubSolarPoint
+from webgeocalc.errors import CalculationInvalidAttr
 
 @pytest.fixture
 def kernels():
@@ -17,6 +18,10 @@ def target():
     return 'ENCELADUS'
 
 @pytest.fixture
+def target_frame():
+    return 'IAU_ENCELADUS'
+
+@pytest.fixture
 def observer():
     return 'CASSINI'
 
@@ -25,17 +30,18 @@ def corr():
     return 'CN+S'
 
 @pytest.fixture
-def params(kernels, time, target, observer, corr):
+def params(kernels, time, target, target_frame, observer, corr):
     return {
         'kernels': kernels,
         'times': time,
         'target': target,
+        'target_frame': target_frame,
         'observer': observer,
         'aberration_correction': corr,
     }
 
 @pytest.fixture
-def payload(kernels, time, target, observer, corr):
+def payload(kernels, time, target, target_frame, observer, corr):
     return {
         "kernels": [{
             "type": "KERNEL_SET",
@@ -46,11 +52,19 @@ def payload(kernels, time, target, observer, corr):
         "times": [
             time,
         ],
-        "calculationType": "ANGULAR_SIZE",
+        "calculationType": "SUB_OBSERVER_POINT",
         "target": target,
+        "targetFrame": target_frame,
         "observer": observer,
-        "aberrationCorrection": corr
+        "subPointType": "Near point: ellipsoid",
+        "aberrationCorrection": corr,
+        "stateRepresentation": "RECTANGULAR",
     }
 
-def test_angular_size_payload(params, payload):
-    assert AngularSize(**params).payload == payload
+def test_sub_solar_point_payload(params, payload):
+    assert SubSolarPoint(**params).payload == payload
+
+
+def test_sub_solar_point_attr_error(params, payload):
+    with pytest.raises(CalculationInvalidAttr):
+        SubSolarPoint(sub_point_type='WRONG', **params)

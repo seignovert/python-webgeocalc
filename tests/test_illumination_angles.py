@@ -3,7 +3,7 @@ import pytest
 import requests_mock
 
 from webgeocalc import IlluminationAngles
-from webgeocalc.errors import CalculationRequiredAttr, CalculationInvalidAttr, CalculationInvalidValue
+from webgeocalc.errors import CalculationInvalidAttr, CalculationInvalidValue
 
 @pytest.fixture
 def kernels():
@@ -75,11 +75,6 @@ def payload(kernels, time, target, target_frame, observer, lat, lon, corr):
 
 def test_illumination_angles_payload(params, payload):
     assert IlluminationAngles(**params).payload == payload
-
-
-def test_illumination_angles_required_err(params, payload):
-    with pytest.raises(CalculationRequiredAttr):
-        IlluminationAngles()
 
 def test_illumination_angles_attr_error(params, payload):
     with pytest.raises(CalculationInvalidAttr):

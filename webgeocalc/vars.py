@@ -127,3 +127,10 @@ COORDINATE_REPRESENTATION = [
     'PLANETODETIC',
     'PLANETOGRAPHIC',
 ]
+
+SUB_POINT_TYPE = [
+    'Near point: ellipsoid',
+    'Intercept: ellipsoid',
+    'NADIR/DSK/UNPRIORITIZED',
+    'INTERCEPT/DSK/UNPRIORITIZED',
+]

@@ -3,7 +3,7 @@ import pytest
 import requests_mock
 
 from webgeocalc import FrameTransformation
-from webgeocalc.errors import CalculationRequiredAttr, CalculationInvalidAttr, CalculationIncompatibleAttr
+from webgeocalc.errors import CalculationInvalidAttr, CalculationIncompatibleAttr
 
 @pytest.fixture
 def kernels():
@@ -63,11 +63,6 @@ def payload(kernels, time, frame_1, frame_2, corr):
 
 def test_frame_transformation_payload(params, payload):
     assert FrameTransformation(**params).payload == payload
-
-
-def test_frame_transformation_required_err(params, payload):
-    with pytest.raises(CalculationRequiredAttr):
-        FrameTransformation()
 
 def test_frame_transformation_attr_err(params, payload):
     del params['aberration_correction']

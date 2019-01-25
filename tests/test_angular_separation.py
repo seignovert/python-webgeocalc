@@ -3,7 +3,6 @@ import pytest
 import requests_mock
 
 from webgeocalc import AngularSeparation
-from webgeocalc.errors import CalculationRequiredAttr
 
 @pytest.fixture
 def kernel_paths():
@@ -69,8 +68,3 @@ def payload(kernel_paths, time, target_1, target_2, observer, corr):
 
 def test_angular_separation_payload(params, payload):
     assert AngularSeparation(**params).payload == payload
-
-
-def test_angular_separation_required_err(params, payload):
-    with pytest.raises(CalculationRequiredAttr):
-        AngularSeparation()
