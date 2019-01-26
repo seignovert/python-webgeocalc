@@ -9,7 +9,7 @@ from .types import KernelSetDetails
 from .vars import CALCULATION_TYPE, TIME_SYSTEM, TIME_FORMAT, TIME_STEP_UNITS, \
                   INTERVALS, ABERRATION_CORRECTION, STATE_REPRESENTATION, SHAPE, TIME_LOCATION, \
                   ORIENTATION_REPRESENTATION, ANGULAR_VELOCITY_REPRESENTATION, AXIS, ANGULAR_UNITS, ANGULAR_VELOCITY_UNITS, \
-                  COORDINATE_REPRESENTATION, SUB_POINT_TYPE
+                  COORDINATE_REPRESENTATION, SUB_POINT_TYPE, INTERCEPT_VECTOR_TYPE
 
 
 class SetterProperty(object):
@@ -625,7 +625,143 @@ class Calculation(object):
         if val in SUB_POINT_TYPE:
             self.__subPointType = val
         else:
-            raise CalculationInvalidAttr('coordinate_representation', val, SUB_POINT_TYPE)
+            raise CalculationInvalidAttr('sub_point_type', val, SUB_POINT_TYPE)
+
+    @SetterProperty
+    def intercept_vector_type(self, val):
+        '''
+        Type of vector to be used as the ray direction. One of:
+            - INSTRUMENT_BORESIGHT (the instrument boresight vector)
+            - INSTRUMENT_FOV_BOUNDARY_VECTORS (the instrument field-of-view boundary vectors)
+            - REFERENCE_FRAME_AXIS (an axis of the specified reference frame)
+            - VECTOR_IN_INSTRUMENT_FOV (a vector in the reference frame of the specified instrument)
+            - VECTOR_IN_REFERENCE_FRAME (a vector in the specified reference frame)
+        '''
+        if val in INTERCEPT_VECTOR_TYPE:
+            self.__interceptVectorType = val
+        else:
+            raise CalculationInvalidAttr('intercept_vector_type', val, INTERCEPT_VECTOR_TYPE)
+
+        if val in ['INSTRUMENT_BORESIGHT', 'INSTRUMENT_FOV_BOUNDARY_VECTORS', 'VECTOR_IN_INSTRUMENT_FOV']:
+            self.required(['intercept_instrument'], self.params)
+        elif val in ['REFERENCE_FRAME_AXIS', 'VECTOR_IN_REFERENCE_FRAME']:
+            self.required(['intercept_frame'], self.params)
+            if val == 'REFERENCE_FRAME_AXIS':
+                self.required(['intercept_frame_axis'], self.params)
+
+        keys = self.params.keys()
+        if val in ['VECTOR_IN_INSTRUMENT_FOV', 'VECTOR_IN_REFERENCE_FRAME']:
+            if not('intercept_vector_x' in keys and 'intercept_vector_y' in keys and 'intercept_vector_z' in keys) and \
+               not('intercept_vector_ra' in keys and 'intercept_vector_dec' in keys):
+                    raise CalculationUndefinedAttr('intercept_vector_type', val, "intercept_vector_x/y/z' or 'intercept_vector_ra/dec")
+
+    @SetterProperty
+    def intercept_instrument(self, val):
+        '''
+        The instrument name or ID.
+
+        Note: Required only if `intercept_vector_type` is:
+            - INSTRUMENT_BORESIGHT
+            - INSTRUMENT_FOV_BOUNDARY_VECTORS
+            - VECTOR_IN_INSTRUMENT_FOV
+        '''
+        if 'intercept_vector_type' not in self.params.keys():
+            raise CalculationUndefinedAttr('intercept_instrument', val, 'intercept_vector_type')
+
+        CHOICES = ['INSTRUMENT_BORESIGHT', 'INSTRUMENT_FOV_BOUNDARY_VECTORS', 'VECTOR_IN_INSTRUMENT_FOV']
+        if not self.params['intercept_vector_type'] in CHOICES:
+            raise CalculationIncompatibleAttr('intercept_instrument', val, 'intercept_vector_type',
+                                              self.params['intercept_vector_type'], CHOICES)
+
+        self.__interceptInstrument = val if isinstance(val, int) else val.upper()
+
+    @SetterProperty
+    def intercept_frame(self, val):
+        '''
+        The vector's reference frame name.
+
+        Note: Required only if `intercept_vector_type` is:
+            - REFERENCE_FRAME_AXIS
+            - VECTOR_IN_REFERENCE_FRAME
+        '''
+        if 'intercept_vector_type' not in self.params.keys():
+            raise CalculationUndefinedAttr('intercept_frame', val, 'intercept_vector_type')
+
+        CHOICES = ['REFERENCE_FRAME_AXIS', 'VECTOR_IN_REFERENCE_FRAME']
+        if not self.params['intercept_vector_type'] in CHOICES:
+            raise CalculationIncompatibleAttr('intercept_frame', val, 'intercept_vector_type',
+                                              self.params['intercept_vector_type'], CHOICES)
+
+        self.__interceptFrame = val
+
+    @SetterProperty
+    def intercept_frame_axis(self, val):
+        '''
+        The vector's reference frame name.
+
+        Note: Required only if `intercept_vector_type` is:
+            - REFERENCE_FRAME_AXIS
+        '''
+        if 'intercept_vector_type' not in self.params.keys():
+            raise CalculationUndefinedAttr('intercept_frame_axis', val, 'intercept_vector_type')
+
+        if self.params['intercept_vector_type'] != 'REFERENCE_FRAME_AXIS':
+            raise CalculationIncompatibleAttr('intercept_frame_axis', val, 'intercept_vector_type',
+                                              self.params['intercept_vector_type'], ['REFERENCE_FRAME_AXIS'])
+
+        if val in AXIS:
+            self.__interceptFrameAxis = val
+        else:
+            raise CalculationInvalidAttr('intercept_frame_axis', val, AXIS)
+
+    def intercept_vector(self, axis, val):
+        '''
+        Intercept vector coordinate.
+        '''
+        if 'intercept_vector_type' not in self.params.keys():
+            raise CalculationUndefinedAttr('intercept_vector_' + axis, val, 'intercept_vector_type')
+
+        CHOICES = ['VECTOR_IN_INSTRUMENT_FOV', 'VECTOR_IN_REFERENCE_FRAME']
+        if not self.params['intercept_vector_type'] in CHOICES:
+            raise CalculationIncompatibleAttr('intercept_vector_' + axis, val, 'intercept_vector_type',
+                                              self.params['intercept_vector_type'], CHOICES)        
+        return val
+
+    @SetterProperty
+    def intercept_vector_x(self, val):
+        '''
+        The X intercept vector coordinate.
+        '''
+        self.__interceptVectorX = self.intercept_vector('x', val)
+
+    @SetterProperty
+    def intercept_vector_y(self, val):
+        '''
+        The Y intercept vector coordinate.
+        '''
+        self.__interceptVectorY = self.intercept_vector('y', val)
+
+    @SetterProperty
+    def intercept_vector_z(self, val):
+        '''
+        The Z intercept vector coordinate.
+        '''
+        self.__interceptVectorZ = self.intercept_vector('z', val)
+
+    @SetterProperty
+    def intercept_vector_ra(self, val):
+        '''
+        The RA intercept vector coordinate.
+        '''
+        self.__interceptVectorRA = self.intercept_vector('ra', val)
+
+    @SetterProperty
+    def intercept_vector_dec(self, val):
+        '''
+        The Dec intercept vector coordinate.
+        '''
+        self.__interceptVectorDec = self.intercept_vector('dec', val)
+
 
 
 class StateVector(Calculation):
@@ -642,10 +778,10 @@ class StateVector(Calculation):
 
     Optionnal parameters (with default):
     ------------------------------------
-        - `time_system` (UTC)
-        - `time_format` (CALENDAR)
-        - `aberration_correction` (CN) [NONE|LT|LT+S|CN|CN+S|XLT|XLT+S|XCN|XCN+S]
-        - `state_representation` (RECTANGULAR) [RECTANGULAR|RA_DEC|LATITUDINAL|PLANETODETIC|PLANETOGRAPHIC|CYLINDRICAL|SPHERICAL]
+        - `time_system`: (UTC)
+        - `time_format`: (CALENDAR)
+        - `aberration_correction`: (CN) [NONE|LT|LT+S|CN|CN+S|XLT|XLT+S|XCN|XCN+S]
+        - `state_representation`: (RECTANGULAR) [RECTANGULAR|RA_DEC|LATITUDINAL|PLANETODETIC|PLANETOGRAPHIC|CYLINDRICAL|SPHERICAL]
     '''
 
     def __init__(self, aberration_correction='CN', state_representation='RECTANGULAR', **kwargs):
@@ -672,8 +808,8 @@ class AngularSeparation(Calculation):
 
     Optionnal parameters (with default):
     ------------------------------------
-        - `time_system` (UTC)
-        - `time_format` (CALENDAR)
+        - `time_system`: (UTC)
+        - `time_format`: (CALENDAR)
         - `shape_1`: The shape to use for the first body. (POINT) [POINT|SPHERE]
         - `shape_2`: The shape to use for the second body. (POINT) [POINT|SPHERE]
         - `aberration_correction` (CN) [NONE|LT|LT+S|CN|CN+S|XLT|XLT+S|XCN|XCN+S]
@@ -703,8 +839,8 @@ class AngularSize(Calculation):
 
     Optionnal parameters (with default):
     ------------------------------------
-        - `time_system` (UTC)
-        - `time_format` (CALENDAR)
+        - `time_system`: (UTC)
+        - `time_format`: (CALENDAR)
         - `aberration_correction` (CN) [NONE|LT|LT+S|CN|CN+S|XLT|XLT+S|XCN|XCN+S]
     '''
 
@@ -731,8 +867,8 @@ class FrameTransformation(Calculation):
 
     Optionnal parameters (with default):
     ------------------------------------
-        - `time_system` (UTC)
-        - `time_format` (CALENDAR)
+        - `time_system`: (UTC)
+        - `time_format`: (CALENDAR)
         - `aberration_correction` (CN) [NONE|LT|CN|XLT|XCN]
         - `time_location`: The frame for the input times. (FRAME1) [FRAME1|FRAME2]
         - `orientation_representation`: The representation of the result transformation. (EULER_ANGLES) [EULER_ANGLES|ANGLE_AND_AXIS|SPICE_QUATERNION|OTHER_QUATERNION|MATRIX_ROW_BY_ROW|MATRIX_FLAGGED|MATRIX_ALL_ONE_ROW]
@@ -802,8 +938,8 @@ class IlluminationAngles(Calculation):
 
     Optionnal parameters (with default):
     ------------------------------------
-        - `time_system` (UTC)
-        - `time_format` (CALENDAR)
+        - `time_system`: (UTC)
+        - `time_format`: (CALENDAR)
         - `shape_1`: The shape to use for the target body. (ELLIPSOID) [ELLIPSOID|DSK]
         - `coordinate_representation` (LATITUDINAL) [LATITUDINAL|PLANETODETIC|PLANETOGRAPHIC]
         - `aberration_correction` (CN) [NONE|LT|LT+S|CN|CN+S|XLT|XLT+S|XCN|XCN+S]
@@ -839,8 +975,8 @@ class SubSolarPoint(Calculation):
 
     Optionnal parameters (with default):
     ------------------------------------
-        - `time_system` (UTC)
-        - `time_format` (CALENDAR)
+        - `time_system`: (UTC)
+        - `time_format`: (CALENDAR)
         - `sub_point_type`: The method of finding the sub-solar point. (Near point: ellipsoid) [Near point: ellipsoid|Intercept: ellipsoid|NADIR/DSK/UNPRIORITIZED|INTERCEPT/DSK/UNPRIORITIZED]
         - `aberration_correction` (CN) [NONE|LT|LT+S|CN|CN+S|XLT|XLT+S|XCN|XCN+S]
         - `state_representation` (RECTANGULAR) [RECTANGULAR|RA_DEC|LATITUDINAL|PLANETODETIC|PLANETOGRAPHIC|CYLINDRICAL|SPHERICAL]
@@ -875,11 +1011,11 @@ class SubObserverPoint(Calculation):
 
     Optionnal parameters (with default):
     ------------------------------------
-        - `time_system` (UTC)
-        - `time_format` (CALENDAR)
+        - `time_system`: (UTC)
+        - `time_format`: (CALENDAR)
         - `sub_point_type`: The method of finding the sub-observer point. (Near point: ellipsoid) [Near point: ellipsoid|Intercept: ellipsoid|NADIR/DSK/UNPRIORITIZED|INTERCEPT/DSK/UNPRIORITIZED]
-        - `aberration_correction` (CN) [NONE|LT|LT+S|CN|CN+S|XLT|XLT+S|XCN|XCN+S]
-        - `state_representation` (RECTANGULAR) [RECTANGULAR|RA_DEC|LATITUDINAL|PLANETODETIC|PLANETOGRAPHIC|CYLINDRICAL|SPHERICAL]
+        - `aberration_correction`: (CN) [NONE|LT|LT+S|CN|CN+S|XLT|XLT+S|XCN|XCN+S]
+        - `state_representation`: (RECTANGULAR) [RECTANGULAR|RA_DEC|LATITUDINAL|PLANETODETIC|PLANETOGRAPHIC|CYLINDRICAL|SPHERICAL]
     '''
 
     def __init__(self, sub_point_type='Near point: ellipsoid', aberration_correction='CN', state_representation='RECTANGULAR', **kwargs):
@@ -890,5 +1026,57 @@ class SubObserverPoint(Calculation):
         kwargs['sub_point_type'] = sub_point_type
         kwargs['aberration_correction'] = aberration_correction
         kwargs['state_representation'] = state_representation
+
+        super().__init__(**kwargs)
+
+
+class SurfaceInterceptPoint(Calculation):
+    '''
+    Calculate the intercept point of a vector or vectors on a target as seen from an observer.
+    
+    Required parameters:
+    --------------------
+        - `kernels` | `kernel_paths`
+        - `times` | `intervals` + `time_step` + `time_step_units`
+        - `target`: The target body name or ID.
+        - `target_frame`: The target body-fixed reference frame name.
+        - `observer`: The observing body name or ID.
+
+    Optionnal parameters (with default):
+    ------------------------------------
+        - `time_system`: (UTC)
+        - `time_format`: (CALENDAR)
+        - `shape_1`: The shape to use for the target body. (ELLIPSOID) [ELLIPSOID|DSK]
+        - `intercept_vector_type`: Type of vector to be used as the ray direction. (INSTRUMENT_BORESIGHT) [INSTRUMENT_BORESIGHT|INSTRUMENT_FOV_BOUNDARY_VECTORS|REFERENCE_FRAME_AXIS|VECTOR_IN_INSTRUMENT_FOV|VECTOR_IN_REFERENCE_FRAME]
+        - `aberration_correction`: (CN) [NONE|LT|LT+S|CN|CN+S|XLT|XLT+S|XCN|XCN+S]
+        - `state_representation`: (RECTANGULAR) [RECTANGULAR|RA_DEC|LATITUDINAL|PLANETODETIC|PLANETOGRAPHIC|CYLINDRICAL|SPHERICAL]
+
+    Only needed if `intercept_vector_type` is `INSTRUMENT_BORESIGHT`, `INSTRUMENT_FOV_BOUNDARY_VECTORS` or `VECTOR_IN_INSTRUMENT_FOV`:
+        - `intercept_instrument`: The instrument name or ID.
+        
+    Only needed if `intercept_vector_type` is `REFERENCE_FRAME_AXIS` or `VECTOR_IN_REFERENCE_FRAME`:
+        - `intercept_frame`: The vector's reference frame name.
+
+    Only needed if `intercept_vector_type` is `REFERENCE_FRAME_AXIS`:
+        - `intercept_frame_axis`: The intercept frame axis.
+
+    Only need if `intercept_vector_type` is `VECTOR_IN_INSTRUMENT_FOV` or `VECTOR_IN_REFERENCE_FRAME`:
+        - `intercept_vector_x` + `intercept_vector_y` + `intercept_vector_z` | `intercept_vector_ra` + `intercept_vector_dec`: intercept vector coordinates.
+    '''
+
+    def __init__(self, shape_1='ELLIPSOID', intercept_vector_type='INSTRUMENT_BORESIGHT', \
+                 aberration_correction='CN', state_representation='RECTANGULAR', **kwargs):
+
+        self.required(['target', 'target_frame', 'observer'], kwargs)
+
+        kwargs['calculation_type'] = 'SURFACE_INTERCEPT_POINT'
+        kwargs['intercept_vector_type'] = intercept_vector_type
+        kwargs['aberration_correction'] = aberration_correction
+        kwargs['state_representation'] = state_representation
+
+        if shape_1 in ['ELLIPSOID', 'DSK']:
+            kwargs['shape_1'] = shape_1
+        else:
+            raise CalculationInvalidAttr('shape_1', shape_1, ['ELLIPSOID', 'DSK'])
 
         super().__init__(**kwargs)

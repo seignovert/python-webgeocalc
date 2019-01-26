@@ -3,7 +3,6 @@ import pytest
 import requests_mock
 
 from webgeocalc import SubObserverPoint
-from webgeocalc.errors import CalculationInvalidAttr
 
 @pytest.fixture
 def kernels():
