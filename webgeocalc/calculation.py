@@ -403,6 +403,20 @@ class Calculation(object):
         self.__frame2 = val if isinstance(val, int) else val.upper()
 
     @SetterProperty
+    def orbiting_body(self, val):
+        '''
+        The SPICE body name or ID for the orbiting body.
+        '''
+        self.__orbitingBody = val if isinstance(val, int) else val.upper()
+
+    @SetterProperty
+    def center_body(self, val):
+        '''
+        The SPICE body name or ID for the body that is the center of motion.
+        '''
+        self.__centerBody = val if isinstance(val, int) else val.upper()
+
+    @SetterProperty
     def aberration_correction(self, val):
         '''
         The SPICE aberration correction string. One of:
@@ -776,7 +790,7 @@ class StateVector(Calculation):
         - `observer`: The observing body name or ID.
         - `reference_frame`: The reference frame name.
 
-    Optionnal parameters (with default):
+    Optional parameters (with default):
     ------------------------------------
         - `time_system`: (UTC)
         - `time_format`: (CALENDAR)
@@ -806,7 +820,7 @@ class AngularSeparation(Calculation):
         - `target_2`: The target body name or ID of the second body.
         - `observer`: The observing body name or ID.
 
-    Optionnal parameters (with default):
+    Optional parameters (with default):
     ------------------------------------
         - `time_system`: (UTC)
         - `time_format`: (CALENDAR)
@@ -837,7 +851,7 @@ class AngularSize(Calculation):
         - `target`: The target body name or ID.
         - `observer`: The observing body name or ID.
 
-    Optionnal parameters (with default):
+    Optional parameters (with default):
     ------------------------------------
         - `time_system`: (UTC)
         - `time_format`: (CALENDAR)
@@ -865,7 +879,7 @@ class FrameTransformation(Calculation):
         - `frame_1`: The first reference frame name.
         - `frame_2`: The second reference frame name.
 
-    Optionnal parameters (with default):
+    Optional parameters (with default):
     ------------------------------------
         - `time_system`: (UTC)
         - `time_format`: (CALENDAR)
@@ -936,7 +950,7 @@ class IlluminationAngles(Calculation):
         - `latitude`: Latitude of the surface point, in degrees, from -90 to +90.
         - `longitude`: Longitude of the surface point, in degrees, from -180 to +180.
 
-    Optionnal parameters (with default):
+    Optional parameters (with default):
     ------------------------------------
         - `time_system`: (UTC)
         - `time_format`: (CALENDAR)
@@ -973,7 +987,7 @@ class SubSolarPoint(Calculation):
         - `target_frame`: The target body-fixed reference frame name.
         - `observer`: The observing body name or ID.
 
-    Optionnal parameters (with default):
+    Optional parameters (with default):
     ------------------------------------
         - `time_system`: (UTC)
         - `time_format`: (CALENDAR)
@@ -1009,7 +1023,7 @@ class SubObserverPoint(Calculation):
         - `target_frame`: The target body-fixed reference frame name.
         - `observer`: The observing body name or ID.
 
-    Optionnal parameters (with default):
+    Optional parameters (with default):
     ------------------------------------
         - `time_system`: (UTC)
         - `time_format`: (CALENDAR)
@@ -1042,7 +1056,7 @@ class SurfaceInterceptPoint(Calculation):
         - `target_frame`: The target body-fixed reference frame name.
         - `observer`: The observing body name or ID.
 
-    Optionnal parameters (with default):
+    Optional parameters (with default):
     ------------------------------------
         - `time_system`: (UTC)
         - `time_format`: (CALENDAR)
@@ -1080,3 +1094,32 @@ class SurfaceInterceptPoint(Calculation):
             raise CalculationInvalidAttr('shape_1', shape_1, ['ELLIPSOID', 'DSK'])
 
         super().__init__(**kwargs)
+
+class OsculatingElements(Calculation):
+    '''
+    Calculate the osculating elements of the orbit of a target body around a central body.
+    The orbit may be elliptical, parabolic, or hyperbolic.
+    
+    Required parameters:
+    --------------------
+        - `kernels` | `kernel_paths`
+        - `times` | `intervals` + `time_step` + `time_step_units`
+        - `orbiting_body`: The SPICE body name or ID for the orbiting body.
+        - `center_body`: The SPICE body name or ID for the body that is the center of motion.
+
+    Optional parameters (with default):
+    ------------------------------------
+        - `time_system`: (UTC)
+        - `time_format`: (CALENDAR)
+        - `reference_frame`: The reference frame name. (J2000)
+    '''
+
+    def __init__(self, reference_frame='J2000', **kwargs):
+
+        self.required(['orbiting_body', 'center_body'], kwargs)
+        
+        kwargs['calculation_type'] = 'OSCULATING_ELEMENTS'
+        kwargs['reference_frame'] = reference_frame
+
+        super().__init__(**kwargs)
+
