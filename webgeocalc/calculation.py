@@ -9,7 +9,7 @@ from .types import KernelSetDetails
 from .vars import CALCULATION_TYPE, TIME_SYSTEM, TIME_FORMAT, TIME_STEP_UNITS, \
                   INTERVALS, ABERRATION_CORRECTION, STATE_REPRESENTATION, SHAPE, TIME_LOCATION, \
                   ORIENTATION_REPRESENTATION, ANGULAR_VELOCITY_REPRESENTATION, AXIS, ANGULAR_UNITS, ANGULAR_VELOCITY_UNITS, \
-                  COORDINATE_REPRESENTATION, SUB_POINT_TYPE, INTERCEPT_VECTOR_TYPE
+                  COORDINATE_REPRESENTATION, SUB_POINT_TYPE, INTERCEPT_VECTOR_TYPE, OUTPUT_TIME_FORMAT
 
 
 class SetterProperty(object):
@@ -198,6 +198,25 @@ class Calculation(object):
             raise CalculationUndefinedAttr('time_system', 'SPACECRAFT_CLOCK', 'sclk_id')
 
     @SetterProperty
+    def output_time_system(self, val):
+        '''
+        The time system for the result times.
+            - TDB
+            - TDT
+            - UTC
+            - SPACECRAFT_CLOCK
+
+        If SPACECRAFT_CLOCK is selected, then sclkId must also be provided.
+        '''
+        if val in TIME_SYSTEM:
+            self.__outputTimeSystem = val
+        else:
+            raise CalculationInvalidAttr('output_time_system', val, TIME_SYSTEM)
+        
+        if val == 'SPACECRAFT_CLOCK' and 'output_sclk_id' not in self.params.keys():
+            raise CalculationUndefinedAttr('output_time_system', 'SPACECRAFT_CLOCK', 'output_sclk_id')
+
+    @SetterProperty
     def time_format(self, val):
         '''
         Time Format. One of the following:
@@ -215,22 +234,86 @@ class Calculation(object):
         else:
             raise CalculationInvalidAttr('time_format', val, TIME_FORMAT)
         
+        self.required(['time_system'], self.params)
+
         if val in ['CALENDAR', 'JULIAN', 'SECONDS_PAST_J2000'] and self.params['time_system'] not in ['UTC', 'TDB', 'TDT']:
             raise CalculationIncompatibleAttr('time_format', val, 'time_system', self.params['time_system'], ['UTC', 'TDB', 'TDT'])
         if val in ['SPACECRAFT_CLOCK_STRING', 'SPACECRAFT_CLOCK_TICKS'] and self.params['time_system'] != 'SPACECRAFT_CLOCK':
             raise CalculationIncompatibleAttr('time_format', val, 'time_system', self.params['time_system'], ['SPACECRAFT_CLOCK'])
+    
+    @SetterProperty
+    def output_time_format(self, val):
+        '''
+        The time format for the result times:
+            - CALENDAR
+            - CALENDAR_YMD
+            - CALENDAR_DOY
+            - JULIAN
+            - SECONDS_PAST_J2000
+            - SPACECRAFT_CLOCK_STRING
+            - SPACECRAFT_CLOCK_TICKS
+            - CUSTOM
+
+        CALENDAR_YMD, CALENDAR_DOY, JULIAN, SECONDS_PAST_J2000, and CUSTOM are applicable only when outputTimeSystem is TDB, TDT, or UTC.
+
+        SPACECRAFT_CLOCK_STRING and SPACECRAFT_CLOCK_TICKS are applicable only when outputTimeSystem is SPACECRAFT_CLOCK.
+
+        If CUSTOM is selected, then outputTimeCustomFormat must also be provided. 
+        '''
+        if val in OUTPUT_TIME_FORMAT:
+            self.__outputTimeFormat = val
+        else:
+            raise CalculationInvalidAttr('output_time_format', val, OUTPUT_TIME_FORMAT)
+        
+        self.required(['output_time_system'], self.params)
+
+        if val in ['CALENDAR', 'CALENDAR_YMD', 'CALENDAR_DOY', 'JULIAN', 'SECONDS_PAST_J2000', 'CUSTOM'] and \
+            self.params['output_time_system'] not in ['UTC', 'TDB', 'TDT']:
+            raise CalculationIncompatibleAttr('output_time_format', val, 'output_time_system', self.params['output_time_system'], ['UTC', 'TDB', 'TDT'])
+        if val in ['SPACECRAFT_CLOCK_STRING', 'SPACECRAFT_CLOCK_TICKS'] and self.params['output_time_system'] != 'SPACECRAFT_CLOCK':
+            raise CalculationIncompatibleAttr('output_time_format', val, 'output_time_system', self.params['output_time_system'], ['SPACECRAFT_CLOCK'])
 
     @SetterProperty
     def sclk_id(self, val):
         '''
         Spacecraft clock kernel id
 
-        Only used if timeSystem is SPACECRAFT_CLOCK.
+        Only used if `time_system` is `SPACECRAFT_CLOCK`.
         '''
         self.__sclkId = int(val)
 
+        self.required(['time_system'], self.params)
+
         if self.params['time_system'] != 'SPACECRAFT_CLOCK':
             raise CalculationIncompatibleAttr('sclk_id', val, 'time_system', self.params['time_system'], ['SPACECRAFT_CLOCK'])
+
+    @SetterProperty
+    def output_sclk_id(self, val):
+        '''
+        The output SCLK ID.
+
+        Only used if `output_time_system` is `SPACECRAFT_CLOCK`.
+        '''
+        self.__outputSclkId = int(val)
+
+        self.required(['output_time_system'], self.params)
+
+        if self.params['output_time_system'] != 'SPACECRAFT_CLOCK':
+            raise CalculationIncompatibleAttr('output_sclk_id', val, 'output_time_system', self.params['output_time_system'], ['SPACECRAFT_CLOCK'])
+
+    @SetterProperty
+    def output_time_custom_format(self, val):
+        '''
+        A SPICE timout() format string.
+        
+        Only used if outputTimeFormat is CUSTOM.
+        '''
+        self.__outputTimeCustomFormat = val
+
+        self.required(['output_time_format'], self.params)
+
+        if self.params['output_time_format'] != 'CUSTOM':
+            raise CalculationIncompatibleAttr('output_time_custom_format', val, 'output_time_format', self.params['output_time_format'], ['CUSTOM'])
 
     @SetterProperty
     def times(self, times):
@@ -1120,6 +1203,37 @@ class OsculatingElements(Calculation):
         
         kwargs['calculation_type'] = 'OSCULATING_ELEMENTS'
         kwargs['reference_frame'] = reference_frame
+
+        super().__init__(**kwargs)
+
+class TimeConversion(Calculation):
+    '''
+    Convert times from one time system or format to another.
+    
+    Required parameters:
+    --------------------
+        - `kernels` | `kernel_paths`
+        - `times` | `intervals` + `time_step` + `time_step_units`
+
+    Optional parameters (with default):
+    ------------------------------------
+        - `time_system`: (UTC)
+        - `time_format`: (CALENDAR)
+        - `output_time_system`: The time system for the result times. (UTC) [TDB|TDT|UTC|SPACECRAFT_CLOCK]
+        - `output_time_format`: The time format for the result times. (CALENDAR) [CALENDAR|CALENDAR_YMD|CALENDAR_DOY|JULIAN|SECONDS_PAST_J2000|SPACECRAFT_CLOCK_STRING|SPACECRAFT_CLOCK_TICKS|CUSTOM]
+
+    Only used if `outputTimeSystem` is `SPACECRAFT_CLOCK`.
+        - `output_sclk_id`: The output SCLK ID.
+    
+    Only used if `output_time_format` is `CUSTOM`.
+        - `output_time_custom_format`: A SPICE timout() format string.
+    '''
+
+    def __init__(self, output_time_system='UTC', output_time_format='CALENDAR', **kwargs):
+     
+        kwargs['calculation_type'] = 'TIME_CONVERSION'
+        kwargs['output_time_system'] = output_time_system
+        kwargs['output_time_format'] = output_time_format
 
         super().__init__(**kwargs)
 

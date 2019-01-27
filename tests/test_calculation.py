@@ -255,3 +255,28 @@ def test_calculation_intercept_vector_error(params):
 
     with pytest.raises(CalculationIncompatibleAttr):
         Calculation(intercept_vector_x=0, intercept_vector_type='INSTRUMENT_BORESIGHT', **params) # Wrong 'intercept_vector_type'
+
+def test_calculation_output_time_system_error(params):
+    with pytest.raises(CalculationInvalidAttr):
+        Calculation(output_time_system='WRONG', **params)
+
+    with pytest.raises(CalculationUndefinedAttr):
+        Calculation(output_time_system='SPACECRAFT_CLOCK', **params) # Missing 'output_sclk_id'
+
+def test_calculation_output_time_format_error(params):
+    with pytest.raises(CalculationInvalidAttr):
+        Calculation(output_time_format='WRONG', **params)
+
+    with pytest.raises(CalculationIncompatibleAttr):
+        Calculation(output_time_format='CALENDAR', output_time_system='SPACECRAFT_CLOCK', **params) # Wrong 'output_time_system'
+
+    with pytest.raises(CalculationIncompatibleAttr):
+        Calculation(output_time_format='SPACECRAFT_CLOCK_STRING', output_time_system='UTC', **params) # Wrong 'output_time_system'
+
+def test_calculation_output_sclk_id_error(params):
+    with pytest.raises(CalculationIncompatibleAttr):
+        Calculation(output_sclk_id=-82, output_time_system='WRONG', **params)
+
+def test_calculation_output_time_custom_format_error(params):
+    with pytest.raises(CalculationIncompatibleAttr):
+        Calculation(output_time_custom_format='YYYY Month DD HR:MN', output_time_format='WRONG', **params)
