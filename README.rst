@@ -176,6 +176,28 @@ More details can be found in the `Jupyter Notebooks`_.
 
 .. _`Jupyter Notebooks`: https://nbviewer.jupyter.org/github/seignovert/python-webgeocalc/blob/master/examples/api.ipynb
 
+Command Line Interface (cli)
+----------------------------
+
+The webgeocalc API can be call directly from the command line interface:
+
+.. code:: bash
+
+    $ wgc-kernels --all
+     - Solar System Kernels: (id: 1)
+    ...
+     - Cassini Huygens: (id: 5)
+    ...
+     - SPICE Class -- Binary PCK Lesson Kernels (Earth): (id: 39)
+
+    $ wgc-kernels --kernel Solar
+     - Solar System Kernels: (id: 1)
+
+More examples can be found in here_.
+
+.. _here: https://nbviewer.jupyter.org/github/seignovert/python-webgeocalc/blob/master/examples/cli.ipynb
+
+
 Disclaimer
 ----------
 This project is not supported or endorsed by either JPL, NAIF or NASA.
