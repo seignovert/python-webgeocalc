@@ -19,7 +19,7 @@ def cli_kernel_sets(argv=None):
         kernels = API.kernel_sets()
         print('\n'.join([f" - {str(kernel)}: (id: {int(kernel)})" for kernel in kernels]))
 
-    elif args.kernel is not None:
+    elif args.kernel:
         for kernel in args.kernel:
             try:
                 kernel = int(kernel)
@@ -32,6 +32,36 @@ def cli_kernel_sets(argv=None):
 
             except (KernelSetNotFound, TooManyKernelSets) as err:
                 print(err)
+    else:
+        parser.print_help()
+
+
+def cli_bodies(argv=None):
+    '''
+        Get list of bodies available in a kernel set.
+        GET: /kernel-set/{kernelSetId}/bodies
+    '''
+    parser = argparse.ArgumentParser(description='List bodies available in WebGeocalc API for a specific kernel set.')
+    parser.add_argument('kernel', nargs='?', help='Kernel set name or id')
+    parser.add_argument('--name', '-n', metavar='BODY', nargs='+', help='Search a specific body by name')
+
+    args, others = parser.parse_known_args(argv)
+
+    if args.kernel:
+        try:
+            kernel = int(args.kernel)
+        except ValueError:
+            kernel = args.kernel
+
+        bodies = API.bodies(kernel)
+
+        if args.name:
+            for body in bodies:
+                for name in args.name:
+                    if name in body:
+                        print(f" - {str(body)}: (id: {int(body)})")
+        else:
+            print('\n'.join([f" - {str(body)}: (id: {int(body)})" for body in bodies]))
     else:
         parser.print_help()
 
