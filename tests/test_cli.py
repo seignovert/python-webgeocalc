@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import pytest
 
-from webgeocalc.cli import cli_kernel_sets, cli_bodies
+from webgeocalc.cli import cli_kernel_sets, cli_bodies, cli_frames, cli_instruments
 
 
 def test_cli_kernel_sets(capsys):
@@ -40,3 +40,41 @@ def test_cli_bodies(capsys):
     cli_bodies(argv)
     captured = capsys.readouterr()
     assert ' - TITAN: (id: 606)\n' == captured.out
+
+def test_cli_frames(capsys):
+
+    argv = ''.split()
+    cli_frames(argv)
+    captured = capsys.readouterr()
+    assert 'usage:' in captured.out
+
+    argv = ['Cassini Huygens']
+    cli_frames(argv)
+    captured = capsys.readouterr()
+    assert ' - IAU_TITAN: (id: 10044)' in captured.out
+    assert ' - J2000: (id: 1)' in captured.out
+
+    argv = '5 --name Titan'.split()
+    cli_frames(argv)
+    captured = capsys.readouterr()
+    assert ' - IAU_TITAN: (id: 10044)' in captured.out
+    assert ' - J2000: (id: 1)' not in captured.out
+
+def test_cli_instruments(capsys):
+
+    argv = ''.split()
+    cli_instruments(argv)
+    captured = capsys.readouterr()
+    assert 'usage:' in captured.out
+
+    argv = ['Cassini Huygens']
+    cli_instruments(argv)
+    captured = capsys.readouterr()
+    assert ' - CASSINI_ISS_WAC: (id: -82361)' in captured.out
+    assert ' - CASSINI_VIMS_IR: (id: -82370)' in captured.out
+
+    argv = '5 --name ISS'.split()
+    cli_instruments(argv)
+    captured = capsys.readouterr()
+    assert ' - CASSINI_ISS_WAC: (id: -82361)' in captured.out
+    assert ' - CASSINI_VIMS_IR: (id: -82370)' not in captured.out
