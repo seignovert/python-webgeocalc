@@ -1,10 +1,12 @@
 Python package for NAIF WebGeoCalc API
 ======================================
 
-|Build| |Coverage| |PyPI| |Status| |Version| |Python| |License| |Examples|
+|Build| |Docs| |Coverage| |PyPI| |Status| |Version| |Python| |License| |Examples|
 
 .. |Build| image:: https://travis-ci.org/seignovert/python-webgeocalc.svg?branch=master
         :target: https://travis-ci.org/seignovert/python-webgeocalc
+.. |Docs| image:: https://readthedocs.org/projects/webgeocalc/badge/?version=latest
+        :target: http://webgeocalc.readthedocs.io/en/latest/?badge=latest
 .. |Coverage| image:: https://coveralls.io/repos/github/seignovert/python-webgeocalc/badge.svg?branch=master
         :target: https://coveralls.io/github/seignovert/python-webgeocalc?branch=master
 .. |PyPI| image:: https://img.shields.io/badge/PyPI-webgeocalc-blue.svg

@@ -8,3 +8,4 @@ htmlcov/
 __pycache__/
 AUTHORS
 Changelog
+docs/_build

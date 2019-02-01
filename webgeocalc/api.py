@@ -1,4 +1,84 @@
 # -*- coding: utf-8 -*-
+'''
+    Basic usage of WebGeoCalc API
+    ==============================
+
+    The :obj:`API` variable in :obj:`webgeocalc` provide an access to
+    the WebGeoCalc API (on its default ``wgc2`` server) :
+
+    >>> from webgeocalc import API
+    >>> API.url
+    'https://wgc2.jpl.nasa.gov:8443/webgeocalc/api'
+
+    Request kernel sets
+    -------------------
+
+    List all the kernel sets available on the API:
+
+    >>> API.kernel_sets()
+    [<KernelSetDetails> Solar System Kernels (id: 1), ...]
+
+    or request a single kernel set with it ``name`` of ``id``:
+
+    >>> API.kernel_set('Cassini Huygens')
+    <KernelSetDetails> Cassini Huygens (id: 5)
+
+    Convert it as *int* and you will get its ``id``:
+    
+    >>> int(API.kernel_set('Cassini Huygens'))
+    5
+
+    Convert it as *str* and you will get its ``caption`` name:
+
+    >>> str(API.kernel_set(5))
+    'Cassini Huygens'
+
+    Get all the kernel set attributes and values:
+
+    >>> dict(API.kernel_set('Cassini Huygens').items())
+    {'caption': 'Cassini Huygens', 'sclkId': '-82', 'description': ...}
+
+    If more than one kernel set is found, an error is thrown:
+
+    >>> API.kernel_set('Cassini')
+    Traceback (most recent call last):
+        ...
+    TooManyKernelSets: Too many kernel sets contains 'Cassini' in their names:
+        - Cassini Huygens
+        - SPICE Class -- CASSINI Remote Sensing Lesson Kernels
+
+    
+    Request bodies
+    --------------
+
+    List all bodies contains in kernel set (by ``name`` or ``id``):
+
+    >>> API.bodies('Cassini Huygens')
+    [<BodyData> CASSINI (id: -82), ...]
+
+
+    Request frames
+    --------------
+
+    List all frames contains in kernel set (by ``name`` or ``id``):
+
+    >>> API.frames('Cassini Huygens')
+    [<FrameData> CASSINI_SATURN_SKR4N_LOCK (id: -82982), ...]
+
+
+    Request instruments
+    -------------------
+
+    List all instruments contains in kernel set (by ``name`` or ``id``):
+
+    >>> API.instruments('Cassini Huygens')
+    [<InstrumentData> CASSINI_CIRS_RAD (id: -82898), ...]
+
+
+    API class
+    ---------
+'''
+
 import requests
 
 from .vars import API_URL
@@ -6,14 +86,45 @@ from .errors import APIError, APIReponseError, TooManyKernelSets, KernelSetNotFo
 from .types import get_type, ColumnResult, KernelSetDetails
 
 class Api(object):
-    '''WebGeoCalc API object'''
+    '''
+    WebGeoCalc API object.
+
+    Parameters
+    ----------
+    url : str, optional
+        API root URL. Default:
+        ``https://wgc2.jpl.nasa.gov:8443/webgeocalc/api``
+    '''
 
     def __init__(self, url=API_URL):
         self.url = url
         self._kernel_sets = None
 
     def get(self, url):
-        '''Parsed GET request'''
+        '''
+        Generic GET request on the API.
+
+        Parameters
+        ----------
+        url: str
+            Request url with GET method.
+
+        Returns
+        -------
+        list or tuple:
+            Parsed json API response. See: :py:func:`read`.
+
+        Raises
+        ------
+        requests.reponse.HTMLError
+            If HTML error is thrown by the API (HTML code not equal 200)
+
+        Example
+        -------
+        >>> API.get('/kernel-sets')
+        [<KernelSetDetails> Solar System Kernels (id: 1), ...]
+
+        '''
         response = requests.get(self.url + url)
         if response.ok:
             return self.read(response.json())
@@ -21,7 +132,32 @@ class Api(object):
             response.raise_for_status()
 
     def post(self, url, payload):
-        '''Parsed POST request'''
+        '''
+        Generic POST request on the API.
+
+        Parameters
+        ----------
+        url: str
+            Request url with POST method.
+
+        payload: dict
+            Calculation payload data.
+
+        Returns
+        -------
+        list or tuple:
+            Parsed json API response. See: :py:func:`read`.
+
+        Raises
+        ------
+        requests.reponse.HTMLError:
+            If HTML error is thrown by the API (HTML code not equal 200)
+
+        Example
+        -------
+        >>> API.post('/calculation/new', payload=calculation_payload)  # doctest: +SKIP
+        ('0788aba2-d4e5-4028-9ef1-4867ad5385e0', 'COMPLETE', 0)
+        '''
         response = requests.post(self.url + url, json=payload)
         if response.ok:
             return self.read(response.json())
@@ -29,7 +165,42 @@ class Api(object):
             response.raise_for_status()
 
     def read(self, json):
-        '''Read content from json reponse'''
+        '''
+        Read content from API JSON reponse
+
+        Parameters
+        ----------
+        json: dict
+            API JSON response
+
+        Returns
+        -------
+        list or tuple
+            Parsed content of the JSON API response.
+
+            If the response contents ``resultType`` and ``items`` keys, then
+            return type will be:
+
+            [`Result objects`: :obj:`webgeocalc.types.ResultType`]
+            
+            If response contents ``result``, then return type will be:
+
+            (`Calculation id`: str, `Phase`: str, `Progress`: int)
+            
+            If the response contents ``columns`` and ``rows``, then
+            return type will be:
+
+            (`Columns`: [:obj:`webgeocalc.types.ColumnResult`], `Results rows`: [[int, float or str], ...])
+
+            Else an error is thrown.
+
+        Raises
+        ------
+        APIError
+            If the API status is not ``OK``.
+        APIReponseError
+            If the format of the API response is unexpected.
+        '''
         if json['status'] != 'OK':
             raise APIError(json['message'])
         
@@ -51,15 +222,32 @@ class Api(object):
 
     def kernel_sets(self):
         '''
-            Get list of kernel sets available on the server.
-            GET: /kernel-sets
+        Get list of all kernel sets available on the webgeocalc server:
+        ``GET:/kernel-sets``
+
+        Returns
+        -------
+        [:obj:`webgeocalc.types.KernelSetDetails`]
+            List of kernel sets.
         '''
         if self._kernel_sets is None:
             self._kernel_sets = self.get('/kernel-sets')
         return self._kernel_sets
 
     def kernel_set(self, kernel_set):
-        '''Get kernel set by caption name or kernel set id'''
+        '''
+        Get kernel set by ``caption`` name or kernel set ``id``.
+
+        Parameters
+        ----------
+        kernel_set: str or int
+            Kernel set ``name`` or ``id``.
+        
+        Returns
+        --------
+        :obj:`webgeocalc.types.KernelSetDetails`
+            Kernel set details object.
+        '''
         kernel_sets = list(filter(lambda x: kernel_set in x, self.kernel_sets()))
         if len(kernel_sets) == 1:
             return kernel_sets[0]
@@ -69,6 +257,19 @@ class Api(object):
             raise KernelSetNotFound(kernel_set)
 
     def kernel_set_id(self, kernel_set):
+        '''
+        Extract kernel set ``id`` based on ``id``, ``name`` or `object`.
+
+        Parameters
+        ----------
+        kernel_set: str, int or :obj:`webgeocalc.types.KernelSetDetails`
+            Kernel sets ``name``, ``id`` or `object`.
+
+        Returns
+        -------
+        int
+            Kernel set ``id``.
+        '''
         if isinstance(kernel_set, int):
             return kernel_set
         elif isinstance(kernel_set, str):
@@ -81,46 +282,139 @@ class Api(object):
 
     def bodies(self, kernel_set):
         '''
-            Get list of bodies available in a kernel set.
-            GET: /kernel-set/{kernelSetId}/bodies
+        Get list of bodies available in a kernel set.
+        ``GET:/kernel-set/{kernelSetId}/bodies``
+
+        Parameters
+        ----------
+        kernel_set: str, int or :obj:`webgeocalc.types.KernelSetDetails`
+            Kernel sets ``name``, ``id`` or `object`.
+
+        Returns
+        -------
+        [:obj:`webgeocalc.types.BodyData`]
+            List of bodies in the requested kernel set.
         '''
         kernelSetId = self.kernel_set_id(kernel_set)
         return self.get(f'/kernel-set/{kernelSetId}/bodies')
 
     def frames(self, kernel_set):
         '''
-            Get list of frames available in a kernel set.
-            GET: /kernel-set/{kernelSetId}/frames
+        Get list of frames available in a kernel set.
+        ``GET:/kernel-set/{kernelSetId}/frames``
+
+        Parameters
+        ----------
+        kernel_set: str, int or :obj:`webgeocalc.types.KernelSetDetails`
+            Kernel sets ``name``, ``id`` or `object`.
+
+        Returns
+        -------
+        [:obj:`webgeocalc.types.FrameData`]
+            List of frames in the requested kernel set.
         '''
         kernelSetId = self.kernel_set_id(kernel_set)
         return self.get(f'/kernel-set/{kernelSetId}/frames')
 
     def instruments(self, kernel_set):
         '''
-            Get list of instruments available in a kernel set.
-            GET: /kernel-set/{kernelSetId}/instruments
+        Get list of instruments available in a kernel set.
+        ``GET:/kernel-set/{kernelSetId}/instruments``
+
+        Parameters
+        ----------
+        kernel_set: str, int or :obj:`webgeocalc.types.KernelSetDetails`
+            Kernel sets ``name``, ``id`` or `object`.
+
+        Returns
+        -------
+        [:obj:`webgeocalc.types.InstrumentData`]
+            List of instruments in the requested kernel set.
         '''
         kernelSetId = self.kernel_set_id(kernel_set)
         return self.get(f'/kernel-set/{kernelSetId}/instruments')
 
     def new_calculation(self, payload):
         '''
-            Starts a new calculation.
-            POST: /calculation/new 
+        Starts a new calculation.
+        ``POST:/calculation/new``
+
+        Parameters
+        ----------
+        payload: dict
+            Calculation payload.
+
+        Returns
+        -------
+        (str, str, int)
+            Tuple of the calculation status:
+            ``(calculation-id, phase, progress)``
+            See: :py:func:`read`.
+
+        Example
+        -------
+        >>> API.calculation_new(calculation_payload)  # doctest: +SKIP
+        ('0788aba2-d4e5-4028-9ef1-4867ad5385e0', 'LOADING_KERNELS', 0)
+
+        Warning
+        ----
+        The ``progress`` attribute is not relevant when ``phase`` is `COMPLETE`.
+
+        In the next release, the API responses may contain ``progress`` only when applicable.
         '''
         return self.post('/calculation/new', payload)
 
     def status_calculation(self, id):
         '''
-            Gets the status of a calculation.
-            GET: /calculation/{id} 
+        Gets the status of a calculation.
+        ``GET:/calculation/{id}``
+
+        Parameters
+        ----------
+        id: str
+            Calculation id.
+
+        Returns
+        -------
+        (str, str, int)
+            Tuple of the calculation status:
+            ``(calculation-id, phase, progress)``
+            See: :py:func:`read`.
+
+        Example
+        -------
+        >>> API.status_calculation('0788aba2-d4e5-4028-9ef1-4867ad5385e0')  # doctest: +SKIP
+        ('0788aba2-d4e5-4028-9ef1-4867ad5385e0', 'COMPLETE', 0)
+
+        Warning
+        ----
+        The ``progress`` attribute is not relevant when ``phase`` is `COMPLETE`.
+
+        In the next release, the API responses may contain ``progress`` only when applicable.
         '''
         return self.get(f'/calculation/{id}')
 
     def results_calculation(self, id):
         '''
-            Gets the results of a calculation.
-            GET: /calculation/{id}/results
+        Gets the results of a complete calculation.
+        ``GET:/calculation/{id}/results``
+
+        Parameters
+        ----------
+        id: str
+            Calculation id.
+
+        Returns
+        -------
+        ([:obj:`webgeocalc.types.ColumnResult`], [[int, float or str], ...])
+            Tuple of calculation results:
+            ``(columns, rows)``
+            See: :py:func:`read`.
+
+        Example
+        -------
+        >>> API.results_calculation('0788aba2-d4e5-4028-9ef1-4867ad5385e0')  # doctest: +SKIP
+        ([<ColumnResult> UTC calendar date, ...], [['2000-01-01 00:00:00.000000 UTC', ...], [...]])
         '''
         return self.get(f'/calculation/{id}/results')
 
