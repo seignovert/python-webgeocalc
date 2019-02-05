@@ -1,26 +1,29 @@
 Python package for NAIF WebGeoCalc API
 ======================================
 
-|Build| |Docs| |Coverage| |PyPI| |Status| |Version| |Python|
-|License| |Examples|
+|Docs| |Build| |Coverage|
 
-.. |Build| image:: https://travis-ci.org/seignovert/python-webgeocalc.svg?branch=master
+|PyPI| |Python| |Version| |Status| |License|
+
+|Examples|
+
+.. |Docs| image:: https://img.shields.io/readthedocs/webgeocalc.svg?label=Docs&logo=read-the-docs&logoColor=white
+        :target: https://webgeocalc.readthedocs.io/
+.. |Build| image:: https://img.shields.io/travis/seignovert/python-webgeocalc.svg?label=CI&logo=travis-ci&logoColor=white
         :target: https://travis-ci.org/seignovert/python-webgeocalc
-.. |Docs| image:: https://readthedocs.org/projects/webgeocalc/badge/?version=latest
-        :target: http://webgeocalc.readthedocs.io/en/latest/?badge=latest
-.. |Coverage| image:: https://coveralls.io/repos/github/seignovert/python-webgeocalc/badge.svg?branch=master
+.. |Coverage| image:: https://img.shields.io/coveralls/github/seignovert/python-webgeocalc.svg?label=Coverage
         :target: https://coveralls.io/github/seignovert/python-webgeocalc?branch=master
-.. |PyPI| image:: https://img.shields.io/badge/PyPI-webgeocalc-blue.svg
-        :target: https://pypi.org/project/webgeocalc
-.. |Status| image:: https://img.shields.io/pypi/status/webgeocalc.svg?label=Status
-        :target: https://pypi.org/project/webgeocalc
-.. |Version| image:: https://img.shields.io/pypi/v/webgeocalc.svg?label=Version
+.. |PyPI| image:: https://img.shields.io/badge/PyPI-webgeocalc-blue.svg?logo=python&logoColor=white
         :target: https://pypi.org/project/webgeocalc
 .. |Python| image:: https://img.shields.io/pypi/pyversions/webgeocalc.svg?label=Python
         :target: https://pypi.org/project/webgeocalc
+.. |Version| image:: https://img.shields.io/pypi/v/webgeocalc.svg?label=Version
+        :target: https://pypi.org/project/webgeocalc
+.. |Status| image:: https://img.shields.io/pypi/status/webgeocalc.svg?label=Status
+        :target: https://pypi.org/project/webgeocalc
 .. |License| image:: https://img.shields.io/pypi/l/webgeocalc.svg?label=License
         :target: https://pypi.org/project/webgeocalc
-.. |Examples| image:: https://img.shields.io/badge/Jupyter%20Notebook-examples-blue.svg
+.. |Examples| image:: https://img.shields.io/badge/Jupyter%20Notebook-examples-blue.svg?logo=jupyter&logoColor=orange
         :target: https://nbviewer.jupyter.org/github/seignovert/python-webgeocalc/blob/master/examples/api.ipynb
 
 
