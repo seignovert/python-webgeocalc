@@ -450,8 +450,8 @@ class Calculation(object):
             An array of objects with startTime and endTime parameters,
             representing the time intervals used for the calculation.
 
-            Important
-            ---------
+            Warning
+            -------
             Either this parameter or the :py:attr:`times` parameter must be supplied.
 
         Raises
