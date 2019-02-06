@@ -61,13 +61,6 @@ With ``pip``:
 
     $ pip install webgeocalc
 
-With the ``source files``:
-
-.. code:: bash
-
-    $ git clone https://github.com/seignovert/python-webgeocalc.git webgeocalc
-    $ cd webgeocalc ; python setup.py install
-
 Usage
 -----
 
@@ -79,35 +72,26 @@ Usage
     'https://wgc2.jpl.nasa.gov:8443/webgeocalc/api'
 
     >>> API.kernel_sets() # /kernel-sets
-    [
-        <KernelSetDetails> Solar System Kernels (id: 1),
-        ...
-        <KernelSetDetails> Cassini Huygens (id: 5),
-        ...
-        <KernelSetDetails> SPICE Class -- Binary PCK Lesson Kernels (Earth) (id: 39)
-    ]
+    [<KernelSetDetails> Solar System Kernels (id: 1),
+     ...
+     <KernelSetDetails> Cassini Huygens (id: 5),
+     ...
+     <KernelSetDetails> SPICE Class -- Binary PCK Lesson Kernels (Earth) (id: 39)]
 
     >>> API.bodies(5) # /kernel-sets/{kernelSetId}/bodies
-    [
-        <BodyData> CASSINI (id: -82),
-        <BodyData> CAS (id: -82),
-        ...
-        <BodyData> SOLAR SYSTEM BARYCENTER (id: 0)
-    ]
+    [<BodyData> CASSINI (id: -82),
+     ...
+     <BodyData> SOLAR SYSTEM BARYCENTER (id: 0)]
 
     >>> API.frames('Cassini Huygens') # /kernel-sets/{kernelSetId}/frames
-    [
-        <FrameData> CASSINI_SATURN_SKR4N_LOCK (id: -82982),
-        ...
-        <FrameData> ITRF93 (id: 13000)
-    ]
+    [<FrameData> CASSINI_SATURN_SKR4N_LOCK (id: -82982),
+     ...
+     <FrameData> ITRF93 (id: 13000)]
 
     >>> API.instruments('Cassini Huygens') # /kernel-set/{kernelSetId}/intruments
-    [
-        <InstrumentData> CASSINI_CIRS_RAD (id: -82898),
-        ...
-        <InstrumentData> CASSINI_SRU-A (id: -82001)
-    ]
+    [<InstrumentData> CASSINI_CIRS_RAD (id: -82898),
+     ...
+     <InstrumentData> CASSINI_SRU-A (id: -82001)]
 
 
 Prepare calculation payload:
@@ -128,59 +112,41 @@ Prepare calculation payload:
     )
 
     >>> calc.payload
-    {
-        'kernels': [{'type': 'KERNEL_SET', 'id': 5}],
-        'times': ['2012-10-19T08:24:00.000'],
-        'calculationType': 'STATE_VECTOR',
-        'target': 'CASSINI',
-        'observer': 'SATURN',
-        'referenceFrame': 'IAU_SATURN',
-        'aberrationCorrection': 'NONE',
-        'stateRepresentation': 'PLANETOGRAPHIC',
-        'timeSystem': 'UTC',
-        'timeFormat': 'CALENDAR'
-    }
+    {'kernels': [{'type': 'KERNEL_SET', 'id': 5}],
+     'times': ['2012-10-19T08:24:00.000'],
+     'calculationType': 'STATE_VECTOR',
+     'target': 'CASSINI',
+     'observer': 'SATURN',
+     'referenceFrame': 'IAU_SATURN',
+     'aberrationCorrection': 'NONE',
+     'stateRepresentation': 'PLANETOGRAPHIC',
+     'timeSystem': 'UTC',
+     'timeFormat': 'CALENDAR'}
 
 Run calculation:
 
 .. code:: python
 
-    >>> calc.submit()
+    >>> calc.run()
     [Calculation submitted] Status: LOADING_KERNELS (id: 19fd1c05-3bfe-47c7-bd16-28612249ae89)
-
-    >>> calc.update()
     [Calculation update] Status: COMPLETE (id: 19fd1c05-3bfe-47c7-bd16-28612249ae89)
-
-    >>> calc.results
-    {
-        'DATE': '2012-10-19 08:24:00.000000 UTC',
-        'LONGITUDE': 46.18900522,
-        'LATITUDE': 21.26337134,
-        'ALTITUDE': 694259.8921163,
-        'D_LONGITUDE_DT': 0.00888655,
-        'D_LATITUDE_DT': -0.00031533,
-        'D_ALTITUDE_DT': 4.77080305,
-        'SPEED': 109.34997994,
-        'TIME_AT_TARGET': '2012-10-19 08:24:00.000000 UTC',
-        'LIGHT_TIME': 2.51438831
-    }
+    {'DATE': '2012-10-19 08:24:00.000000 UTC',
+     'LONGITUDE': 46.18900522,
+     'LATITUDE': 21.26337134,
+     'ALTITUDE': 694259.8921163,
+     'D_LONGITUDE_DT': 0.00888655,
+     'D_LATITUDE_DT': -0.00031533,
+     'D_ALTITUDE_DT': 4.77080305,
+     'SPEED': 109.34997994,
+     'TIME_AT_TARGET': '2012-10-19 08:24:00.000000 UTC',
+     'LIGHT_TIME': 2.51438831}
 
     >>> from webgeocalc import AngularSeparation
 
-    >>> AngularSeparation(
-        kernel_paths = ['pds/wgc/kernels/lsk/naif0012.tls', 'pds/wgc/kernels/spk/de430.bsp'],
-        times = '2012-10-19T08:24:00.000',
-        target_1 = 'VENUS',
-        target_2 = 'MERCURY',
-        observer = 'SUN',
-    ).run()
-    [Calculation submitted] Status: COMPLETE (id: 24739881-c068-45a1-8e52-b3cd87f47866)
-    {'DATE': '2012-10-19 08:24:00.000000 UTC', 'ANGULAR_SEPARATION': 175.17072258}
+More details can be found in the `docs`_ and in the `Jupyter Notebooks`_.
 
-
-More details can be found in the `Jupyter Notebooks`_.
-
-.. _`Jupyter Notebooks`: https://nbviewer.jupyter.org/github/seignovert/python-webgeocalc/blob/master/examples/api.ipynb
+.. _`docs`: https://webgeocalc.readthedocs.io/en/stable/calculation.html
+.. _`Jupyter Notebooks`: https://nbviewer.jupyter.org/github/seignovert/python-webgeocalc/blob/master/examples/calculation.ipynb
 
 Command Line Interface (cli)
 ----------------------------
@@ -201,7 +167,7 @@ The webgeocalc API can be call directly from the command line interface:
 
 More examples can be found in here_.
 
-.. _here: https://nbviewer.jupyter.org/github/seignovert/python-webgeocalc/blob/master/examples/cli.ipynb
+.. _here: https://webgeocalc.readthedocs.io/en/stable/cli.html
 
 
 Disclaimer
