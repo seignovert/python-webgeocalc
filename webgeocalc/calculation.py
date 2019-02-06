@@ -370,7 +370,7 @@ class Calculation(object):
             - GF_SURFACE_INTERCEPT_POINT_SEARCH
             - GF_RAY_IN_FOV_SEARCH
 
-            Hint
+            Note
             ----
             This parameters will be auto-filled for specific calculation sub-classes.
 
