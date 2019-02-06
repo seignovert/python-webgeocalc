@@ -60,7 +60,7 @@ property :py:attr:`Calculation.payload`:
 }
 
 Example of :py:class:`StateVector` calculation with multi :py:attr:`kernels`
- inputs (requested by ``name`` in this case), with multiple :py:attr:`times`
+inputs (requested by ``name`` in this case), with multiple :py:attr:`times`
 inputs for :py:attr:`target`, :py:attr:`observer` and :py:attr:`frame`
 requested by ``id``:
 
@@ -218,7 +218,7 @@ calculated in a desired reference frame:
 ...    target = 'CASSINI',
 ...    observer = 'SATURN',
 ...    reference_frame = 'IAU_SATURN',
-... )
+... )  # doctest: +SKIP
 
 .. important::
 
