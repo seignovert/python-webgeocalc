@@ -76,6 +76,6 @@ List all instruments contains in kernel set (by ``name`` or ``id``):
 API class
 ---------
 
-.. automodule:: webgeocalc.api
-    :members:
-    :show-inheritance:
+.. currentmodule:: webgeocalc.api
+
+.. autoclass:: Api

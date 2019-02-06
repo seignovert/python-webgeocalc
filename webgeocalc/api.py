@@ -6,8 +6,7 @@ from .errors import APIError, APIReponseError, TooManyKernelSets, KernelSetNotFo
 from .types import get_type, ColumnResult, KernelSetDetails
 
 class Api(object):
-    '''
-    WebGeoCalc API object.
+    '''WebGeoCalc API object.
 
     Parameters
     ----------
@@ -21,8 +20,7 @@ class Api(object):
         self._kernel_sets = None
 
     def get(self, url):
-        '''
-        Generic GET request on the API.
+        '''Generic GET request on the API.
 
         Parameters
         ----------
@@ -43,7 +41,6 @@ class Api(object):
         -------
         >>> API.get('/kernel-sets')
         [<KernelSetDetails> Solar System Kernels (id: 1), ...]
-
         '''
         response = requests.get(self.url + url)
         if response.ok:
@@ -52,8 +49,7 @@ class Api(object):
             response.raise_for_status()
 
     def post(self, url, payload):
-        '''
-        Generic POST request on the API.
+        '''Generic POST request on the API.
 
         Parameters
         ----------
@@ -70,7 +66,7 @@ class Api(object):
 
         Raises
         ------
-        requests.reponse.HTMLError:
+        requests.reponse.HTMLError
             If HTML error is thrown by the API (HTML code not equal 200)
 
         Example
@@ -85,8 +81,7 @@ class Api(object):
             response.raise_for_status()
 
     def read(self, json):
-        '''
-        Read content from API JSON reponse
+        '''Read content from API JSON reponse
 
         Parameters
         ----------
@@ -141,8 +136,7 @@ class Api(object):
             raise APIReponseError(json)
 
     def kernel_sets(self):
-        '''
-        Get list of all kernel sets available on the webgeocalc server:
+        '''Get list of all kernel sets available on the webgeocalc server:
         ``GET:/kernel-sets``
 
         Returns
@@ -155,8 +149,7 @@ class Api(object):
         return self._kernel_sets
 
     def kernel_set(self, kernel_set):
-        '''
-        Get kernel set by ``caption`` name or kernel set ``id``.
+        '''Get kernel set by ``caption`` name or kernel set ``id``.
 
         Parameters
         ----------
@@ -177,8 +170,7 @@ class Api(object):
             raise KernelSetNotFound(kernel_set)
 
     def kernel_set_id(self, kernel_set):
-        '''
-        Extract kernel set ``id`` based on ``id``, ``name`` or `object`.
+        '''Extract kernel set ``id`` based on ``id``, ``name`` or `object`.
 
         Parameters
         ----------
@@ -201,8 +193,7 @@ class Api(object):
                              '>>> Type({kernel_set}) = {type(kernel_set)}")
 
     def bodies(self, kernel_set):
-        '''
-        Get list of bodies available in a kernel set.
+        '''Get list of bodies available in a kernel set.
         ``GET:/kernel-set/{kernelSetId}/bodies``
 
         Parameters
@@ -237,8 +228,7 @@ class Api(object):
         return self.get(f'/kernel-set/{kernelSetId}/frames')
 
     def instruments(self, kernel_set):
-        '''
-        Get list of instruments available in a kernel set.
+        '''Get list of instruments available in a kernel set.
         ``GET:/kernel-set/{kernelSetId}/instruments``
 
         Parameters
@@ -255,8 +245,7 @@ class Api(object):
         return self.get(f'/kernel-set/{kernelSetId}/instruments')
 
     def new_calculation(self, payload):
-        '''
-        Starts a new calculation.
+        '''Starts a new calculation.
         ``POST:/calculation/new``
 
         Parameters
@@ -285,8 +274,7 @@ class Api(object):
         return self.post('/calculation/new', payload)
 
     def status_calculation(self, id):
-        '''
-        Gets the status of a calculation.
+        '''Gets the status of a calculation.
         ``GET:/calculation/{id}``
 
         Parameters
@@ -315,8 +303,7 @@ class Api(object):
         return self.get(f'/calculation/{id}')
 
     def results_calculation(self, id):
-        '''
-        Gets the results of a complete calculation.
+        '''Gets the results of a complete calculation.
         ``GET:/calculation/{id}/results``
 
         Parameters

@@ -1,252 +1,241 @@
-Make a calculation
-==================
+WebGeoCalc calculations
+=======================
+
+.. currentmodule:: webgeocalc.calculation
+
+For now only the geometry calculations are implemented:
+
+- :py:class:`StateVector`
+- :py:class:`AngularSeparation`
+- :py:class:`AngularSize`
+- :py:class:`FrameTransformation`
+- :py:class:`IlluminationAngles`
+- :py:class:`SubSolarPoint`
+- :py:class:`SubObserverPoint`
+- :py:class:`SurfaceInterceptPoint`
+- :py:class:`OsculatingElements`
+- :py:class:`TimeConversion`
+
+Import generic WebGeoCalc calculation object:
+
+>>> from webgeocalc import Calculation
+
+or import specific WebGeoCalc calculation object:
+
+>>> from webgeocalc import StateVector, AngularSeparation
+
+Inputs examples and payloads
+----------------------------
+
+All WebGeoCalc calculation objects take their input attributes in
+``underscore_case`` format.
+
+>>> calc = StateVector(
+...    kernels = 5,
+...    times = '2012-10-19T08:24:00.000',
+...    calculation_type = 'STATE_VECTOR',
+...    target = 'CASSINI',
+...    observer = 'SATURN',
+...    reference_frame = 'IAU_SATURN',
+...    aberration_correction = 'NONE',
+...    state_representation = 'PLANETOGRAPHIC',
+... )
+
+The payload that will be submitted to
+the WebGeoCalc API can be retrieve with the
+property :py:attr:`Calculation.payload`:
+
+>>> calc.payload   # doctest: +SKIP
+{
+    'kernels': [{'type': 'KERNEL_SET', 'id': 5}],
+    'times': ['2012-10-19T08:24:00.000'],
+    'calculationType': 'STATE_VECTOR',
+    'target': 'CASSINI',
+    'observer': 'SATURN',
+    'referenceFrame': 'IAU_SATURN',
+    'aberrationCorrection': 'NONE',
+    'stateRepresentation': 'PLANETOGRAPHIC',
+    'timeSystem': 'UTC',
+    'timeFormat': 'CALENDAR'
+}
+
+Example of :py:class:`StateVector` calculation with multi :py:attr:`kernels`
+ inputs (requested by ``name`` in this case), with multiple :py:attr:`times`
+inputs for :py:attr:`target`, :py:attr:`observer` and :py:attr:`frame`
+requested by ``id``:
+
+>>> StateVector(
+...    kernels = ['Solar System Kernels', 'Cassini Huygens'],
+...    times = ['2012-10-19T07:00:00', '2012-10-19T09:00:00'],
+...    target = -82,             # CASSINI
+...    observer = 699,           # SATURN
+...    reference_frame = 10016,  # IAU_SATURN
+... ).payload   # doctest: +SKIP
+{
+    'kernels': [
+        {'type': 'KERNEL_SET', 'id': 1},
+        {'type': 'KERNEL_SET', 'id': 5}
+    ],
+    'times': ['2012-10-19T07:00:00', '2012-10-19T09:00:00'],
+    'target': -82,
+    'observer': 699,
+    'referenceFrame': 10016,
+    'calculationType': 'STATE_VECTOR',
+    'aberrationCorrection': 'CN',
+    'stateRepresentation': 'RECTANGULAR',
+    'timeSystem': 'UTC',
+    'timeFormat': 'CALENDAR'
+}
+
+
+Example of :py:class:`AngularSeparation` calculation
+with specific :py:attr:`kernel_paths` and multiple :py:attr:`intervals`:
+
+>>> AngularSeparation(
+...    kernel_paths = [
+...         'pds/wgc/kernels/lsk/naif0012.tls',
+...         'pds/wgc/kernels/spk/de430.bsp'
+...    ],
+...    intervals = [
+...        ['2000-01-01', '2000-01-03'],
+...        ['2000-02-01', '2000-02-03']
+...    ],
+...    time_step = 1,
+...    time_step_units = 'DAYS',
+...    target_1 = 'VENUS',
+...    target_2 = 'MERCURY',
+...    observer = 'SUN',
+... ).payload   # doctest: +SKIP
+{
+    'kernels': [
+        {'type': 'KERNEL', 'path': 'pds/wgc/kernels/lsk/naif0012.tls'}
+        {'type': 'KERNEL', 'path': 'pds/wgc/kernels/spk/de430.bsp'}
+    ],
+    'intervals': [
+        {'startTime': '2000-01-01', 'endTime': '2000-01-03'},
+        {'startTime': '2000-02-01', 'endTime': '2000-02-03'}
+    ],
+    'timeStep': 1,
+    'timeStepUnit': 'DAYS',
+    'target1': 'VENUS',
+    'target2': 'MERCURY',
+    'observer': 'SUN',
+    'calculationType': 'ANGULAR_SEPARATION',
+    'shape1': 'POINT',
+    'shape2': 'POINT',
+    'aberrationCorrection': 'CN',
+    'timeSystem': 'UTC',
+    'timeFormat': 'CALENDAR'
+}
+
+.. important::
+
+    Calculation required parameters:
+        - :py:attr:`calculation_type`
+        - :py:attr:`kernels` or/and :py:attr:`kernel_paths`
+        - :py:attr:`times` or :py:attr:`intervals` with :py:attr:`time_step` and :py:attr:`time_step_units`
+
+    Calculation default parameters:
+        - :py:attr:`time_system`: ``UTC``
+        - :py:attr:`time_format`: ``CALENDAR``
+
+
+Submit payload and retrieve results
+------------------------------------
+
+Calculation requests to the WebGeoCalc API are made
+in three steps:
+
+1. The ``payload`` is submitted to the API with
+:py:func:`Calculation.submit` method,
+and a :py:attr:`Calculation.id` is retrieved:
+
+>>> calc.submit() # doctest: +SKIP
+[Calculation submit] Status: LOADING_KERNELS (id: 8750344d-645d-4e43-b159-c8d88d28aac6)
+
+2. If the calculation status is `COMPLETE`, the results can
+be directly retrieved. Otherwise, you need to update the
+calculation status with :py:func:`Calculation.update` method:
+
+>>> calc.update() # doctest: +SKIP
+[Calculation update] Status: COMPLETE (id: 8750344d-645d-4e43-b159-c8d88d28aac6)
+
+3. When the calculation status is `COMPLETE`, the
+results are retrieved with :py:attr:`Calculation.results`
+attribute:
+
+>>> calc.results  # doctest: +SKIP
+{
+    'DATE': '2012-10-19 09:00:00.000000 UTC',
+    'DISTANCE': 764142.63776247,
+    'SPEED': 111.54765899,
+    'X': 298292.85744169,
+    'Y': -651606.58468976,
+    'Z': 265224.81187627,
+    'D_X_DT': -98.8032491,
+    'D_Y_DT': -51.73211296,
+    'D_Z_DT': -2.1416539,
+    'TIME_AT_TARGET': '2012-10-19 08:59:57.451094 UTC',
+    'LIGHT_TIME': 2.54890548
+}
+
+.. tip::
+
+    It is possible to submit, update and retrieved the results at once
+    with :py:func:`Calculation.run` method:
+
+    >>> calc.run()  # doctest: +SKIP
+    [Calculation submit] Status: LOADING_KERNELS (id: 8750344d-645d-4e43-b159-c8d88d28aac6)
+    [Calculation update] Status: COMPLETE (id: 8750344d-645d-4e43-b159-c8d88d28aac6)
+    {
+        'DATE': '2012-10-19 09:00:00.000000 UTC',
+        'DISTANCE': 764142.63776247,
+        'SPEED': 111.54765899,
+        'X': 298292.85744169,
+        'Y': -651606.58468976,
+        'Z': 265224.81187627,
+        'D_X_DT': -98.8032491,
+        'D_Y_DT': -51.73211296,
+        'D_Z_DT': -2.1416539,
+        'TIME_AT_TARGET': '2012-10-19 08:59:57.451094 UTC',
+        'LIGHT_TIME': 2.54890548
+    }
 
 Generic calculation
---------------------
+-------------------
 
-Optional parameters (with **default**):
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
--  ``time_system``: **UTC** \| TDB \| TDT \| SPACECRAFT_CLOCK
--  ``time_format``: **CALENDAR** \| JULIAN \| SECONDS_PAST_J2000 \|
-   SPACECRAFT_CLOCK_TICKS \| SPACECRAFT_CLOCK_STRING
-
-.. code:: ipython3
-
-    from webgeocalc import Calculation
-
-    Calculation(
-        kernels = 5,
-        times = '2012-10-19T08:24:00.000',
-        calculation_type = 'STATE_VECTOR',
-        target = 'CASSINI',
-        observer = 'SATURN',
-        reference_frame = 'IAU_SATURN',
-        aberration_correction = 'NONE',
-        state_representation = 'PLANETOGRAPHIC',
-    ).payload
-
-
-
-
-.. parsed-literal::
-
-    {'kernels': [{'type': 'KERNEL_SET', 'id': 5}],
-     'times': ['2012-10-19T08:24:00.000'],
-     'calculationType': 'STATE_VECTOR',
-     'target': 'CASSINI',
-     'observer': 'SATURN',
-     'referenceFrame': 'IAU_SATURN',
-     'aberrationCorrection': 'NONE',
-     'stateRepresentation': 'PLANETOGRAPHIC',
-     'timeSystem': 'UTC',
-     'timeFormat': 'CALENDAR'}
-
-
+.. autoclass:: Calculation
 
 State Vector
 ------------
 
-Calculates the position of one body relative to another, calculated in a
-desired reference frame.
-
-Required parameters:
-~~~~~~~~~~~~~~~~~~~~
-
--  ``kernels`` or ``kernel_paths``
--  ``times`` or ``intervals`` + ``time_step`` + ``time_step_units``
--  ``target``, the target body name or ID.
--  ``observer``, the observing body name or ID.
--  ``reference_frame``, the reference frame name.
-
-Optional parameters (with **default**):
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
--  ``time_system``: **UTC** \| TDB \| TDT \| SPACECRAFT_CLOCK
--  ``time_format``: **CALENDAR** \| JULIAN \| SECONDS_PAST_J2000 \|
-   SPACECRAFT_CLOCK_TICKS \| SPACECRAFT_CLOCK_STRING
--  ``aberration_correction``: NONE \| LT \| LT+S \| **CN** \| CN+S \|
-   XLT \| XLT+S \| XCN \| XCN+S
--  ``state_representation``: **RECTANGULAR** \| RA_DEC \| LATITUDINAL \|
-   PLANETODETIC \| PLANETOGRAPHIC \| CYLINDRICAL \| SPHERICAL
-
-.. code:: ipython3
-
-    from webgeocalc import StateVector
-
-    StateVector(
-        kernels = 5,
-        times = '2012-10-19T09:00:00',
-        target = 'CASSINI',
-        observer = 'SATURN',
-        reference_frame = 'IAU_SATURN',
-    ).payload
-
-
-
-
-.. parsed-literal::
-
-    {'kernels': [{'type': 'KERNEL_SET', 'id': 5}],
-     'times': ['2012-10-19T09:00:00'],
-     'target': 'CASSINI',
-     'observer': 'SATURN',
-     'referenceFrame': 'IAU_SATURN',
-     'calculationType': 'STATE_VECTOR',
-     'aberrationCorrection': 'CN',
-     'stateRepresentation': 'RECTANGULAR',
-     'timeSystem': 'UTC',
-     'timeFormat': 'CALENDAR'}
-
-
-
-Set multiple ``kernels`` by *name*, multiple ``times`` and
-``target``-``observer``-``frame`` by *id*:
-
-.. code:: ipython3
-
-    StateVector(
-        kernels = ['Solar System Kernels', 'Cassini Huygens'],
-        times = ['2012-10-19T07:00:00', '2012-10-19T09:00:00'],
-        target = -82, # CASSINI
-        observer = 699, # SATURN
-        reference_frame = 10016, # IAU_SATURN
-        aberration_correction = 'NONE',
-        stateRepresentation = 'PLANETOGRAPHIC',
-    ).payload
-
-
-
-
-.. parsed-literal::
-
-    {'kernels': [{'type': 'KERNEL_SET', 'id': 1}, {'type': 'KERNEL_SET', 'id': 5}],
-     'times': ['2012-10-19T07:00:00', '2012-10-19T09:00:00'],
-     'target': -82,
-     'observer': 699,
-     'referenceFrame': 10016,
-     'calculationType': 'STATE_VECTOR',
-     'aberrationCorrection': 'NONE',
-     'stateRepresentation': 'RECTANGULAR',
-     'timeSystem': 'UTC',
-     'timeFormat': 'CALENDAR'}
-
-
-
-Add individual ``kernel path`` from on a remote server and
-multiple ``intervals``:
-
-.. code:: ipython3
-
-    StateVector(
-        kernel_paths = 'https://path.to.server/kernel',
-        intervals = [['2000-01-01', '2000-01-03'], ['2000-02-01', '2000-02-03']],
-        time_step = 1,
-        time_step_units = 'DAYS',
-        target = 'CASSINI',
-        observer = 'SATURN',
-        reference_frame = 'IAU_SATURN',
-    ).payload
-
-
-
-
-.. parsed-literal::
-
-    {'kernels': [{'type': 'KERNEL', 'path': 'https://path.to.server/kernel'}],
-     'intervals': [{'startTime': '2000-01-01', 'endTime': '2000-01-03'},
-      {'startTime': '2000-02-01', 'endTime': '2000-02-03'}],
-     'timeStep': 1,
-     'timeStepUnit': 'DAYS',
-     'target': 'CASSINI',
-     'observer': 'SATURN',
-     'referenceFrame': 'IAU_SATURN',
-     'calculationType': 'STATE_VECTOR',
-     'aberrationCorrection': 'CN',
-     'stateRepresentation': 'RECTANGULAR',
-     'timeSystem': 'UTC',
-     'timeFormat': 'CALENDAR'}
-
-
-
-Run the calculation
--------------------
-
-.. code:: ipython3
-
-    calc = StateVector(
-        kernels = 5,
-        times = '2012-10-19T09:00:00',
-        target = 'CASSINI',
-        observer = 'SATURN',
-        reference_frame = 'IAU_SATURN',
-    )
-    calc.submit()
-
-
-.. parsed-literal::
-
-    [Calculation submit] Status: COMPLETE (id: 8750344d-645d-4e43-b159-c8d88d28aac6)
-
-
-Update status calculation:
-
-.. code:: ipython3
-
-    calc.update()
-
-
-.. parsed-literal::
-
-    [Calculation submit] Status: COMPLETE (id: 8750344d-645d-4e43-b159-c8d88d28aac6)
-
-
-.. code:: ipython3
-
-    calc.results
-
-
-
-
-.. parsed-literal::
-
-    {'DATE': '2012-10-19 09:00:00.000000 UTC',
-     'DISTANCE': 764142.63776247,
-     'SPEED': 111.54765899,
-     'X': 298292.85744169,
-     'Y': -651606.58468976,
-     'Z': 265224.81187627,
-     'D_X_DT': -98.8032491,
-     'D_Y_DT': -51.73211296,
-     'D_Z_DT': -2.1416539,
-     'TIME_AT_TARGET': '2012-10-19 08:59:57.451094 UTC',
-     'LIGHT_TIME': 2.54890548}
-
-
-
-Submit, update and get results at once
-
-.. code:: ipython3
-
-    calc.run()
-
-
-
-
-.. parsed-literal::
-
-    {'DATE': '2012-10-19 09:00:00.000000 UTC',
-     'DISTANCE': 764142.63776247,
-     'SPEED': 111.54765899,
-     'X': 298292.85744169,
-     'Y': -651606.58468976,
-     'Z': 265224.81187627,
-     'D_X_DT': -98.8032491,
-     'D_Y_DT': -51.73211296,
-     'D_Z_DT': -2.1416539,
-     'TIME_AT_TARGET': '2012-10-19 08:59:57.451094 UTC',
-     'LIGHT_TIME': 2.54890548}
-
+Calculates the position of one body relative to another,
+calculated in a desired reference frame:
+
+>>> StateVector(
+...    kernels = 5,
+...    times = '2012-10-19T09:00:00',
+...    target = 'CASSINI',
+...    observer = 'SATURN',
+...    reference_frame = 'IAU_SATURN',
+... )
+
+.. important::
+
+    Calculation required parameters:
+        - :py:attr:`kernels` or/and :py:attr:`kernel_paths`
+        - :py:attr:`times` or :py:attr:`intervals` with :py:attr:`time_step` and :py:attr:`time_step_units`
+        - :py:attr:`target`
+        - :py:attr:`observer`
+        - :py:attr:`reference_frame`
+
+    Default parameters:
+        -  :py:attr:`time_system`: ``UTC``
+        -  :py:attr:`time_format`: ``CALENDAR``
+        -  :py:attr:`aberration_correction`: ``CN``
+        -  :py:attr:`state_representation`: ``RECTANGULAR``
+
+.. autoclass:: StateVector
 
 
 Angular Separation
@@ -801,7 +790,7 @@ Only used if ``outputTimeSystem`` is SPACECRAFT_CLOCK. -
 ``output_sclk_id``, the output SCLK ID.
 
 Only used if ``output_time_format`` is CUSTOM. -
-``output_time_custom_format``, a SPICE ``timout()`` format string.
+``output_time_custom_format``, a SPICE ``timeout()`` format string.
 
 .. code:: ipython3
 
