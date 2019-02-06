@@ -50,14 +50,14 @@ class Calculation(object):
         See: :py:attr:`time_step`
     time_step_units: str
         See: :py:attr:`time_step_units`
+    sclk_id: int
+        See: :py:attr:`sclk_id`
     output_time_system: str
         See: :py:attr:`output_time_system`
     output_time_format: str
         See: :py:attr:`output_time_format`
     output_time_custom_format: str
         See: :py:attr:`output_time_custom_format`
-    sclk_id: int
-        See: :py:attr:`sclk_id`
     output_sclk_id: int
         See: :py:attr:`output_sclk_id`
     target: str or int
@@ -273,19 +273,17 @@ class Calculation(object):
         Examples
         --------
         >>> calc.results     # doctest: +SKIP
-        {
-            'DATE': '2012-10-19 09:00:00.000000 UTC',
-            'DISTANCE': 764142.63776247,
-            'SPEED': 111.54765899,
-            'X': 298292.85744169,
-            'Y': -651606.58468976,
-            'Z': 265224.81187627,
-            'D_X_DT': -98.8032491,
-            'D_Y_DT': -51.73211296,
-            'D_Z_DT': -2.1416539,
-            'TIME_AT_TARGET': '2012-10-19 08:59:57.451094 UTC',
-            'LIGHT_TIME': 2.54890548
-        }
+        {'DATE': '2012-10-19 09:00:00.000000 UTC',
+         'DISTANCE': 764142.63776247,
+         'SPEED': 111.54765899,
+         'X': 298292.85744169,
+         'Y': -651606.58468976,
+         'Z': 265224.81187627,
+         'D_X_DT': -98.8032491,
+         'D_Y_DT': -51.73211296,
+         'D_Z_DT': -2.1416539,
+         'TIME_AT_TARGET': '2012-10-19 08:59:57.451094 UTC',
+         'LIGHT_TIME': 2.54890548}
 
         >>> ang_sep = AngularSeparation(
         ...     kernel_paths = ['pds/wgc/kernels/lsk/naif0012.tls', 'pds/wgc/kernels/spk/de430.bsp'],
@@ -297,10 +295,8 @@ class Calculation(object):
         ... )
         >>> ang_sep.submit()      # doctest: +SKIP
         >>> ang_sep.results       # doctest: +SKIP
-        {
-            'DATE': ['2012-10-19 08:24:00.000000 UTC', '2012-10-19 09:00:00.000000 UTC'],
-            'ANGULAR_SEPARATION': [175.17072258, 175.18555938]
-        }
+        {'DATE': ['2012-10-19 08:24:00.000000 UTC', '2012-10-19 09:00:00.000000 UTC'],
+         'ANGULAR_SEPARATION': [175.17072258, 175.18555938]}
         '''
         if self.status != 'COMPLETE':
             raise CalculationNotCompleted(self.status)
@@ -374,14 +370,14 @@ class Calculation(object):
             - GF_SURFACE_INTERCEPT_POINT_SEARCH
             - GF_RAY_IN_FOV_SEARCH
 
+            Hint
+            ----
+            This parameters will be auto-filled for specific calculation sub-classes.
+
         Raises
         ------
         CalculationInvalidAttr
             If the value provided is invalid.
-
-        Note
-        ----
-        This parameters will be auto-filled for specific calculation sub-classes.
         '''
         if val in CALCULATION_TYPE:
             self.__calculationType = val
@@ -390,7 +386,7 @@ class Calculation(object):
 
     @SetterProperty
     def kernels(self, kernel_sets):
-        '''Add kernel sets
+        '''Add kernel sets.
         
         Parameters
         ----------
@@ -409,7 +405,7 @@ class Calculation(object):
 
     @SetterProperty
     def kernel_paths(self, paths):
-        '''Add path for individual kernel paths
+        '''Add path for individual kernel paths.
 
         Parameters
         ----------
@@ -424,221 +420,6 @@ class Calculation(object):
     def kernel_path_obj(server_path):
         # Payloaf individual kernel path object
         return {"type": "KERNEL", "path": server_path}
-
-    @SetterProperty
-    def time_system(self, val):
-        '''Time System.
-        
-        Parameters
-        ----------
-        time_system: str
-            One of the following:
-
-            - UTC
-            - TDB
-            - TDT
-            - SPACECRAFT_CLOCK 
-
-        Raises
-        -------
-        CalculationInvalidAttr
-            If the value provided is invalid.
-        CalculationUndefinedAttr
-            If ``SPACECRAFT_CLOCK`` is selected, but 
-            :py:attr:`sclk_id` attribute is not provided.
-        '''
-        if val in TIME_SYSTEM:
-            self.__timeSystem = val
-        else:
-            raise CalculationInvalidAttr('time_system', val, TIME_SYSTEM)
-        
-        if val == 'SPACECRAFT_CLOCK' and 'sclk_id' not in self.params.keys():
-            raise CalculationUndefinedAttr('time_system', 'SPACECRAFT_CLOCK', 'sclk_id')
-
-    @SetterProperty
-    def output_time_system(self, val):
-        '''The time system for results output times.
-
-        Parameters
-        ----------
-        output_time_system: str
-            One of the following:
-
-            - UTC
-            - TDB
-            - TDT
-            - SPACECRAFT_CLOCK
-
-        Raises
-        -------
-        CalculationInvalidAttr
-            If the value provided is invalid.
-        CalculationUndefinedAttr
-            If ``SPACECRAFT_CLOCK`` is selected, but
-            :py:attr:`output_sclk_id` attribute is not provided.
-        '''
-        if val in TIME_SYSTEM:
-            self.__outputTimeSystem = val
-        else:
-            raise CalculationInvalidAttr('output_time_system', val, TIME_SYSTEM)
-        
-        if val == 'SPACECRAFT_CLOCK' and 'output_sclk_id' not in self.params.keys():
-            raise CalculationUndefinedAttr('output_time_system', 'SPACECRAFT_CLOCK', 'output_sclk_id')
-
-    @SetterProperty
-    def time_format(self, val):
-        '''Time format input.
-        
-        Parameters
-        ----------
-        time_format: str
-            One of the following:
-    
-            - CALENDAR
-            - JULIAN
-            - SECONDS_PAST_J2000
-            - SPACECRAFT_CLOCK_TICKS
-            - SPACECRAFT_CLOCK_STRING 
-
-        Raises
-        -------
-        CalculationInvalidAttr
-            If the value provided is invalid.
-        CalculationRequiredAttr
-            If :py:attr:`time_system` is not provided.
-        CalculationIncompatibleAttr
-            If ``CALENDAR``, ``JULIAN`` or ``SECONDS_PAST_J2000`` is selected but
-            :py:attr:`time_system` attribute is not in ``UTC``, ``TDB`` or ``TDT``,
-            or ``SPACECRAFT_CLOCK_STRING`` or ``SPACECRAFT_CLOCK_TICKS`` is selected but
-            :py:attr:`time_system` attribute is not ``SPACECRAFT_CLOCK``.
-        '''
-        if val in TIME_FORMAT:
-            self.__timeFormat = val
-        else:
-            raise CalculationInvalidAttr('time_format', val, TIME_FORMAT)
-        
-        self.required(['time_system'], self.params)
-
-        if val in ['CALENDAR', 'JULIAN', 'SECONDS_PAST_J2000'] and self.params['time_system'] not in ['UTC', 'TDB', 'TDT']:
-            raise CalculationIncompatibleAttr('time_format', val, 'time_system', self.params['time_system'], ['UTC', 'TDB', 'TDT'])
-        if val in ['SPACECRAFT_CLOCK_STRING', 'SPACECRAFT_CLOCK_TICKS'] and self.params['time_system'] != 'SPACECRAFT_CLOCK':
-            raise CalculationIncompatibleAttr('time_format', val, 'time_system', self.params['time_system'], ['SPACECRAFT_CLOCK'])
-    
-    @SetterProperty
-    def output_time_format(self, val):
-        '''The time format for the result output times.
-
-        Parameters
-        ----------
-        output_time_format: str
-            One of the following:
-            
-            - CALENDAR
-            - CALENDAR_YMD
-            - CALENDAR_DOY
-            - JULIAN
-            - SECONDS_PAST_J2000
-            - SPACECRAFT_CLOCK_STRING
-            - SPACECRAFT_CLOCK_TICKS
-            - CUSTOM
-
-            Note
-            ----
-            If ``CUSTOM`` is selected, then :py:attr:`output_time_custom_format` must also be provided. 
-
-        Raises
-        -------
-        CalculationInvalidAttr
-            If the value provided is invalid.
-        CalculationRequiredAttr
-            If :py:attr:`output_time_system` is not provided.
-        CalculationIncompatibleAttr
-            If ``CALENDAR_YMD``, ``CALENDAR_DOY``, ``JULIAN``, ``SECONDS_PAST_J2000`` or ``CUSTOM`` is selected
-            but :py:attr:`outputTimeSystem` is not in ``TDB``, ``TDT`` or ``UTC``,
-            or ``SPACECRAFT_CLOCK_STRING`` or ``SPACECRAFT_CLOCK_TICKS`` is selected but
-            :py:attr:`output_time_system` is not ``SPACECRAFT_CLOCK``.
-        '''
-        if val in OUTPUT_TIME_FORMAT:
-            self.__outputTimeFormat = val
-        else:
-            raise CalculationInvalidAttr('output_time_format', val, OUTPUT_TIME_FORMAT)
-        
-        self.required(['output_time_system'], self.params)
-
-        if val in ['CALENDAR', 'CALENDAR_YMD', 'CALENDAR_DOY', 'JULIAN', 'SECONDS_PAST_J2000', 'CUSTOM'] and \
-            self.params['output_time_system'] not in ['UTC', 'TDB', 'TDT']:
-            raise CalculationIncompatibleAttr('output_time_format', val, 'output_time_system', self.params['output_time_system'], ['UTC', 'TDB', 'TDT'])
-        if val in ['SPACECRAFT_CLOCK_STRING', 'SPACECRAFT_CLOCK_TICKS'] and self.params['output_time_system'] != 'SPACECRAFT_CLOCK':
-            raise CalculationIncompatibleAttr('output_time_format', val, 'output_time_system', self.params['output_time_system'], ['SPACECRAFT_CLOCK'])
-
-    @SetterProperty
-    def output_time_custom_format(self, val):
-        '''A SPICE ``timout()`` format string.
-        
-        Parameters
-        ----------
-        output_time_custom_format: str
-            A SPICE ``timout()`` format string.
-
-        Raises
-        ------
-        CalculationRequiredAttr
-            If :py:attr:`output_time_format` is not provided.
-        CalculationIncompatibleAttr
-            If :py:attr:`output_time_format` is not ``CUSTOM``.
-        '''
-        self.__outputTimeCustomFormat = val
-
-        self.required(['output_time_format'], self.params)
-
-        if self.params['output_time_format'] != 'CUSTOM':
-            raise CalculationIncompatibleAttr('output_time_custom_format', val, 'output_time_format', self.params['output_time_format'], ['CUSTOM'])
-
-    @SetterProperty
-    def sclk_id(self, val):
-        '''Spacecraft clock kernel id.
-
-        Parameters
-        ----------
-        sclk_id: int
-            Spacecraft clock kernel id.
-
-        Raises
-        ------
-        CalculationRequiredAttr
-            If :py:attr:`time_system` is not provided.
-        CalculationIncompatibleAttr
-            If :py:attr:`time_system` is not ``SPACECRAFT_CLOCK``.
-        '''
-        self.__sclkId = int(val)
-
-        self.required(['time_system'], self.params)
-
-        if self.params['time_system'] != 'SPACECRAFT_CLOCK':
-            raise CalculationIncompatibleAttr('sclk_id', val, 'time_system', self.params['time_system'], ['SPACECRAFT_CLOCK'])
-
-    @SetterProperty
-    def output_sclk_id(self, val):
-        '''The output spacecraft clock kernel id.
-
-        Parameters
-        ----------
-        output_sclk_id: int
-            Spacecraft clock kernel id.
-
-        Raises
-        ------
-        CalculationRequiredAttr
-            If :py:attr:`output_time_system` is not provided.
-        CalculationIncompatibleAttr
-            If :py:attr:`output_time_system` is not ``SPACECRAFT_CLOCK``.
-        '''
-        self.__outputSclkId = int(val)
-
-        self.required(['output_time_system'], self.params)
-
-        if self.params['output_time_system'] != 'SPACECRAFT_CLOCK':
-            raise CalculationIncompatibleAttr('output_sclk_id', val, 'output_time_system', self.params['output_time_system'], ['SPACECRAFT_CLOCK'])
 
     @SetterProperty
     def times(self, times):
@@ -669,8 +450,8 @@ class Calculation(object):
             An array of objects with startTime and endTime parameters,
             representing the time intervals used for the calculation.
 
-            Note
-            ----
+            Important
+            ---------
             Either this parameter or the :py:attr:`times` parameter must be supplied.
 
         Raises
@@ -773,6 +554,221 @@ class Calculation(object):
             raise CalculationConflictAttr('time_step', 'times')
         if 'time_step' not in self.params.keys():
             raise CalculationUndefinedAttr('time_step_units', val, 'time_step')
+
+    @SetterProperty
+    def time_system(self, val):
+        '''Time System.
+        
+        Parameters
+        ----------
+        time_system: str
+            One of the following:
+
+            - UTC
+            - TDB
+            - TDT
+            - SPACECRAFT_CLOCK 
+
+        Raises
+        -------
+        CalculationInvalidAttr
+            If the value provided is invalid.
+        CalculationUndefinedAttr
+            If ``SPACECRAFT_CLOCK`` is selected, but 
+            :py:attr:`sclk_id` attribute is not provided.
+        '''
+        if val in TIME_SYSTEM:
+            self.__timeSystem = val
+        else:
+            raise CalculationInvalidAttr('time_system', val, TIME_SYSTEM)
+        
+        if val == 'SPACECRAFT_CLOCK' and 'sclk_id' not in self.params.keys():
+            raise CalculationUndefinedAttr('time_system', 'SPACECRAFT_CLOCK', 'sclk_id')
+
+    @SetterProperty
+    def time_format(self, val):
+        '''Time format input.
+        
+        Parameters
+        ----------
+        time_format: str
+            One of the following:
+    
+            - CALENDAR
+            - JULIAN
+            - SECONDS_PAST_J2000
+            - SPACECRAFT_CLOCK_TICKS
+            - SPACECRAFT_CLOCK_STRING 
+
+        Raises
+        -------
+        CalculationInvalidAttr
+            If the value provided is invalid.
+        CalculationRequiredAttr
+            If :py:attr:`time_system` is not provided.
+        CalculationIncompatibleAttr
+            If ``CALENDAR``, ``JULIAN`` or ``SECONDS_PAST_J2000`` is selected but
+            :py:attr:`time_system` attribute is not in ``UTC``, ``TDB`` or ``TDT``,
+            or ``SPACECRAFT_CLOCK_STRING`` or ``SPACECRAFT_CLOCK_TICKS`` is selected but
+            :py:attr:`time_system` attribute is not ``SPACECRAFT_CLOCK``.
+        '''
+        if val in TIME_FORMAT:
+            self.__timeFormat = val
+        else:
+            raise CalculationInvalidAttr('time_format', val, TIME_FORMAT)
+        
+        self.required(['time_system'], self.params)
+
+        if val in ['CALENDAR', 'JULIAN', 'SECONDS_PAST_J2000'] and self.params['time_system'] not in ['UTC', 'TDB', 'TDT']:
+            raise CalculationIncompatibleAttr('time_format', val, 'time_system', self.params['time_system'], ['UTC', 'TDB', 'TDT'])
+        if val in ['SPACECRAFT_CLOCK_STRING', 'SPACECRAFT_CLOCK_TICKS'] and self.params['time_system'] != 'SPACECRAFT_CLOCK':
+            raise CalculationIncompatibleAttr('time_format', val, 'time_system', self.params['time_system'], ['SPACECRAFT_CLOCK'])
+    
+    @SetterProperty
+    def sclk_id(self, val):
+        '''Spacecraft clock kernel id.
+
+        Parameters
+        ----------
+        sclk_id: int
+            Spacecraft clock kernel id.
+
+        Raises
+        ------
+        CalculationRequiredAttr
+            If :py:attr:`time_system` is not provided.
+        CalculationIncompatibleAttr
+            If :py:attr:`time_system` is not ``SPACECRAFT_CLOCK``.
+        '''
+        self.__sclkId = int(val)
+
+        self.required(['time_system'], self.params)
+
+        if self.params['time_system'] != 'SPACECRAFT_CLOCK':
+            raise CalculationIncompatibleAttr('sclk_id', val, 'time_system', self.params['time_system'], ['SPACECRAFT_CLOCK'])
+
+    @SetterProperty
+    def output_time_system(self, val):
+        '''The time system for results output times.
+
+        Parameters
+        ----------
+        output_time_system: str
+            One of the following:
+
+            - UTC
+            - TDB
+            - TDT
+            - SPACECRAFT_CLOCK
+
+        Raises
+        -------
+        CalculationInvalidAttr
+            If the value provided is invalid.
+        CalculationUndefinedAttr
+            If ``SPACECRAFT_CLOCK`` is selected, but
+            :py:attr:`output_sclk_id` attribute is not provided.
+        '''
+        if val in TIME_SYSTEM:
+            self.__outputTimeSystem = val
+        else:
+            raise CalculationInvalidAttr('output_time_system', val, TIME_SYSTEM)
+        
+        if val == 'SPACECRAFT_CLOCK' and 'output_sclk_id' not in self.params.keys():
+            raise CalculationUndefinedAttr('output_time_system', 'SPACECRAFT_CLOCK', 'output_sclk_id')
+
+    @SetterProperty
+    def output_time_format(self, val):
+        '''The time format for the result output times.
+
+        Parameters
+        ----------
+        output_time_format: str
+            One of the following:
+            
+            - CALENDAR
+            - CALENDAR_YMD
+            - CALENDAR_DOY
+            - JULIAN
+            - SECONDS_PAST_J2000
+            - SPACECRAFT_CLOCK_STRING
+            - SPACECRAFT_CLOCK_TICKS
+            - CUSTOM
+
+            Warning
+            -------
+            If ``CUSTOM`` is selected, then :py:attr:`output_time_custom_format` must also be provided. 
+
+        Raises
+        -------
+        CalculationInvalidAttr
+            If the value provided is invalid.
+        CalculationRequiredAttr
+            If :py:attr:`output_time_system` is not provided.
+        CalculationIncompatibleAttr
+            If ``CALENDAR_YMD``, ``CALENDAR_DOY``, ``JULIAN``, ``SECONDS_PAST_J2000`` or ``CUSTOM`` is selected
+            but :py:attr:`outputTimeSystem` is not in ``TDB``, ``TDT`` or ``UTC``,
+            or ``SPACECRAFT_CLOCK_STRING`` or ``SPACECRAFT_CLOCK_TICKS`` is selected but
+            :py:attr:`output_time_system` is not ``SPACECRAFT_CLOCK``.
+        '''
+        if val in OUTPUT_TIME_FORMAT:
+            self.__outputTimeFormat = val
+        else:
+            raise CalculationInvalidAttr('output_time_format', val, OUTPUT_TIME_FORMAT)
+        
+        self.required(['output_time_system'], self.params)
+
+        if val in ['CALENDAR', 'CALENDAR_YMD', 'CALENDAR_DOY', 'JULIAN', 'SECONDS_PAST_J2000', 'CUSTOM'] and \
+            self.params['output_time_system'] not in ['UTC', 'TDB', 'TDT']:
+            raise CalculationIncompatibleAttr('output_time_format', val, 'output_time_system', self.params['output_time_system'], ['UTC', 'TDB', 'TDT'])
+        if val in ['SPACECRAFT_CLOCK_STRING', 'SPACECRAFT_CLOCK_TICKS'] and self.params['output_time_system'] != 'SPACECRAFT_CLOCK':
+            raise CalculationIncompatibleAttr('output_time_format', val, 'output_time_system', self.params['output_time_system'], ['SPACECRAFT_CLOCK'])
+
+    @SetterProperty
+    def output_time_custom_format(self, val):
+        '''A SPICE ``timout()`` format string.
+        
+        Parameters
+        ----------
+        output_time_custom_format: str
+            A SPICE ``timout()`` format string.
+
+        Raises
+        ------
+        CalculationRequiredAttr
+            If :py:attr:`output_time_format` is not provided.
+        CalculationIncompatibleAttr
+            If :py:attr:`output_time_format` is not ``CUSTOM``.
+        '''
+        self.__outputTimeCustomFormat = val
+
+        self.required(['output_time_format'], self.params)
+
+        if self.params['output_time_format'] != 'CUSTOM':
+            raise CalculationIncompatibleAttr('output_time_custom_format', val, 'output_time_format', self.params['output_time_format'], ['CUSTOM'])
+
+    @SetterProperty
+    def output_sclk_id(self, val):
+        '''The output spacecraft clock kernel id.
+
+        Parameters
+        ----------
+        output_sclk_id: int
+            Spacecraft clock kernel id.
+
+        Raises
+        ------
+        CalculationRequiredAttr
+            If :py:attr:`output_time_system` is not provided.
+        CalculationIncompatibleAttr
+            If :py:attr:`output_time_system` is not ``SPACECRAFT_CLOCK``.
+        '''
+        self.__outputSclkId = int(val)
+
+        self.required(['output_time_system'], self.params)
+
+        if self.params['output_time_system'] != 'SPACECRAFT_CLOCK':
+            raise CalculationIncompatibleAttr('output_sclk_id', val, 'output_time_system', self.params['output_time_system'], ['SPACECRAFT_CLOCK'])
 
     @SetterProperty
     def target(self, val):
@@ -1533,39 +1529,39 @@ class StateVector(Calculation):
     Parameters
     ----------
     aberration_correction: str, optional
-        See: :py:attr:`aberration_correction`
+        See: :py:attr:`.aberration_correction`
     state_representation: str, optional
-        See: :py:attr:`state_representation`
+        See: :py:attr:`.state_representation`
 
     Other Parameters
     ----------------
     kernels: str, int, [str or/and int]
-        See: :py:attr:`kernels`
+        See: :py:attr:`.kernels`
     kernel_paths: str, [str]
-        See: :py:attr:`kernel_paths`
-    time_system: str, optional
-        See: :py:attr:`time_system`
-    time_format: str, optional
-        See: :py:attr:`time_format`
+        See: :py:attr:`.kernel_paths`
     times: str or [str]
-        See: :py:attr:`times`
+        See: :py:attr:`.times`
     intervals: [str, str] or [[str, str], ...] or {'startTime': str, 'endTime': str} or [{'startTime': str, 'endTime': str}, ...]
-        See: :py:attr:`intervals`
+        See: :py:attr:`.intervals`
     time_step: int
-        See: :py:attr:`time_step`
+        See: :py:attr:`.time_step`
     time_step_units: str
-        See: :py:attr:`time_step_units`
+        See: :py:attr:`.time_step_units`
+    time_system: str
+        See: :py:attr:`.time_system`
+    time_format: str
+        See: :py:attr:`.time_format`
     target: str or int
-        See: :py:attr:`target`
+        See: :py:attr:`.target`
     observer: str or int
-        See: :py:attr:`observer`
+        See: :py:attr:`.observer`
     reference_frame: str or int
-        See: :py:attr:`reference_frame`
+        See: :py:attr:`.reference_frame`
 
     Raises
     ------
     CalculationRequiredAttr
-        If :py:attr:`target`, :py:attr:`observer` and :py:attr:`reference_frame` are not provided.
+        If :py:attr:`.target`, :py:attr:`.observer` and :py:attr:`.reference_frame` are not provided.
     '''
 
     def __init__(self, aberration_correction='CN', state_representation='RECTANGULAR', **kwargs):
@@ -1579,24 +1575,46 @@ class StateVector(Calculation):
         super().__init__(**kwargs)
 
 class AngularSeparation(Calculation):
-    '''
-    Calculates the angular separation of two bodies as seen by an observer body.
+    '''Calculates the angular separation of two bodies as seen by an observer body.
     
-    Required parameters:
-    --------------------
-        - `kernels` | `kernel_paths`
-        - `times` | `intervals` + `time_step` + `time_step_units`
-        - `target_1`: The target body name or ID of the first body.
-        - `target_2`: The target body name or ID of the second body.
-        - `observer`: The observing body name or ID.
+    Parameters
+    ----------
+    shape_1: str, optional
+        See: :py:attr:`.shape_1`
+    shape_2: str, optional
+        See: :py:attr:`.shape_2`
+    aberration_correction: str, optional
+        See: :py:attr:`.aberration_correction`
 
-    Optional parameters (with default):
-    ------------------------------------
-        - `time_system`: (UTC)
-        - `time_format`: (CALENDAR)
-        - `shape_1`: The shape to use for the first body. (POINT) [POINT|SPHERE]
-        - `shape_2`: The shape to use for the second body. (POINT) [POINT|SPHERE]
-        - `aberration_correction` (CN) [NONE|LT|LT+S|CN|CN+S|XLT|XLT+S|XCN|XCN+S]
+    Other Parameters
+    ----------------
+    kernels: str, int, [str or/and int]
+        See: :py:attr:`.kernels`
+    kernel_paths: str, [str]
+        See: :py:attr:`.kernel_paths`
+    times: str or [str]
+        See: :py:attr:`.times`
+    intervals: [str, str] or [[str, str], ...] or {'startTime': str, 'endTime': str} or [{'startTime': str, 'endTime': str}, ...]
+        See: :py:attr:`.intervals`
+    time_step: int
+        See: :py:attr:`.time_step`
+    time_step_units: str
+        See: :py:attr:`.time_step_units`
+    time_system: str
+        See: :py:attr:`.time_system`
+    time_format: str
+        See: :py:attr:`.time_format`
+    target_1: str or int
+        See: :py:attr:`.target_1`
+    target_2: str or int
+        See: :py:attr:`.target_2`
+    observer: str or int
+        See: :py:attr:`.observer`
+
+    Raises
+    ------
+    CalculationRequiredAttr
+        If :py:attr:`.target_1`, :py:attr:`.target_2` and :py:attr:`.observer` are not provided.
     '''
 
     def __init__(self, shape_1='POINT', shape_2='POINT', aberration_correction='CN', **kwargs):
@@ -1611,21 +1629,40 @@ class AngularSeparation(Calculation):
         super().__init__(**kwargs)
 
 class AngularSize(Calculation):
-    '''
-    Calculates the angular size of a target as seen by an observer.
+    '''Calculates the angular size of a target as seen by an observer.
     
-    Required parameters:
-    --------------------
-        - `kernels` | `kernel_paths`
-        - `times` | `intervals` + `time_step` + `time_step_units`
-        - `target`: The target body name or ID.
-        - `observer`: The observing body name or ID.
+    Parameters
+    ----------
+    aberration_correction: str, optional
+        See: :py:attr:`.aberration_correction`
 
-    Optional parameters (with default):
-    ------------------------------------
-        - `time_system`: (UTC)
-        - `time_format`: (CALENDAR)
-        - `aberration_correction` (CN) [NONE|LT|LT+S|CN|CN+S|XLT|XLT+S|XCN|XCN+S]
+    Other Parameters
+    ----------------
+    kernels: str, int, [str or/and int]
+        See: :py:attr:`.kernels`
+    kernel_paths: str, [str]
+        See: :py:attr:`.kernel_paths`
+    times: str or [str]
+        See: :py:attr:`.times`
+    intervals: [str, str] or [[str, str], ...] or {'startTime': str, 'endTime': str} or [{'startTime': str, 'endTime': str}, ...]
+        See: :py:attr:`.intervals`
+    time_step: int
+        See: :py:attr:`.time_step`
+    time_step_units: str
+        See: :py:attr:`.time_step_units`
+    time_system: str
+        See: :py:attr:`.time_system`
+    time_format: str
+        See: :py:attr:`.time_format`
+    target: str or int
+        See: :py:attr:`.target`
+    observer: str or int
+        See: :py:attr:`.observer`
+
+    Raises
+    ------
+    CalculationRequiredAttr
+        If :py:attr:`.target` and :py:attr:`.observer` are not provided.
     '''
 
     def __init__(self, aberration_correction='CN', **kwargs):
@@ -1639,37 +1676,73 @@ class AngularSize(Calculation):
 
 
 class FrameTransformation(Calculation):
-    '''
-    Calculate the transformation from one reference frame (Frame 1) to another reference frame (Frame 2).
+    '''Calculate the transformation from one reference frame (Frame 1) to another reference frame (Frame 2).
     
-    Required parameters:
-    --------------------
-        - `kernels` | `kernel_paths`
-        - `times` | `intervals` + `time_step` + `time_step_units`
-        - `frame_1`: The first reference frame name.
-        - `frame_2`: The second reference frame name.
+    Parameters
+    ----------
+    aberration_correction: str, optional
+        See: :py:attr:`.aberration_correction`
+    time_location: str, optional
+        See: :py:attr:`.time_location`
+    orientation_representation: str, optional
+        See: :py:attr:`.orientation_representation`
+    axis_1: str, optional
+        See: :py:attr:`.axis_1`
+    axis_2: str, optional
+        See: :py:attr:`.axis_2`
+    axis_3: str, optional
+        See: :py:attr:`.axis_3`
+    angular_units: str, optional
+        See: :py:attr:`.angular_units`
+    angular_velocity_representation: str, optional
+        See: :py:attr:`.angular_velocity_representation`
+    angular_velocity_units: str, optional
+        See: :py:attr:`.angular_velocity_units`
 
-    Optional parameters (with default):
-    ------------------------------------
-        - `time_system`: (UTC)
-        - `time_format`: (CALENDAR)
-        - `aberration_correction` (CN) [NONE|LT|CN|XLT|XCN]
-        - `time_location`: The frame for the input times. (FRAME1) [FRAME1|FRAME2]
-        - `orientation_representation`: The representation of the result transformation. (EULER_ANGLES) [EULER_ANGLES|ANGLE_AND_AXIS|SPICE_QUATERNION|OTHER_QUATERNION|MATRIX_ROW_BY_ROW|MATRIX_FLAGGED|MATRIX_ALL_ONE_ROW]
-        - `angular_velocity_representation`: The representation of angular velocity in the output. (VECTOR_IN_FRAME1) [NOT_INCLUDED|VECTOR_IN_FRAME1|VECTOR_IN_FRAME2|EULER_ANGLE_DERIVATIVES|MATRIX]
-    
-    Only needed if `orientation_representation` is `EULER_ANGLES`:
-        - `axis_1`: The first axis for Euler angle rotation. (X) [X|Y|Z]
-        - `axis_2`: The second axis for Euler angle rotation (X) [X|Y|Z]
-        - `axis_3`: The third axis for Euler angle rotation (X) [X|Y|Z]
+        Warning
+        -------
+        Attribute :py:attr:`.aberration_correction` must be ``NONE``, `LT``, ``CN``,
+        ``XLT`` or ``XCN``.
 
-    Only needed if `orientation_representation` is `EULER_ANGLES` or `ANGLE_AND_AXIS`:
-        - `angular_units`: The angular units used for the angle of rotation. (deg) [deg|rad]
-    
-    Only needed if `angular_velocity_representation` is one of: `VECTOR_IN_FRAME1`, `VECTOR_IN_FRAME2`, or `EULER_ANGLE_DERIVATIVES`:
-        - `angular_velocity_units`: The units for the angular velocity. (deg/s) [deg/s|rad/s|RPM|Unitary]
-    
-    Note: `Unitary` = Unit vector, only applicable for `VECTOR_IN_FRAME1` and `VECTOR_IN_FRAME2`.
+        Attributes :py:attr:`.axis_1`, :py:attr:`.axis_2` and :py:attr:`.axis_3`
+        are imported only if :py:attr:`.orientation_representation` is ``EULER_ANGLES``.
+
+        Attribute :py:attr:`.angular_units` is imported only if 
+        :py:attr:`.orientation_representation` is ``EULER_ANGLES`` or ``ANGLE_AND_AXIS``.
+
+        Attribute :py:attr:`.angular_velocity_units` is imported only if
+        :py:attr:`.angular_velocity_representation` is ``VECTOR_IN_FRAME1``,
+        ``VECTOR_IN_FRAME2`` or ``EULER_ANGLE_DERIVATIVES``.
+
+    Other Parameters
+    ----------------
+    kernels: str, int, [str or/and int]
+        See: :py:attr:`.kernels`
+    kernel_paths: str, [str]
+        See: :py:attr:`.kernel_paths`
+    times: str or [str]
+        See: :py:attr:`.times`
+    intervals: [str, str] or [[str, str], ...] or {'startTime': str, 'endTime': str} or [{'startTime': str, 'endTime': str}, ...]
+        See: :py:attr:`.intervals`
+    time_step: int
+        See: :py:attr:`.time_step`
+    time_step_units: str
+        See: :py:attr:`.time_step_units`
+    time_system: str
+        See: :py:attr:`.time_system`
+    time_format: str
+        See: :py:attr:`.time_format`
+    frame_1: str or int
+        See: :py:attr:`.frame_1`
+    frame_2: str or int
+        See: :py:attr:`.frame_2`
+
+    Raises
+    ------
+    CalculationRequiredAttr
+        If :py:attr:`.frame_1` and :py:attr:`.frame_2` are not provided.
+    CalculationInvalidAttr
+        If :py:attr:`.aberration_correction` is in ``LT+S``, ``CN+S``, ``XLT+S`` or ``XCN+S``.
     '''
 
     def __init__(self, aberration_correction='CN', time_location='FRAME1',
@@ -1707,26 +1780,53 @@ class FrameTransformation(Calculation):
 
 
 class IlluminationAngles(Calculation):
-    '''
-    Calculate the emission, phase and solar incidence angles at a point on a target as seen from an observer.
+    '''Calculate the emission, phase and solar incidence angles at a point on a target as seen from an observer.
     
-    Required parameters:
-    --------------------
-        - `kernels` | `kernel_paths`
-        - `times` | `intervals` + `time_step` + `time_step_units`
-        - `target`: The target body name or ID.
-        - `target_frame`: The target body-fixed reference frame name.
-        - `observer`: The observing body name or ID.
-        - `latitude`: Latitude of the surface point, in degrees, from -90 to +90.
-        - `longitude`: Longitude of the surface point, in degrees, from -180 to +180.
+    Parameters
+    ----------
+    shape_1: str, optional
+        See: :py:attr:`shape_1`
+    coordinate_representation: str, optional
+        See: :py:attr:`coordinate_representation`
+    aberration_correction: str, optional
+        See: :py:attr:`.aberration_correction`
 
-    Optional parameters (with default):
-    ------------------------------------
-        - `time_system`: (UTC)
-        - `time_format`: (CALENDAR)
-        - `shape_1`: The shape to use for the target body. (ELLIPSOID) [ELLIPSOID|DSK]
-        - `coordinate_representation` (LATITUDINAL) [LATITUDINAL|PLANETODETIC|PLANETOGRAPHIC]
-        - `aberration_correction` (CN) [NONE|LT|LT+S|CN|CN+S|XLT|XLT+S|XCN|XCN+S]
+    Other Parameters
+    ----------------
+    kernels: str, int, [str or/and int]
+        See: :py:attr:`.kernels`
+    kernel_paths: str, [str]
+        See: :py:attr:`.kernel_paths`
+    times: str or [str]
+        See: :py:attr:`.times`
+    intervals: [str, str] or [[str, str], ...] or {'startTime': str, 'endTime': str} or [{'startTime': str, 'endTime': str}, ...]
+        See: :py:attr:`.intervals`
+    time_step: int
+        See: :py:attr:`.time_step`
+    time_step_units: str
+        See: :py:attr:`.time_step_units`
+    time_system: str
+        See: :py:attr:`.time_system`
+    time_format: str
+        See: :py:attr:`.time_format`
+    target: str or int
+        See: :py:attr:`.target`
+    target_frame: str or int
+        See: :py:attr:`.target_frame`
+    observer: str or int
+        See: :py:attr:`.observer`
+    latitude: str or int
+        See: :py:attr:`.latitude`
+    longitude: str or int
+        See: :py:attr:`.longitude`
+
+    Raises
+    ------
+    CalculationRequiredAttr
+        If :py:attr:`.target`, :py:attr:`.target_frame`, :py:attr:`.observer`,
+        :py:attr:`.latitude` and :py:attr:`.longitude` are not provided.
+    CalculationInvalidAttr
+        If :py:attr:`.shape_1` is not ``ELLIPSOID`` or ``DSK``.
     '''
 
     def __init__(self, shape_1='ELLIPSOID', coordinate_representation='LATITUDINAL', aberration_correction='CN', **kwargs):
@@ -1746,24 +1846,53 @@ class IlluminationAngles(Calculation):
 
 
 class SubSolarPoint(Calculation):
-    '''
-    Calculates the sub-solar point on a target as seen from an observer.
+    '''Calculates the sub-solar point on a target as seen from an observer.
     
-    Required parameters:
-    --------------------
-        - `kernels` | `kernel_paths`
-        - `times` | `intervals` + `time_step` + `time_step_units`
-        - `target`: The target body name or ID.
-        - `target_frame`: The target body-fixed reference frame name.
-        - `observer`: The observing body name or ID.
+    Parameters
+    ----------
+    sub_point_type: str, optional
+        See: :py:attr:`sub_point_type`
+    aberration_correction: str, optional
+        See: :py:attr:`.aberration_correction`
+    state_representation: str, optional
+        See: :py:attr:`state_representation`
 
-    Optional parameters (with default):
-    ------------------------------------
-        - `time_system`: (UTC)
-        - `time_format`: (CALENDAR)
-        - `sub_point_type`: The method of finding the sub-solar point. (Near point: ellipsoid) [Near point: ellipsoid|Intercept: ellipsoid|NADIR/DSK/UNPRIORITIZED|INTERCEPT/DSK/UNPRIORITIZED]
-        - `aberration_correction` (CN) [NONE|LT|LT+S|CN|CN+S|XLT|XLT+S|XCN|XCN+S]
-        - `state_representation` (RECTANGULAR) [RECTANGULAR|RA_DEC|LATITUDINAL|PLANETODETIC|PLANETOGRAPHIC|CYLINDRICAL|SPHERICAL]
+        Warning
+        -------
+        Attribute :py:attr:`.aberration_correction` must be ``NONE``, `LT``, ``LT+S``,
+        ``CN`` or ``CN+S``.
+
+    Other Parameters
+    ----------------
+    kernels: str, int, [str or/and int]
+        See: :py:attr:`.kernels`
+    kernel_paths: str, [str]
+        See: :py:attr:`.kernel_paths`
+    times: str or [str]
+        See: :py:attr:`.times`
+    intervals: [str, str] or [[str, str], ...] or {'startTime': str, 'endTime': str} or [{'startTime': str, 'endTime': str}, ...]
+        See: :py:attr:`.intervals`
+    time_step: int
+        See: :py:attr:`.time_step`
+    time_step_units: str
+        See: :py:attr:`.time_step_units`
+    time_system: str
+        See: :py:attr:`.time_system`
+    time_format: str
+        See: :py:attr:`.time_format`
+    target: str or int
+        See: :py:attr:`.target`
+    target_frame: str or int
+        See: :py:attr:`.target_frame`
+    observer: str or int
+        See: :py:attr:`.observer`
+
+    Raises
+    ------
+    CalculationRequiredAttr
+        If :py:attr:`.target`, :py:attr:`.target_frame` and :py:attr:`.observer` are not provided.
+    CalculationInvalidAttr
+        If :py:attr:`.aberration_correction` is in ``XLT``, ``XLT+S``, ``XCN+S`` or ``XCN+S``.
     '''
 
     def __init__(self, sub_point_type='Near point: ellipsoid', aberration_correction='CN', state_representation='RECTANGULAR', **kwargs):
@@ -1782,24 +1911,46 @@ class SubSolarPoint(Calculation):
         super().__init__(**kwargs)
 
 class SubObserverPoint(Calculation):
-    '''
-    Calculate the sub-observer point on a target as seen from an observer.
+    '''Calculate the sub-observer point on a target as seen from an observer.
     
-    Required parameters:
-    --------------------
-        - `kernels` | `kernel_paths`
-        - `times` | `intervals` + `time_step` + `time_step_units`
-        - `target`: The target body name or ID.
-        - `target_frame`: The target body-fixed reference frame name.
-        - `observer`: The observing body name or ID.
+    Parameters
+    ----------
+    sub_point_type: str, optional
+        See: :py:attr:`sub_point_type`
+    aberration_correction: str, optional
+        See: :py:attr:`.aberration_correction`
+    state_representation: str, optional
+        See: :py:attr:`state_representation`
 
-    Optional parameters (with default):
-    ------------------------------------
-        - `time_system`: (UTC)
-        - `time_format`: (CALENDAR)
-        - `sub_point_type`: The method of finding the sub-observer point. (Near point: ellipsoid) [Near point: ellipsoid|Intercept: ellipsoid|NADIR/DSK/UNPRIORITIZED|INTERCEPT/DSK/UNPRIORITIZED]
-        - `aberration_correction`: (CN) [NONE|LT|LT+S|CN|CN+S|XLT|XLT+S|XCN|XCN+S]
-        - `state_representation`: (RECTANGULAR) [RECTANGULAR|RA_DEC|LATITUDINAL|PLANETODETIC|PLANETOGRAPHIC|CYLINDRICAL|SPHERICAL]
+    Other Parameters
+    ----------------
+    kernels: str, int, [str or/and int]
+        See: :py:attr:`.kernels`
+    kernel_paths: str, [str]
+        See: :py:attr:`.kernel_paths`
+    times: str or [str]
+        See: :py:attr:`.times`
+    intervals: [str, str] or [[str, str], ...] or {'startTime': str, 'endTime': str} or [{'startTime': str, 'endTime': str}, ...]
+        See: :py:attr:`.intervals`
+    time_step: int
+        See: :py:attr:`.time_step`
+    time_step_units: str
+        See: :py:attr:`.time_step_units`
+    time_system: str
+        See: :py:attr:`.time_system`
+    time_format: str
+        See: :py:attr:`.time_format`
+    target: str or int
+        See: :py:attr:`.target`
+    target_frame: str or int
+        See: :py:attr:`.target_frame`
+    observer: str or int
+        See: :py:attr:`.observer`
+
+    Raises
+    ------
+    CalculationRequiredAttr
+        If :py:attr:`.target`, :py:attr:`.target_frame` and :py:attr:`.observer` are not provided.
     '''
 
     def __init__(self, sub_point_type='Near point: ellipsoid', aberration_correction='CN', state_representation='RECTANGULAR', **kwargs):
@@ -1815,37 +1966,82 @@ class SubObserverPoint(Calculation):
 
 
 class SurfaceInterceptPoint(Calculation):
-    '''
-    Calculate the intercept point of a vector or vectors on a target as seen from an observer.
+    '''Calculate the intercept point of a vector or vectors on a target as seen from an observer.
     
-    Required parameters:
-    --------------------
-        - `kernels` | `kernel_paths`
-        - `times` | `intervals` + `time_step` + `time_step_units`
-        - `target`: The target body name or ID.
-        - `target_frame`: The target body-fixed reference frame name.
-        - `observer`: The observing body name or ID.
+    Parameters
+    ----------
+    shape_1: str, optional
+        See: :py:attr:`shape_1`
+    intercept_vector_type: str, optional
+        See: :py:attr:`intercept_vector_type`
+    aberration_correction: str, optional
+        See: :py:attr:`.aberration_correction`
+    state_representation: str, optional
+        See: :py:attr:`state_representation`
 
-    Optional parameters (with default):
-    ------------------------------------
-        - `time_system`: (UTC)
-        - `time_format`: (CALENDAR)
-        - `shape_1`: The shape to use for the target body. (ELLIPSOID) [ELLIPSOID|DSK]
-        - `intercept_vector_type`: Type of vector to be used as the ray direction. (INSTRUMENT_BORESIGHT) [INSTRUMENT_BORESIGHT|INSTRUMENT_FOV_BOUNDARY_VECTORS|REFERENCE_FRAME_AXIS|VECTOR_IN_INSTRUMENT_FOV|VECTOR_IN_REFERENCE_FRAME]
-        - `aberration_correction`: (CN) [NONE|LT|LT+S|CN|CN+S|XLT|XLT+S|XCN|XCN+S]
-        - `state_representation`: (RECTANGULAR) [RECTANGULAR|RA_DEC|LATITUDINAL|PLANETODETIC|PLANETOGRAPHIC|CYLINDRICAL|SPHERICAL]
+    Other Parameters
+    ----------------
+    kernels: str, int, [str or/and int]
+        See: :py:attr:`.kernels`
+    kernel_paths: str, [str]
+        See: :py:attr:`.kernel_paths`
+    times: str or [str]
+        See: :py:attr:`.times`
+    intervals: [str, str] or [[str, str], ...] or {'startTime': str, 'endTime': str} or [{'startTime': str, 'endTime': str}, ...]
+        See: :py:attr:`.intervals`
+    time_step: int
+        See: :py:attr:`.time_step`
+    time_step_units: str
+        See: :py:attr:`.time_step_units`
+    time_system: str
+        See: :py:attr:`.time_system`
+    time_format: str
+        See: :py:attr:`.time_format`
+    target: str or int
+        See: :py:attr:`.target`
+    target_frame: str or int
+        See: :py:attr:`.target_frame`
+    observer: str or int
+        See: :py:attr:`.observer`
+    intercept_instrument: str or int
+        See: :py:attr:`intercept_instrument`
+    intercept_frame: str
+        See: :py:attr:`intercept_frame`
+    intercept_frame_axis: str
+        See: :py:attr:`intercept_frame_axis`
+    intercept_vector_x: float
+        See: :py:attr:`intercept_vector_x`
+    intercept_vector_y: float
+        See: :py:attr:`intercept_vector_y`
+    intercept_vector_z: float
+        See: :py:attr:`intercept_vector_z`
+    intercept_vector_ra: float
+        See: :py:attr:`intercept_vector_ra`
+    intercept_vector_dec: float
+        See: :py:attr:`intercept_vector_dec`
 
-    Only needed if `intercept_vector_type` is `INSTRUMENT_BORESIGHT`, `INSTRUMENT_FOV_BOUNDARY_VECTORS` or `VECTOR_IN_INSTRUMENT_FOV`:
-        - `intercept_instrument`: The instrument name or ID.
-        
-    Only needed if `intercept_vector_type` is `REFERENCE_FRAME_AXIS` or `VECTOR_IN_REFERENCE_FRAME`:
-        - `intercept_frame`: The vector's reference frame name.
+        Warnings
+        --------
+        Attributes :py:attr:`.intercept_instrument` is needed only if
+        :py:attr:`intercept_vector_type` is ``INSTRUMENT_BORESIGHT``,
+        ``INSTRUMENT_FOV_BOUNDARY_VECTORS`` or ``VECTOR_IN_INSTRUMENT_FOV``.
 
-    Only needed if `intercept_vector_type` is `REFERENCE_FRAME_AXIS`:
-        - `intercept_frame_axis`: The intercept frame axis.
+        Attributes :py:attr:`.intercept_frame` is needed only if
+        :py:attr:`intercept_vector_type` is ``REFERENCE_FRAME_AXIS`` or
+        ``VECTOR_IN_REFERENCE_FRAME``.
 
-    Only need if `intercept_vector_type` is `VECTOR_IN_INSTRUMENT_FOV` or `VECTOR_IN_REFERENCE_FRAME`:
-        - `intercept_vector_x` + `intercept_vector_y` + `intercept_vector_z` | `intercept_vector_ra` + `intercept_vector_dec`: intercept vector coordinates.
+        Attributes :py:attr:`.intercept_vector_x` + :py:attr:`.intercept_vector_y` +
+        :py:attr:`.intercept_vector_z` or :py:attr:`.intercept_vector_ra` +
+        :py:attr:`.intercept_vector_dec` is needed only if
+        :py:attr:`intercept_vector_type` is ``VECTOR_IN_INSTRUMENT_FOV`` or
+        ``VECTOR_IN_REFERENCE_FRAME``.
+
+    Raises
+    ------
+    CalculationRequiredAttr
+        If :py:attr:`.target`, :py:attr:`.target_frame` and :py:attr:`.observer` are not provided.
+    CalculationInvalidAttr
+        If :py:attr:`.shape_1` is not ``ELLIPSOID`` or ``DSK``.
     '''
 
     def __init__(self, shape_1='ELLIPSOID', intercept_vector_type='INSTRUMENT_BORESIGHT', \
@@ -1866,22 +2062,41 @@ class SurfaceInterceptPoint(Calculation):
         super().__init__(**kwargs)
 
 class OsculatingElements(Calculation):
-    '''
-    Calculate the osculating elements of the orbit of a target body around a central body.
+    '''Calculate the osculating elements of the orbit of a target body around a central body.
     The orbit may be elliptical, parabolic, or hyperbolic.
     
-    Required parameters:
-    --------------------
-        - `kernels` | `kernel_paths`
-        - `times` | `intervals` + `time_step` + `time_step_units`
-        - `orbiting_body`: The SPICE body name or ID for the orbiting body.
-        - `center_body`: The SPICE body name or ID for the body that is the center of motion.
+    Parameters
+    ----------
+    reference_frame: str, optional
+        See: :py:attr:`reference_frame`
 
-    Optional parameters (with default):
-    ------------------------------------
-        - `time_system`: (UTC)
-        - `time_format`: (CALENDAR)
-        - `reference_frame`: The reference frame name. (J2000)
+    Other Parameters
+    ----------------
+    kernels: str, int, [str or/and int]
+        See: :py:attr:`.kernels`
+    kernel_paths: str, [str]
+        See: :py:attr:`.kernel_paths`
+    times: str or [str]
+        See: :py:attr:`.times`
+    intervals: [str, str] or [[str, str], ...] or {'startTime': str, 'endTime': str} or [{'startTime': str, 'endTime': str}, ...]
+        See: :py:attr:`.intervals`
+    time_step: int
+        See: :py:attr:`.time_step`
+    time_step_units: str
+        See: :py:attr:`.time_step_units`
+    time_system: str
+        See: :py:attr:`.time_system`
+    time_format: str
+        See: :py:attr:`.time_format`
+    orbiting_body: str or int
+        See: :py:attr:`.orbiting_body`
+    center_body: str or int
+        See: :py:attr:`.center_body`
+
+    Raises
+    ------
+    CalculationRequiredAttr
+        If :py:attr:`.orbiting_body` and :py:attr:`.center_body` are not provided.
     '''
 
     def __init__(self, reference_frame='J2000', **kwargs):
@@ -1894,26 +2109,45 @@ class OsculatingElements(Calculation):
         super().__init__(**kwargs)
 
 class TimeConversion(Calculation):
-    '''
-    Convert times from one time system or format to another.
+    '''Convert times from one time system or format to another.
     
-    Required parameters:
-    --------------------
-        - `kernels` | `kernel_paths`
-        - `times` | `intervals` + `time_step` + `time_step_units`
+    Parameters
+    ----------
+    output_time_system: str, optional
+        See: :py:attr:`output_time_system`
+    output_time_format: str, optional
+        See: :py:attr:`output_time_format`
 
-    Optional parameters (with default):
-    ------------------------------------
-        - `time_system`: (UTC)
-        - `time_format`: (CALENDAR)
-        - `output_time_system`: The time system for the result times. (UTC) [TDB|TDT|UTC|SPACECRAFT_CLOCK]
-        - `output_time_format`: The time format for the result times. (CALENDAR) [CALENDAR|CALENDAR_YMD|CALENDAR_DOY|JULIAN|SECONDS_PAST_J2000|SPACECRAFT_CLOCK_STRING|SPACECRAFT_CLOCK_TICKS|CUSTOM]
+    Other Parameters
+    ----------------
+    kernels: str, int, [str or/and int]
+        See: :py:attr:`.kernels`
+    kernel_paths: str, [str]
+        See: :py:attr:`.kernel_paths`
+    times: str or [str]
+        See: :py:attr:`.times`
+    intervals: [str, str] or [[str, str], ...] or {'startTime': str, 'endTime': str} or [{'startTime': str, 'endTime': str}, ...]
+        See: :py:attr:`.intervals`
+    time_step: int
+        See: :py:attr:`.time_step`
+    time_step_units: str
+        See: :py:attr:`.time_step_units`
+    time_system: str
+        See: :py:attr:`.time_system`
+    time_format: str
+        See: :py:attr:`.time_format`
+    output_sclk_id: str
+        See: :py:attr:`output_sclk_id`
+    output_time_custom_format: str
+        See: :py:attr:`output_time_custom_format`
 
-    Only used if `outputTimeSystem` is `SPACECRAFT_CLOCK`.
-        - `output_sclk_id`: The output SCLK ID.
-    
-    Only used if `output_time_format` is `CUSTOM`.
-        - `output_time_custom_format`: A SPICE timout() format string.
+        Warnings
+        --------
+        Attributes :py:attr:`.output_sclk_id` is needed only if
+        :py:attr:`output_time_system` is ``SPACECRAFT_CLOCK``.
+        
+        Attributes :py:attr:`.output_time_custom_format` is needed only if
+        :py:attr:`output_time_format` is ``CUSTOM``.
     '''
 
     def __init__(self, output_time_system='UTC', output_time_format='CALENDAR', **kwargs):
