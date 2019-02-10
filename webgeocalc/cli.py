@@ -1,18 +1,22 @@
 # -*- coding: utf-8 -*-
+'''Command line interface.'''
+
 import argparse
 
 from .api import API
 from .errors import KernelSetNotFound, TooManyKernelSets
 
 def cli_kernel_sets(argv=None):
-    '''
-        Get list of kernel sets available on the server.
-        GET: /kernel-sets
-    '''
-    parser = argparse.ArgumentParser(description='List and search kernel sets available in WebGeocalc API.')
-    parser.add_argument('--all', '-a', action='store_true', help='List all kernel sets available')
-    parser.add_argument('--kernel', '-k', metavar='NAME|ID', nargs='+', help='Search a specific kernel by name or id')
+    '''Get list of kernel sets available on the server.
 
+    GET: /kernel-sets
+    '''
+    parser = argparse.ArgumentParser(
+        description='List and search kernel sets available in WebGeocalc API.')
+    parser.add_argument('--all', '-a', action='store_true',
+                        help='List all kernel sets available')
+    parser.add_argument('--kernel', '-k', metavar='NAME|ID', nargs='+',
+                        help='Search a specific kernel by name or id')
     args, others = parser.parse_known_args(argv)
 
     if args.all:
@@ -37,13 +41,15 @@ def cli_kernel_sets(argv=None):
 
 
 def cli_bodies(argv=None):
+    '''Get list of bodies available in a kernel set.
+
+    GET: /kernel-set/{kernelSetId}/bodies
     '''
-        Get list of bodies available in a kernel set.
-        GET: /kernel-set/{kernelSetId}/bodies
-    '''
-    parser = argparse.ArgumentParser(description='List bodies available in WebGeocalc API for a specific kernel set.')
+    parser = argparse.ArgumentParser(
+        description='List bodies available in WebGeocalc API for a specific kernel set.')
     parser.add_argument('kernel', nargs='?', help='Kernel set name or id')
-    parser.add_argument('--name', '-n', metavar='BODY', nargs='+', help='Search a specific body by name or id')
+    parser.add_argument('--name', '-n', metavar='BODY', nargs='+',
+                        help='Search a specific body by name or id')
 
     args, others = parser.parse_known_args(argv)
 
@@ -66,13 +72,15 @@ def cli_bodies(argv=None):
         parser.print_help()
 
 def cli_frames(argv=None):
+    '''Get list of frames available in a kernel set.
+
+    GET: /kernel-set/{kernelSetId}/frames
     '''
-        Get list of frames available in a kernel set.
-        GET: /kernel-set/{kernelSetId}/frames
-    '''
-    parser = argparse.ArgumentParser(description='List frames available in WebGeocalc API for a specific kernel set.')
+    parser = argparse.ArgumentParser(
+        description='List frames available in WebGeocalc API for a specific kernel set.')
     parser.add_argument('kernel', nargs='?', help='Kernel set name or id')
-    parser.add_argument('--name', '-n', metavar='FRAME', nargs='+', help='Search a specific frame by name or id')
+    parser.add_argument('--name', '-n', metavar='FRAME',
+                        nargs='+', help='Search a specific frame by name or id')
 
     args, others = parser.parse_known_args(argv)
 
@@ -95,13 +103,15 @@ def cli_frames(argv=None):
         parser.print_help()
 
 def cli_instruments(argv=None):
+    '''Get list of instruments available in a kernel set.
+
+    GET: /kernel-set/{kernelSetId}/instruments
     '''
-        Get list of instruments available in a kernel set.
-        GET: /kernel-set/{kernelSetId}/instruments
-    '''
-    parser = argparse.ArgumentParser(description='List instruments available in WebGeocalc API for a specific kernel set.')
+    parser = argparse.ArgumentParser(description='List instruments available'
+                                     'in WebGeocalc API for a specific kernel set.')
     parser.add_argument('kernel', nargs='?', help='Kernel set name or id')
-    parser.add_argument('--name', '-n', metavar='INSTRUMENT', nargs='+', help='Search a specific instrument by name or id')
+    parser.add_argument('--name', '-n', metavar='INSTRUMENT', nargs='+',
+                        help='Search a specific instrument by name or id')
 
     args, others = parser.parse_known_args(argv)
 
@@ -119,7 +129,8 @@ def cli_instruments(argv=None):
                     if name in instrument:
                         print(f" - {str(instrument)}: (id: {int(instrument)})")
         else:
-            print('\n'.join([f" - {str(instrument)}: (id: {int(instrument)})" for instrument in instruments]))
+            print('\n'.join(
+                [f" - {str(instrument)}: (id: {int(instrument)})"
+                 for instrument in instruments]))
     else:
         parser.print_help()
-

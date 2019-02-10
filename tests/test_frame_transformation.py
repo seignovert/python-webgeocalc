@@ -1,32 +1,39 @@
 # -*- coding: utf-8 -*-
+'''Test WGC angular frame transformation calculation.'''
+
 import pytest
-import requests_mock
 
 from webgeocalc import FrameTransformation
-from webgeocalc.errors import CalculationInvalidAttr, CalculationIncompatibleAttr
+from webgeocalc.errors import CalculationIncompatibleAttr, CalculationInvalidAttr
 
 @pytest.fixture
 def kernels():
-    return 5 # Cassini-Huygens
+    '''Cassini kernel set.'''
+    return 5
 
 @pytest.fixture
 def time():
+    '''Input time.'''
     return '2012-10-19T08:24:00.000'
 
 @pytest.fixture
 def frame_1():
+    '''Input frame 1.'''
     return 'IAU_SATURN'
 
 @pytest.fixture
 def frame_2():
+    '''Input frame 2.'''
     return 'IAU_ENCELADUS'
 
 @pytest.fixture
 def corr():
+    '''Input aberration correction.'''
     return 'NONE'
 
 @pytest.fixture
 def params(kernels, time, frame_1, frame_2, corr):
+    '''Input parameters from WGC API example.'''
     return {
         'kernels': kernels,
         'times': time,
@@ -37,6 +44,7 @@ def params(kernels, time, frame_1, frame_2, corr):
 
 @pytest.fixture
 def payload(kernels, time, frame_1, frame_2, corr):
+    '''Payload from WGC API example.'''
     return {
         "kernels": [{
             "type": "KERNEL_SET",
@@ -62,11 +70,14 @@ def payload(kernels, time, frame_1, frame_2, corr):
     }
 
 def test_frame_transformation_payload(params, payload):
+    '''Test angular frame transformation payload.'''
     assert FrameTransformation(**params).payload == payload
 
 def test_frame_transformation_attr_err(params, payload):
+    '''Test errors when frame transformation is invalid.'''
     del params['aberration_correction']
     with pytest.raises(CalculationInvalidAttr):
+        # aberration_correctin can not be '+S'
         FrameTransformation(aberration_correction='CN+S', **params)
 
     with pytest.raises(CalculationInvalidAttr):

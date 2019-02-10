@@ -1,13 +1,16 @@
 # -*- coding: utf-8 -*-
+'''Test WGC calculation runs.'''
+
 import pytest
-import requests_mock
 
 from webgeocalc import Calculation, StateVector
+from webgeocalc.errors import CalculationAlreadySubmitted, CalculationNotCompleted, \
+    CalculationTimeOut, ResultAttributeError
 from webgeocalc.vars import API_URL
-from webgeocalc.errors import CalculationNotCompleted, CalculationAlreadySubmitted, ResultAttributeError, CalculationTimeOut
 
 @pytest.fixture
 def params():
+    '''Input parameters with 2 input time for generic calculation.'''
     return {
         "calculation_type": "STATE_VECTOR",
         "kernels": 1,
@@ -25,6 +28,7 @@ def params():
 
 @pytest.fixture
 def response():
+    '''Response status expected from the API.'''
     return {
         "status": "OK",
         "message": "The operation was successful.",
@@ -37,6 +41,7 @@ def response():
 
 @pytest.fixture
 def results():
+    '''Results expected from the API.'''
     return {
         "status": "OK",
         "message": "The operation was successful.",
@@ -134,6 +139,7 @@ def results():
 
 @pytest.fixture
 def params_sv():
+    '''Input parameters for state vector caclulation (1 time only).'''
     return {
         "kernels": 5,
         "times": "2012-10-19T08:24:00.000",
@@ -144,6 +150,7 @@ def params_sv():
 
 @pytest.fixture
 def response_sv():
+    '''State vector response status expected from the API.'''
     return {
         "status": "OK",
         "message": "The operation was successful.",
@@ -156,6 +163,7 @@ def response_sv():
 
 @pytest.fixture
 def results_sv():
+    '''State vector esults expected from the API.'''
     return {
         "status": "OK",
         "message": "The operation was successful.",
@@ -247,6 +255,7 @@ def results_sv():
 
 @pytest.fixture
 def loading_kernels():
+    '''Uncomplete response status expected from the API.'''
     return {
         "status": "OK",
         "message": "Loading kernels…",
@@ -258,13 +267,15 @@ def loading_kernels():
     }
 
 
-
 def test_calculation_run(requests_mock, params, response, results):
+    '''Run generic calculation.'''
     calc = Calculation(**params)
 
     requests_mock.post(API_URL + '/calculation/new', json=response)
-    requests_mock.get(API_URL + '/calculation/' + response['calculationId'], json=response)
-    requests_mock.get(API_URL + '/calculation/' + response['calculationId'] + '/results', json=results)
+    requests_mock.get(
+        API_URL + '/calculation/' + response['calculationId'], json=response)
+    requests_mock.get(
+        API_URL + '/calculation/' + response['calculationId'] + '/results', json=results)
 
     with pytest.raises(CalculationNotCompleted):
         calc.results
@@ -272,29 +283,32 @@ def test_calculation_run(requests_mock, params, response, results):
     calc.run()
     assert calc.id == response['calculationId']
 
-
     calc.update()
     assert calc.status == response['result']['phase']
 
     with pytest.raises(CalculationAlreadySubmitted):
         calc.submit()
-    
+
     calc.resubmit()
     assert calc.id == response['calculationId']
 
-    out = calc.run() # Re-run results without API request
+    out = calc.run()  # Re-run results without API request
     assert len(out['DATE']) == len(results['rows'])
 
 def test_state_vector_single_time(requests_mock, params_sv, response_sv, results_sv):
+    '''Run state vector calculation.'''
     sv = StateVector(**params_sv)
 
     requests_mock.post(API_URL + '/calculation/new', json=response_sv)
-    requests_mock.get(API_URL + '/calculation/' + response_sv['calculationId'], json=response_sv)
-    requests_mock.get(API_URL + '/calculation/' + response_sv['calculationId'] + '/results', json=results_sv)
+    requests_mock.get(
+        API_URL + '/calculation/' + response_sv['calculationId'], json=response_sv)
+    requests_mock.get(
+        API_URL + '/calculation/' + response_sv['calculationId'] + '/results',
+        json=results_sv)
 
     out = sv.run()
     assert out['DATE'] == results_sv['rows'][0][0]
-    
+
     column = sv.columns[0]
     column_sv = results_sv['columns'][0]
 
@@ -314,7 +328,7 @@ def test_state_vector_single_time(requests_mock, params_sv, response_sv, results
         column.wrong_attr
 
 def test_calculation_timeout(requests_mock, params, loading_kernels):
-
+    '''Test error if response exceed timeout.'''
     requests_mock.post(API_URL + '/calculation/new', json=loading_kernels)
 
     with pytest.raises(CalculationTimeOut):

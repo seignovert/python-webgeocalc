@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
-import pytest
+'''Test WGC command line inputs.'''
 
-from webgeocalc.cli import cli_kernel_sets, cli_bodies, cli_frames, cli_instruments
+from webgeocalc.cli import cli_bodies, cli_frames, cli_instruments, cli_kernel_sets
 
 
 def test_cli_kernel_sets(capsys):
-
+    '''Test GET kernels with CLI.'''
     argv = ''.split()
     cli_kernel_sets(argv)
     captured = capsys.readouterr()
@@ -21,10 +21,10 @@ def test_cli_kernel_sets(capsys):
     cli_kernel_sets(argv)
     captured = capsys.readouterr()
     assert ' - Solar System Kernels: (id: 1)' in captured.out
-    assert 'Too many kernel sets contains \'Cassini\' in their names:'  in captured.out
+    assert 'Too many kernel sets contains \'Cassini\' in their names:' in captured.out
 
 def test_cli_bodies(capsys):
-
+    '''Test GET bodies with CLI.'''
     argv = ''.split()
     cli_bodies(argv)
     captured = capsys.readouterr()
@@ -42,7 +42,7 @@ def test_cli_bodies(capsys):
     assert ' - TITAN: (id: 606)\n' == captured.out
 
 def test_cli_frames(capsys):
-
+    '''Test GET frames with CLI.'''
     argv = ''.split()
     cli_frames(argv)
     captured = capsys.readouterr()
@@ -61,7 +61,7 @@ def test_cli_frames(capsys):
     assert ' - J2000: (id: 1)' not in captured.out
 
 def test_cli_instruments(capsys):
-
+    '''Test GET instruments with CLI.'''
     argv = ''.split()
     cli_instruments(argv)
     captured = capsys.readouterr()

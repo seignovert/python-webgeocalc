@@ -1,18 +1,24 @@
 # -*- coding: utf-8 -*-
+'''Webgeocalc Calculations.'''
+
 import time
 
 from .api import API
-from .errors import CalculationRequiredAttr, CalculationInvalidAttr, CalculationUndefinedAttr, \
-                    CalculationIncompatibleAttr, CalculationConflictAttr, CalculationAlreadySubmitted, \
-                    CalculationNotCompleted, CalculationInvalidValue, CalculationTimeOut
+from .errors import CalculationAlreadySubmitted, CalculationConflictAttr, \
+    CalculationIncompatibleAttr, CalculationInvalidAttr, CalculationInvalidValue, \
+    CalculationNotCompleted, CalculationRequiredAttr, CalculationTimeOut, \
+    CalculationUndefinedAttr
 from .types import KernelSetDetails
-from .vars import CALCULATION_TYPE, TIME_SYSTEM, TIME_FORMAT, TIME_STEP_UNITS, \
-                  INTERVALS, ABERRATION_CORRECTION, STATE_REPRESENTATION, SHAPE, TIME_LOCATION, \
-                  ORIENTATION_REPRESENTATION, ANGULAR_VELOCITY_REPRESENTATION, AXIS, ANGULAR_UNITS, ANGULAR_VELOCITY_UNITS, \
-                  COORDINATE_REPRESENTATION, SUB_POINT_TYPE, INTERCEPT_VECTOR_TYPE, OUTPUT_TIME_FORMAT
+from .vars import ABERRATION_CORRECTION, ANGULAR_UNITS, ANGULAR_VELOCITY_REPRESENTATION, \
+    ANGULAR_VELOCITY_UNITS, AXIS, CALCULATION_TYPE, COORDINATE_REPRESENTATION, \
+    INTERCEPT_VECTOR_TYPE, INTERVALS, ORIENTATION_REPRESENTATION, OUTPUT_TIME_FORMAT, \
+    SHAPE, STATE_REPRESENTATION, SUB_POINT_TYPE, TIME_FORMAT, TIME_LOCATION, \
+    TIME_STEP_UNITS, TIME_SYSTEM
 
 
 class SetterProperty(object):
+    '''Setter property decorator.'''
+
     def __init__(self, func, doc=None):
         self.func = func
         self.__doc__ = doc if doc is not None else func.__doc__
@@ -44,7 +50,7 @@ class Calculation(object):
         See: :py:attr:`kernel_paths`
     times: str or [str]
         See: :py:attr:`times`
-    intervals: [str, str] or [[str, str], ...] or {'startTime': str, 'endTime': str} or [{'startTime': str, 'endTime': str}, ...]
+    intervals: [str, str] or {'startTime': str, 'endTime': str} or [interval, ...]
         See: :py:attr:`intervals`
     time_step: int
         See: :py:attr:`time_step`
@@ -134,11 +140,13 @@ class Calculation(object):
     Raises
     ------
     CalculationRequiredAttr
-        If :py:attr:`calculation_type`, :py:attr:`time_system` and :py:attr:`time_format` are not provided.
+        If :py:attr:`calculation_type`, :py:attr:`time_system` and
+        :py:attr:`time_format` are not provided.
     CalculationRequiredAttr
         If neither :py:attr:`kernels` nor :py:attr:`kernel_paths` is not provided.
     CalculationRequiredAttr
         If neither :py:attr:`times` nor :py:attr:`intervals` is not provided.
+
     '''
 
     def __init__(self, time_system='UTC', time_format='CALENDAR', verbose=True, **kwargs):
@@ -156,7 +164,7 @@ class Calculation(object):
         self.verbose = verbose
 
         # Required parameters
-        self.required(['calculation_type', 'time_system', 'time_format'], kwargs)
+        self._required(['calculation_type', 'time_system', 'time_format'], kwargs)
 
         if 'kernels' not in kwargs.keys() and 'kernel_paths' not in kwargs.keys():
             raise CalculationRequiredAttr('kernels\' or \'kernel_paths')
@@ -169,13 +177,14 @@ class Calculation(object):
             setattr(self, key, value)
 
     def __repr__(self):
-        return '\n'.join(
-            [f"<{self.__class__.__name__}> Status: {self.status} (id: {self.id})"] +
-            [f' - {k}: {v}' for k, v in self.payload.items()]
-        )
+        return '\n'.join([
+            f"<{self.__class__.__name__}> Status: {self.status} (id: {self.id})"
+        ] + [
+            f' - {k}: {v}' for k, v in self.payload.items()
+        ])
 
     @staticmethod
-    def required(attrs, kwargs):
+    def _required(attrs, kwargs):
         # Check required arguments
         for required in attrs:
             if required not in kwargs.keys():
@@ -183,13 +192,13 @@ class Calculation(object):
 
     @property
     def payload(self):
-        '''Calculation payload parameters *dict* for JSON input in WebGeoCalc format
+        '''Calculation payload parameters *dict* for JSON input in WebGeoCalc format.
 
         Return
         ------
         dict
             Payload keys and values.
-        
+
         Example
         -------
         >>> Calculation(
@@ -201,7 +210,7 @@ class Calculation(object):
         ...    reference_frame = 'IAU_SATURN',
         ...    aberration_correction = 'NONE',
         ...    state_representation = 'PLANETOGRAPHIC',
-        ... ).payload
+        ... ).payload  # noqa: E501
         {'kernels': [{'type': 'KERNEL_SET', 'id': 5}], 'times': ['2012-10-19T08:24:00.000'], ...}
 
         '''
@@ -209,7 +218,7 @@ class Calculation(object):
 
     def submit(self):
         '''Submit calculation parameters and get calculation ``id``, ``phase`` and ``progress``.
-        
+
         Raises
         ------
         CalculationAlreadySubmitted
@@ -217,14 +226,15 @@ class Calculation(object):
 
         Example
         -------
-        >>> calc.submit()   # doctest: +SKIP
+        >>> calc.submit()  # noqa: E501  # doctest: +SKIP
         [Calculation submit] Status: LOADING_KERNELS (id: 8750344d-645d-4e43-b159-c8d88d28aac6)
-        >>> calc.id         # doctest: +SKIP
+        >>> calc.id        # doctest: +SKIP
         '8750344d-645d-4e43-b159-c8d88d28aac6'
-        >>> calc.status     # doctest: +SKIP
+        >>> calc.status    # doctest: +SKIP
         'LOADING_KERNELS'
+
         '''
-        if not self.id is None:
+        if self.id is not None:
             raise CalculationAlreadySubmitted(self.id)
 
         self.id, self.status, self.progress = API.new_calculation(self.payload)
@@ -233,7 +243,10 @@ class Calculation(object):
             print(f'[Calculation submit] Status: {self.status} (id: {self.id})')
 
     def resubmit(self):
-        '''Reset calculation ``id`` and re-submit the calculation. See: :py:func:`submit`'''
+        '''Reset calculation ``id`` and re-submit the calculation.
+
+        See: :py:func:`submit`.
+        '''
         self.id = None
         self.submit()
 
@@ -242,16 +255,16 @@ class Calculation(object):
 
         Example
         -------
-        >>> calc.update()   # doctest: +SKIP
+        >>> calc.update()  # noqa: E501  # doctest: +SKIP
         [Calculation update] Status: LOADING_KERNELS (id: 8750344d-645d-4e43-b159-c8d88d28aac6)
-        >>> calc.update()   # doctest: +SKIP
+        >>> calc.update()  # doctest: +SKIP
         [Calculation update] Status: COMPLETE (id: 8750344d-645d-4e43-b159-c8d88d28aac6)
         '''
         if self.id is None:
             self.submit()
         else:
             _, self.status, self.progress = API.status_calculation(self.id)
-            
+
             if self.verbose:
                 print(f'[Calculation update] Status: {self.status} (id: {self.id})')
 
@@ -262,14 +275,15 @@ class Calculation(object):
         Return
         ------
         dict
-            Calculation results as *dict* based on output columns. If multiple ``times`` or
-            ``intervals`` are used, the value of the *dict* will be an array. See examples.
+            Calculation results as *dict* based on output columns. If multiple ``times``
+            or ``intervals`` are used, the value of the *dict* will be an array.
+            See examples.
 
         Raises
         ------
         CalculationNotCompleted
             If calculation status is not `COMPLETE`.
-        
+
         Examples
         --------
         >>> calc.results     # doctest: +SKIP
@@ -292,11 +306,12 @@ class Calculation(object):
         ...     target_2 = 'MERCURY',
         ...     observer = 'SUN',
         ...     verbose = False,
-        ... )
+        ... )  # noqa: E501
         >>> ang_sep.submit()      # doctest: +SKIP
         >>> ang_sep.results       # doctest: +SKIP
         {'DATE': ['2012-10-19 08:24:00.000000 UTC', '2012-10-19 09:00:00.000000 UTC'],
          'ANGULAR_SEPARATION': [175.17072258, 175.18555938]}
+
         '''
         if self.status != 'COMPLETE':
             raise CalculationNotCompleted(self.status)
@@ -314,7 +329,7 @@ class Calculation(object):
 
     def run(self, timeout=30, sleep=1):
         '''Submit, update and retrive calculation results at once.
-        
+
         See: :py:func:`submit`, :py:func:`update` and :py:attr:`results`.
 
         Parameters
@@ -328,13 +343,14 @@ class Calculation(object):
         ------
         CalculationTimeOut
             If calculation reach the timeout duration.
+
         '''
-        if not self.columns is None and not self.values is None:
+        if self.columns is not None and self.values is not None:
             return self.results
 
-        for i in range(int(timeout/sleep)):
+        for i in range(int(timeout / sleep)):
             self.update()
-            
+
             if self.status == 'COMPLETE':
                 return self.results
             else:
@@ -360,7 +376,7 @@ class Calculation(object):
             - SURFACE_INTERCEPT_POINT
             - OSCULATING_ELEMENTS
             - FRAME_TRANSFORMATION
-            - TIME_CONVERSION 
+            - TIME_CONVERSION
             - GF_COORDINATE_SEARCH
             - GF_ANGULAR_SEPARATION_SEARCH
             - GF_DISTANCE_SEARCH
@@ -378,6 +394,7 @@ class Calculation(object):
         ------
         CalculationInvalidAttr
             If the value provided is invalid.
+
         '''
         if val in CALCULATION_TYPE:
             self.__calculationType = val
@@ -387,19 +404,24 @@ class Calculation(object):
     @SetterProperty
     def kernels(self, kernel_sets):
         '''Add kernel sets.
-        
+
         Parameters
         ----------
         kernels: str, int, [str or/and int]
             Kernel set(s) to be used for the calculation::
 
                [{'type': 'KERNEL_SET', 'id': 5}, ...]
+
         '''
-        self.__kernels += [self.kernel_id_obj(kernel_sets)] if isinstance(kernel_sets, (int, str, KernelSetDetails)) else \
-                          list(map(self.kernel_id_obj, kernel_sets))
+        self.__kernels += [
+            self._kernel_id_obj(kernel_sets)
+        ] if isinstance(
+            kernel_sets,
+            (int, str, KernelSetDetails)
+        ) else list(map(self._kernel_id_obj, kernel_sets))
 
     @staticmethod
-    def kernel_id_obj(kernel_set):
+    def _kernel_id_obj(kernel_set):
         # Payload kernel set object
         return {"type": "KERNEL_SET", "id": API.kernel_set_id(kernel_set)}
 
@@ -413,11 +435,14 @@ class Calculation(object):
             Kernel path(s) to be used for the calculation::
 
                [{'type': 'KERNEL', 'path': 'pds/wgc/kernels/lsk/naif0012.tls'}, ...]
+
         '''
-        self.__kernels += [self.kernel_path_obj(paths)] if isinstance(paths, str) else list(map(self.kernel_path_obj, paths))
+        self.__kernels += [
+            self._kernel_path_obj(paths)
+        ] if isinstance(paths, str) else list(map(self._kernel_path_obj, paths))
 
     @staticmethod
-    def kernel_path_obj(server_path):
+    def _kernel_path_obj(server_path):
         # Payloaf individual kernel path object
         return {"type": "KERNEL", "path": server_path}
 
@@ -428,12 +453,14 @@ class Calculation(object):
         Parameters
         ----------
         times: str or [str]
-            String or array of strings representing the time points that should be used in the calculation.
+            String or array of strings representing the time points
+            that should be used in the calculation.
 
         Raises
         ------
         CalculationConflictAttr
-            Either this parameter or the py:attr:`intervals` parameter must be supplied. 
+            Either this parameter or the py:attr:`intervals` parameter must be supplied.
+
         '''
         self.__times = [times] if isinstance(times, str) else times
 
@@ -443,10 +470,10 @@ class Calculation(object):
     @SetterProperty
     def intervals(self, intervals):
         '''Calculation input intervals.
-        
+
         Parameters
         ----------
-        intervals: [str, str] or [[str, str], ...] or {'startTime': str, 'endTime': str} or [{'startTime': str, 'endTime': str}, ...]
+        intervals: [str, str] or {'startTime': str, 'endTime': str} or [interval, ...]
             An array of objects with startTime and endTime parameters,
             representing the time intervals used for the calculation.
 
@@ -457,25 +484,29 @@ class Calculation(object):
         Raises
         ------
         CalculationInvalidAttr
-            If :py:attr:intervals` input format is invalid. For example, if :py:attr:intervals`
-            is provided an dict, ``startTime`` and ``endTime`` must be present.
+            If :py:attr:intervals` input format is invalid.
+            For example, if :py:attr:intervals` is provided an dict,
+            ``startTime`` and ``endTime`` must be present.
         CalculationUndefinedAttr
             If this parameter is used, :py:attr:`time_step` must also be supplied.
+
         '''
         if isinstance(intervals, dict):
-            self.__intervals = [self.interval(intervals)]
+            self.__intervals = [self._interval(intervals)]
         elif isinstance(intervals, list) and len(intervals) > 2:
-            self.__intervals = list(map(self.interval, intervals))
+            self.__intervals = list(map(self._interval, intervals))
         elif isinstance(intervals, list) and len(intervals) == 2:
             if isinstance(intervals[0], str) and isinstance(intervals[1], str):
-                self.__intervals = [self.interval(intervals)]
-            elif isinstance(intervals[0], (dict, list)) and isinstance(intervals[1], (dict, list)):
-                self.__intervals = [self.interval(intervals[0]), self.interval(intervals[1])]
+                self.__intervals = [self._interval(intervals)]
+            elif isinstance(intervals[0], (dict, list)) and \
+                    isinstance(intervals[1], (dict, list)):
+                self.__intervals = [
+                    self._interval(intervals[0]), self._interval(intervals[1])]
             else:
                 raise CalculationInvalidAttr('intervals', intervals, INTERVALS)
         elif isinstance(intervals, list) and len(intervals) == 1:
             if isinstance(intervals[0], (dict, list)):
-                self.__intervals = [self.interval(intervals[0])]
+                self.__intervals = [self._interval(intervals[0])]
             else:
                 raise CalculationInvalidAttr('intervals', intervals, INTERVALS)
         else:
@@ -485,11 +516,11 @@ class Calculation(object):
             raise CalculationUndefinedAttr('intervals', intervals, 'time_step')
 
     @staticmethod
-    def interval(interval):
+    def _interval(interval):
         # Parse interval object
         if not len(interval) == 2:
             raise CalculationInvalidAttr('interval', interval, INTERVALS[:2])
-        
+
         if isinstance(interval, dict):
             if 'startTime' in interval.keys() and 'endTime' in interval.keys():
                 return interval
@@ -500,12 +531,13 @@ class Calculation(object):
 
     @SetterProperty
     def time_step(self, val):
-        '''Time step for intervals
+        '''Time step for intervals.
 
         Parameters
         ----------
         time_step: int
-            Number of steps parameter used for time series or geometry finder calculations.
+            Number of steps parameter used for time series or
+            geometry finder calculations.
 
         Raises
         ------
@@ -513,28 +545,30 @@ class Calculation(object):
             If :py:attr:`times` attribute is supplied.
         CalculationUndefinedAttr
             If :py:attr:`time_step_units` is not supplied.
+
         '''
         self.__timeStep = int(val)
 
         if 'times' in self.params.keys():
             raise CalculationConflictAttr('time_step', 'times')
+
         if 'time_step_units' not in self.params.keys():
             raise CalculationUndefinedAttr('time_step', val, 'time_step_units')
 
     @SetterProperty
     def time_step_units(self, val):
-        '''Time step units
+        '''Time step units.
 
         Parameters
         ----------
         time_step_units: str
             One of the following:
-         
+
             - SECONDS
             - MINUTES
             - HOURS
             - DAYS
-            - EQUAL_INTERVALS 
+            - EQUAL_INTERVALS
 
         Raises
         -------
@@ -544,6 +578,7 @@ class Calculation(object):
             If :py:attr:`times` attribute is supplied.
         CalculationUndefinedAttr
             If :py:attr:`time_step` is not supplied.
+
         '''
         if val in TIME_STEP_UNITS:
             self.__timeStepUnit = val
@@ -558,7 +593,7 @@ class Calculation(object):
     @SetterProperty
     def time_system(self, val):
         '''Time System.
-        
+
         Parameters
         ----------
         time_system: str
@@ -567,38 +602,39 @@ class Calculation(object):
             - UTC
             - TDB
             - TDT
-            - SPACECRAFT_CLOCK 
+            - SPACECRAFT_CLOCK
 
         Raises
         -------
         CalculationInvalidAttr
             If the value provided is invalid.
         CalculationUndefinedAttr
-            If ``SPACECRAFT_CLOCK`` is selected, but 
+            If ``SPACECRAFT_CLOCK`` is selected, but
             :py:attr:`sclk_id` attribute is not provided.
+
         '''
         if val in TIME_SYSTEM:
             self.__timeSystem = val
         else:
             raise CalculationInvalidAttr('time_system', val, TIME_SYSTEM)
-        
+
         if val == 'SPACECRAFT_CLOCK' and 'sclk_id' not in self.params.keys():
             raise CalculationUndefinedAttr('time_system', 'SPACECRAFT_CLOCK', 'sclk_id')
 
     @SetterProperty
     def time_format(self, val):
         '''Time format input.
-        
+
         Parameters
         ----------
         time_format: str
             One of the following:
-    
+
             - CALENDAR
             - JULIAN
             - SECONDS_PAST_J2000
             - SPACECRAFT_CLOCK_TICKS
-            - SPACECRAFT_CLOCK_STRING 
+            - SPACECRAFT_CLOCK_STRING
 
         Raises
         -------
@@ -611,19 +647,27 @@ class Calculation(object):
             :py:attr:`time_system` attribute is not in ``UTC``, ``TDB`` or ``TDT``,
             or ``SPACECRAFT_CLOCK_STRING`` or ``SPACECRAFT_CLOCK_TICKS`` is selected but
             :py:attr:`time_system` attribute is not ``SPACECRAFT_CLOCK``.
+
         '''
         if val in TIME_FORMAT:
             self.__timeFormat = val
         else:
             raise CalculationInvalidAttr('time_format', val, TIME_FORMAT)
-        
-        self.required(['time_system'], self.params)
 
-        if val in ['CALENDAR', 'JULIAN', 'SECONDS_PAST_J2000'] and self.params['time_system'] not in ['UTC', 'TDB', 'TDT']:
-            raise CalculationIncompatibleAttr('time_format', val, 'time_system', self.params['time_system'], ['UTC', 'TDB', 'TDT'])
-        if val in ['SPACECRAFT_CLOCK_STRING', 'SPACECRAFT_CLOCK_TICKS'] and self.params['time_system'] != 'SPACECRAFT_CLOCK':
-            raise CalculationIncompatibleAttr('time_format', val, 'time_system', self.params['time_system'], ['SPACECRAFT_CLOCK'])
-    
+        self._required(['time_system'], self.params)
+
+        if val in ['CALENDAR', 'JULIAN', 'SECONDS_PAST_J2000'] and \
+                self.params['time_system'] not in ['UTC', 'TDB', 'TDT']:
+            raise CalculationIncompatibleAttr(
+                'time_format', val, 'time_system', self.params['time_system'],
+                ['UTC', 'TDB', 'TDT'])
+
+        if val in ['SPACECRAFT_CLOCK_STRING', 'SPACECRAFT_CLOCK_TICKS'] and \
+                self.params['time_system'] != 'SPACECRAFT_CLOCK':
+            raise CalculationIncompatibleAttr(
+                'time_format', val, 'time_system',
+                self.params['time_system'], ['SPACECRAFT_CLOCK'])
+
     @SetterProperty
     def sclk_id(self, val):
         '''Spacecraft clock kernel id.
@@ -639,13 +683,16 @@ class Calculation(object):
             If :py:attr:`time_system` is not provided.
         CalculationIncompatibleAttr
             If :py:attr:`time_system` is not ``SPACECRAFT_CLOCK``.
+
         '''
         self.__sclkId = int(val)
 
-        self.required(['time_system'], self.params)
+        self._required(['time_system'], self.params)
 
         if self.params['time_system'] != 'SPACECRAFT_CLOCK':
-            raise CalculationIncompatibleAttr('sclk_id', val, 'time_system', self.params['time_system'], ['SPACECRAFT_CLOCK'])
+            raise CalculationIncompatibleAttr(
+                'sclk_id', val, 'time_system',
+                self.params['time_system'], ['SPACECRAFT_CLOCK'])
 
     @SetterProperty
     def output_time_system(self, val):
@@ -668,14 +715,16 @@ class Calculation(object):
         CalculationUndefinedAttr
             If ``SPACECRAFT_CLOCK`` is selected, but
             :py:attr:`output_sclk_id` attribute is not provided.
+
         '''
         if val in TIME_SYSTEM:
             self.__outputTimeSystem = val
         else:
             raise CalculationInvalidAttr('output_time_system', val, TIME_SYSTEM)
-        
+
         if val == 'SPACECRAFT_CLOCK' and 'output_sclk_id' not in self.params.keys():
-            raise CalculationUndefinedAttr('output_time_system', 'SPACECRAFT_CLOCK', 'output_sclk_id')
+            raise CalculationUndefinedAttr(
+                'output_time_system', 'SPACECRAFT_CLOCK', 'output_sclk_id')
 
     @SetterProperty
     def output_time_format(self, val):
@@ -685,7 +734,7 @@ class Calculation(object):
         ----------
         output_time_format: str
             One of the following:
-            
+
             - CALENDAR
             - CALENDAR_YMD
             - CALENDAR_DOY
@@ -697,7 +746,8 @@ class Calculation(object):
 
             Warning
             -------
-            If ``CUSTOM`` is selected, then :py:attr:`output_time_custom_format` must also be provided. 
+            If ``CUSTOM`` is selected, then :py:attr:`output_time_custom_format`
+            must also be provided.
 
         Raises
         -------
@@ -706,28 +756,39 @@ class Calculation(object):
         CalculationRequiredAttr
             If :py:attr:`output_time_system` is not provided.
         CalculationIncompatibleAttr
-            If ``CALENDAR_YMD``, ``CALENDAR_DOY``, ``JULIAN``, ``SECONDS_PAST_J2000`` or ``CUSTOM`` is selected
-            but :py:attr:`outputTimeSystem` is not in ``TDB``, ``TDT`` or ``UTC``,
-            or ``SPACECRAFT_CLOCK_STRING`` or ``SPACECRAFT_CLOCK_TICKS`` is selected but
-            :py:attr:`output_time_system` is not ``SPACECRAFT_CLOCK``.
+            If ``CALENDAR_YMD``, ``CALENDAR_DOY``, ``JULIAN``, ``SECONDS_PAST_J2000``
+            or ``CUSTOM`` is selected but :py:attr:`outputTimeSystem` is not in
+            ``TDB``, ``TDT`` or ``UTC``, or ``SPACECRAFT_CLOCK_STRING`` or
+            ``SPACECRAFT_CLOCK_TICKS`` is selected but :py:attr:`output_time_system`
+            is not ``SPACECRAFT_CLOCK``.
+
         '''
         if val in OUTPUT_TIME_FORMAT:
             self.__outputTimeFormat = val
         else:
             raise CalculationInvalidAttr('output_time_format', val, OUTPUT_TIME_FORMAT)
-        
-        self.required(['output_time_system'], self.params)
 
-        if val in ['CALENDAR', 'CALENDAR_YMD', 'CALENDAR_DOY', 'JULIAN', 'SECONDS_PAST_J2000', 'CUSTOM'] and \
-            self.params['output_time_system'] not in ['UTC', 'TDB', 'TDT']:
-            raise CalculationIncompatibleAttr('output_time_format', val, 'output_time_system', self.params['output_time_system'], ['UTC', 'TDB', 'TDT'])
-        if val in ['SPACECRAFT_CLOCK_STRING', 'SPACECRAFT_CLOCK_TICKS'] and self.params['output_time_system'] != 'SPACECRAFT_CLOCK':
-            raise CalculationIncompatibleAttr('output_time_format', val, 'output_time_system', self.params['output_time_system'], ['SPACECRAFT_CLOCK'])
+        self._required(['output_time_system'], self.params)
+
+        if val in ['CALENDAR', 'CALENDAR_YMD', 'CALENDAR_DOY',
+                   'JULIAN', 'SECONDS_PAST_J2000', 'CUSTOM'] and \
+                self.params['output_time_system'] not in ['UTC', 'TDB', 'TDT']:
+            raise CalculationIncompatibleAttr(
+                'output_time_format', val,
+                'output_time_system', self.params['output_time_system'],
+                ['UTC', 'TDB', 'TDT'])
+
+        if val in ['SPACECRAFT_CLOCK_STRING', 'SPACECRAFT_CLOCK_TICKS'] and \
+                self.params['output_time_system'] != 'SPACECRAFT_CLOCK':
+            raise CalculationIncompatibleAttr(
+                'output_time_format', val,
+                'output_time_system', self.params['output_time_system'],
+                ['SPACECRAFT_CLOCK'])
 
     @SetterProperty
     def output_time_custom_format(self, val):
         '''A SPICE ``timout()`` format string.
-        
+
         Parameters
         ----------
         output_time_custom_format: str
@@ -739,13 +800,16 @@ class Calculation(object):
             If :py:attr:`output_time_format` is not provided.
         CalculationIncompatibleAttr
             If :py:attr:`output_time_format` is not ``CUSTOM``.
+
         '''
         self.__outputTimeCustomFormat = val
 
-        self.required(['output_time_format'], self.params)
+        self._required(['output_time_format'], self.params)
 
         if self.params['output_time_format'] != 'CUSTOM':
-            raise CalculationIncompatibleAttr('output_time_custom_format', val, 'output_time_format', self.params['output_time_format'], ['CUSTOM'])
+            raise CalculationIncompatibleAttr(
+                'output_time_custom_format', val, 'output_time_format',
+                self.params['output_time_format'], ['CUSTOM'])
 
     @SetterProperty
     def output_sclk_id(self, val):
@@ -762,13 +826,16 @@ class Calculation(object):
             If :py:attr:`output_time_system` is not provided.
         CalculationIncompatibleAttr
             If :py:attr:`output_time_system` is not ``SPACECRAFT_CLOCK``.
+
         '''
         self.__outputSclkId = int(val)
 
-        self.required(['output_time_system'], self.params)
+        self._required(['output_time_system'], self.params)
 
         if self.params['output_time_system'] != 'SPACECRAFT_CLOCK':
-            raise CalculationIncompatibleAttr('output_sclk_id', val, 'output_time_system', self.params['output_time_system'], ['SPACECRAFT_CLOCK'])
+            raise CalculationIncompatibleAttr(
+                'output_sclk_id', val, 'output_time_system',
+                self.params['output_time_system'], ['SPACECRAFT_CLOCK'])
 
     @SetterProperty
     def target(self, val):
@@ -778,6 +845,7 @@ class Calculation(object):
         ----------
         target: str or int
             The target body ``name`` or ``id`` from :py:func:`API.bodies`.
+
         '''
         self.__target = val if isinstance(val, int) else val.upper()
 
@@ -789,6 +857,7 @@ class Calculation(object):
         ----------
         target_frame: str
             Reference frame ``name``.
+
         '''
         self.__targetFrame = val
 
@@ -800,6 +869,7 @@ class Calculation(object):
         ----------
         target_1: str
             Target body ``name`` or ``id``.
+
         '''
         self.__target1 = val if isinstance(val, int) else val.upper()
 
@@ -811,18 +881,19 @@ class Calculation(object):
         ----------
         target_2: str
             Target body ``name`` or ``id``.
+
         '''
         self.__target2 = val if isinstance(val, int) else val.upper()
 
     @SetterProperty
     def shape_1(self, val):
         '''The shape to use for the first body.
-        
+
         Parameters
         ----------
         shape_1: str
             One of:
-            
+
             - POINT
             - SPHERE
 
@@ -830,6 +901,7 @@ class Calculation(object):
         -------
         CalculationInvalidAttr
             If the value provided is invalid.
+
         '''
         if val in SHAPE:
             self.__shape1 = val
@@ -839,12 +911,12 @@ class Calculation(object):
     @SetterProperty
     def shape_2(self, val):
         '''The shape to use for the second body.
-        
+
         Parameters
         ----------
         shape_2: str
             One of:
-            
+
             - POINT
             - SPHERE
 
@@ -852,6 +924,7 @@ class Calculation(object):
         -------
         CalculationInvalidAttr
             If the value provided is invalid.
+
         '''
         if val in SHAPE:
             self.__shape2 = val
@@ -866,8 +939,8 @@ class Calculation(object):
         ----------
         observer: str or int
             The oberving body ``name`` or ``id`` from :py:func:`API.bodies`.
-        '''
 
+        '''
         self.__observer = val if isinstance(val, int) else val.upper()
 
     @SetterProperty
@@ -878,6 +951,7 @@ class Calculation(object):
         ----------
         reference_frame: str or int
             The reference frame ``name`` or ``id`` from :py:func:`API.frames`.
+
         '''
         self.__referenceFrame = val if isinstance(val, int) else val.upper()
 
@@ -889,6 +963,7 @@ class Calculation(object):
         ----------
         frame_1: str or int
             The reference frame ``name`` or ``id`` from :py:func:`API.frames`.
+
         '''
         self.__frame1 = val if isinstance(val, int) else val.upper()
 
@@ -900,6 +975,7 @@ class Calculation(object):
         ----------
         frame_2: str or int
             The reference frame ``name`` or ``id`` from :py:func:`API.frames`.
+
         '''
         self.__frame2 = val if isinstance(val, int) else val.upper()
 
@@ -911,6 +987,7 @@ class Calculation(object):
         ----------
         orbiting_body: str or int
             SPICE body ``name`` or ``id`` for the orbiting body.
+
         '''
         self.__orbitingBody = val if isinstance(val, int) else val.upper()
 
@@ -923,6 +1000,7 @@ class Calculation(object):
         ----------
         center_body: str or int
             SPICE body ``name`` or ``id`` for the body that is the center of motion.
+
         '''
         self.__centerBody = val if isinstance(val, int) else val.upper()
 
@@ -949,48 +1027,52 @@ class Calculation(object):
         ------
         CalculationInvalidAttr
             If the value provided is invalid.
+
         '''
         if val in ABERRATION_CORRECTION:
             self.__aberrationCorrection = val
         else:
-            raise CalculationInvalidAttr('aberration_correction', val, ABERRATION_CORRECTION)
+            raise CalculationInvalidAttr(
+                'aberration_correction', val, ABERRATION_CORRECTION)
 
     @SetterProperty
     def state_representation(self, val):
         '''State representation.
-        
+
         Parameters
         ----------
         state_representation: str
             One of:
-            
+
             - RECTANGULAR
             - RA_DEC
             - LATITUDINAL (planetocentric)
             - PLANETODETIC
             - PLANETOGRAPHIC
             - CYLINDRICAL
-            - SPHERICAL 
+            - SPHERICAL
 
         Raises
         ------
         CalculationInvalidAttr
             If the value provided is invalid.
+
         '''
         if val in STATE_REPRESENTATION:
             self.__stateRepresentation = val
         else:
-            raise CalculationInvalidAttr('state_representation', val, STATE_REPRESENTATION)
+            raise CalculationInvalidAttr(
+                'state_representation', val, STATE_REPRESENTATION)
 
     @SetterProperty
     def time_location(self, val):
         '''The frame for the input times.
-        
+
         Parameters
         ----------
         time_location: str
             One of:
-    
+
             - FRAME1
             - FRAME2
 
@@ -1004,8 +1086,9 @@ class Calculation(object):
         NAIF API docs::
 
             `Only needed if aberrationCorrection is not NONE.`
-        
+
         Required even when :py:attr:`aberration_correction` is ``NONE``.
+
         '''
         if val in TIME_LOCATION:
             self.__timeLocation = val
@@ -1020,7 +1103,7 @@ class Calculation(object):
         ----------
         orientation_representation: str
             Orientation result transformation. One of:
-            
+
             - EULER_ANGLES
             - ANGLE_AND_AXIS
             - SPICE_QUATERNION
@@ -1033,11 +1116,13 @@ class Calculation(object):
         ------
         CalculationInvalidAttr
             If the value provided is invalid.
+
         '''
         if val in ORIENTATION_REPRESENTATION:
             self.__orientationRepresentation = val
         else:
-            raise CalculationInvalidAttr('orientation_representation', val, ORIENTATION_REPRESENTATION)
+            raise CalculationInvalidAttr(
+                'orientation_representation', val, ORIENTATION_REPRESENTATION)
 
     @SetterProperty
     def axis_1(self, val):
@@ -1047,6 +1132,7 @@ class Calculation(object):
         ----------
         axis_1: str
             Axis name. See: :py:func:`axis`.
+
         '''
         self.__axis1 = self.axis('axis_1', val)
 
@@ -1058,23 +1144,25 @@ class Calculation(object):
         ----------
         axis_3: str
             Axis name. See: :py:func:`axis`.
+
         '''
         self.__axis2 = self.axis('axis_2', val)
 
     @SetterProperty
     def axis_3(self, val):
         '''The third axis for Euler angle rotation.
-        
+
         Parameters
         ----------
         axis_3: str
             Axis name. See: :py:func:`axis`.
+
         '''
         self.__axis3 = self.axis('axis_3', val)
-    
+
     def axis(self, name, val):
         '''Axis for Euler angle rotation.
-        
+
         Parameters
         ----------
         name: str
@@ -1091,7 +1179,7 @@ class Calculation(object):
         ------
         float
             Value on the axis.
-        
+
         Raises
         ------
         CalculationInvalidAttr
@@ -1100,12 +1188,15 @@ class Calculation(object):
             If :py:attr:`orientation_representation` is not supplied.
         CalculationIncompatibleAttr
             If :py:attr:`orientation_representation` is not ``EULER_ANGLES``.
+
         '''
         if 'orientation_representation' not in self.params.keys():
             raise CalculationUndefinedAttr(name, val, 'orientation_representation')
 
         if self.params['orientation_representation'] != 'EULER_ANGLES':
-            raise CalculationIncompatibleAttr(name, val, 'orientation_representation', self.params['orientation_representation'], ['EULER_ANGLES'])
+            raise CalculationIncompatibleAttr(
+                name, val, 'orientation_representation',
+                self.params['orientation_representation'], ['EULER_ANGLES'])
 
         if val in AXIS:
             return val
@@ -1115,14 +1206,14 @@ class Calculation(object):
     @SetterProperty
     def angular_units(self, val):
         '''The angular units.
-        
+
         Parameters
         ----------
         angular_units: str
             The angular units used for the angle of rotation. One of:
 
             - deg
-            - rad 
+            - rad
 
         Raises
         ------
@@ -1131,7 +1222,9 @@ class Calculation(object):
         CalculationUndefinedAttr
             If :py:attr:`orientation_representation` is not supplied.
         CalculationIncompatibleAttr
-            If :py:attr:`orientation_representation` is not `EULER_ANGLES` or `ANGLE_AND_AXIS`.
+            If :py:attr:`orientation_representation` is
+            not `EULER_ANGLES` or `ANGLE_AND_AXIS`.
+
         '''
         if val in ANGULAR_UNITS:
             self.__angularUnits = val
@@ -1139,11 +1232,15 @@ class Calculation(object):
             raise CalculationInvalidAttr('angular_units', val, ANGULAR_UNITS)
 
         if 'orientation_representation' not in self.params.keys():
-            raise CalculationUndefinedAttr('angular_units', val, 'orientation_representation')
+            raise CalculationUndefinedAttr(
+                'angular_units', val, 'orientation_representation')
 
-        if not self.params['orientation_representation'] in ['EULER_ANGLES', 'ANGLE_AND_AXIS']:
-            raise CalculationIncompatibleAttr('angular_units', val, 'orientation_representation', \
-                                              self.params['orientation_representation'], ['EULER_ANGLES', 'ANGLE_AND_AXIS'])
+        if not self.params['orientation_representation'] in ['EULER_ANGLES',
+                                                             'ANGLE_AND_AXIS']:
+            raise CalculationIncompatibleAttr(
+                'angular_units', val, 'orientation_representation',
+                self.params['orientation_representation'],
+                ['EULER_ANGLES', 'ANGLE_AND_AXIS'])
 
     @SetterProperty
     def angular_velocity_representation(self, val):
@@ -1153,7 +1250,7 @@ class Calculation(object):
         ----------
         angular_velocity_representation: str
             The representation of angular velocity in the output. One of:
-    
+
             - NOT_INCLUDED
             - VECTOR_IN_FRAME1
             - VECTOR_IN_FRAME2
@@ -1164,11 +1261,13 @@ class Calculation(object):
         ------
         CalculationInvalidAttr
             If the value provided is invalid.
+
         '''
         if val in ANGULAR_VELOCITY_REPRESENTATION:
             self.__angularVelocityRepresentation = val
         else:
-            raise CalculationInvalidAttr('angular_velocity_representation', val, ANGULAR_VELOCITY_REPRESENTATION)
+            raise CalculationInvalidAttr(
+                'angular_velocity_representation', val, ANGULAR_VELOCITY_REPRESENTATION)
 
     @SetterProperty
     def angular_velocity_units(self, val):
@@ -1178,7 +1277,7 @@ class Calculation(object):
         ----------
         angular_velocity_units: str
             One of:
-            
+
             - deg/s
             - rad/s
             - RPM
@@ -1196,23 +1295,30 @@ class Calculation(object):
         CalculationIncompatibleAttr
             If ``Unitary`` selected but :py:attr:`angular_velocity_representation` is not
             ``VECTOR_IN_FRAME1`` or ``VECTOR_IN_FRAME2``.
+
         '''
         if val in ANGULAR_VELOCITY_UNITS:
             self.__angularVelocityUnits = val
         else:
-            raise CalculationInvalidAttr('angular_velocity_units', val, ANGULAR_VELOCITY_UNITS)
+            raise CalculationInvalidAttr(
+                'angular_velocity_units', val, ANGULAR_VELOCITY_UNITS)
 
         if 'angular_velocity_representation' not in self.params.keys():
-            raise CalculationUndefinedAttr('angular_velocity_units', val, 'angular_velocity_representation')
+            raise CalculationUndefinedAttr(
+                'angular_velocity_units', val, 'angular_velocity_representation')
 
-        CHOICES = ['VECTOR_IN_FRAME1', 'VECTOR_IN_FRAME2', 'EULER_ANGLE_DERIVATIVES']
-        if not self.params['angular_velocity_representation'] in CHOICES:
-            raise CalculationIncompatibleAttr('angular_velocity_units', val, 'angular_velocity_representation',
-                                              self.params['angular_velocity_representation'], CHOICES)
-        
-        if val == 'Unitary' and not self.params['angular_velocity_representation'] in ['VECTOR_IN_FRAME1', 'VECTOR_IN_FRAME2']:
-            raise CalculationIncompatibleAttr('angular_velocity_units', val, 'angular_velocity_representation',
-                                              self.params['angular_velocity_representation'], ['VECTOR_IN_FRAME1', 'VECTOR_IN_FRAME2'])
+        choices = ['VECTOR_IN_FRAME1', 'VECTOR_IN_FRAME2', 'EULER_ANGLE_DERIVATIVES']
+        if not self.params['angular_velocity_representation'] in choices:
+            raise CalculationIncompatibleAttr(
+                'angular_velocity_units', val, 'angular_velocity_representation',
+                self.params['angular_velocity_representation'], choices)
+
+        if val == 'Unitary' and not self.params['angular_velocity_representation'] in \
+                ['VECTOR_IN_FRAME1', 'VECTOR_IN_FRAME2']:
+            raise CalculationIncompatibleAttr(
+                'angular_velocity_units', val, 'angular_velocity_representation',
+                self.params['angular_velocity_representation'],
+                ['VECTOR_IN_FRAME1', 'VECTOR_IN_FRAME2'])
 
     @SetterProperty
     def coordinate_representation(self, val):
@@ -1222,7 +1328,7 @@ class Calculation(object):
         ----------
         coordinate_representation: str
             One of:
-            
+
             - LATITUDINAL *(planetocentric)*
             - PLANETODETIC
             - PLANETOGRAPHIC
@@ -1231,11 +1337,13 @@ class Calculation(object):
         ------
         CalculationInvalidAttr
             If the value provided is invalid.
+
         '''
         if val in COORDINATE_REPRESENTATION:
             self.__coordinateRepresentation = val
         else:
-            raise CalculationInvalidAttr('coordinate_representation', val, COORDINATE_REPRESENTATION)
+            raise CalculationInvalidAttr(
+                'coordinate_representation', val, COORDINATE_REPRESENTATION)
 
     @SetterProperty
     def latitude(self, val):
@@ -1250,6 +1358,7 @@ class Calculation(object):
         ------
         CalculationInvalidValue
             If ``latitude`` not in [-90, +90] range.
+
         '''
         if val >= -90 and val <= 90:
             self.__latitude = val
@@ -1269,6 +1378,7 @@ class Calculation(object):
         ------
         CalculationInvalidValue
             If ``longitude`` not in [-180, +180] range.
+
         '''
         if val >= -180 and val <= 180:
             self.__longitude = val
@@ -1284,7 +1394,7 @@ class Calculation(object):
         sub_point_type: str
             The method of finding the sub-observer point, as in
             the SPICE ``subpnt()`` API call. One of:
-            
+
             - Near point: ellipsoid
             - Intercept: ellipsoid
             - NADIR/DSK/UNPRIORITIZED
@@ -1294,6 +1404,7 @@ class Calculation(object):
         ------
         CalculationInvalidAttr
             If the value provided is invalid.
+
         '''
         if val in SUB_POINT_TYPE:
             self.__subPointType = val
@@ -1310,9 +1421,11 @@ class Calculation(object):
             Type of vector to be used as the ray direction. One of:
 
             - INSTRUMENT_BORESIGHT *(the instrument boresight vector)*
-            - INSTRUMENT_FOV_BOUNDARY_VECTORS *(the instrument field-of-view boundary vectors)*
+            - INSTRUMENT_FOV_BOUNDARY_VECTORS *(the instrument field-of-view
+              boundary vectors)*
             - REFERENCE_FRAME_AXIS *(an axis of the specified reference frame)*
-            - VECTOR_IN_INSTRUMENT_FOV *(a vector in the reference frame of the specified instrument)*
+            - VECTOR_IN_INSTRUMENT_FOV *(a vector in the reference frame of the
+              specified instrument)*
             - VECTOR_IN_REFERENCE_FRAME *(a vector in the specified reference frame)*
 
         Raises
@@ -1320,36 +1433,51 @@ class Calculation(object):
         CalculationInvalidAttr
             If the value provided is invalid.
         CalculationRequiredAttr
-            If this parameter is ``INSTRUMENT_BORESIGHT``, ``INSTRUMENT_FOV_BOUNDARY_VECTORS`` or 
-            ``VECTOR_IN_INSTRUMENT_FOV`` but :py:attr:`intercept_instrument` is not provided.
+            If this parameter is ``INSTRUMENT_BORESIGHT``,
+            ``INSTRUMENT_FOV_BOUNDARY_VECTORS`` or ``VECTOR_IN_INSTRUMENT_FOV``
+            but :py:attr:`intercept_instrument` is not provided.
         CalculationRequiredAttr
             If this parameter is ``REFERENCE_FRAME_AXIS`` or ``VECTOR_IN_REFERENCE_FRAME``
             but :py:attr:`intercept_frame` is not provided.
         CalculationRequiredAttr
-            If this parameter is ``REFERENCE_FRAME_AXIS`` but :py:attr:`intercept_frame_axis` is not provided.
+            If this parameter is ``REFERENCE_FRAME_AXIS`` but
+            :py:attr:`intercept_frame_axis` is not provided.
         CalculationUndefinedAttr
-            If this parameter is ``VECTOR_IN_INSTRUMENT_FOV`` or ``VECTOR_IN_REFERENCE_FRAME`` but
-            neither :py:attr:`intercept_vector_x`, :py:attr:`intercept_vector_y` and :py:attr:`intercept_vector_z`
+            If this parameter is ``VECTOR_IN_INSTRUMENT_FOV``
+            or ``VECTOR_IN_REFERENCE_FRAME`` but neither :py:attr:`intercept_vector_x`,
+            :py:attr:`intercept_vector_y` and :py:attr:`intercept_vector_z`
             nor :py:attr:`intercept_vector_ra` and :py:attr:`intercept_vector_dec`
             are provided.
+
         '''
         if val in INTERCEPT_VECTOR_TYPE:
             self.__interceptVectorType = val
         else:
-            raise CalculationInvalidAttr('intercept_vector_type', val, INTERCEPT_VECTOR_TYPE)
+            raise CalculationInvalidAttr(
+                'intercept_vector_type', val, INTERCEPT_VECTOR_TYPE)
 
-        if val in ['INSTRUMENT_BORESIGHT', 'INSTRUMENT_FOV_BOUNDARY_VECTORS', 'VECTOR_IN_INSTRUMENT_FOV']:
-            self.required(['intercept_instrument'], self.params)
+        if val in ['INSTRUMENT_BORESIGHT', 'INSTRUMENT_FOV_BOUNDARY_VECTORS',
+                   'VECTOR_IN_INSTRUMENT_FOV']:
+            self._required(['intercept_instrument'], self.params)
+
         elif val in ['REFERENCE_FRAME_AXIS', 'VECTOR_IN_REFERENCE_FRAME']:
-            self.required(['intercept_frame'], self.params)
+            self._required(['intercept_frame'], self.params)
             if val == 'REFERENCE_FRAME_AXIS':
-                self.required(['intercept_frame_axis'], self.params)
+                self._required(['intercept_frame_axis'], self.params)
 
         keys = self.params.keys()
         if val in ['VECTOR_IN_INSTRUMENT_FOV', 'VECTOR_IN_REFERENCE_FRAME']:
-            if not('intercept_vector_x' in keys and 'intercept_vector_y' in keys and 'intercept_vector_z' in keys) and \
-               not('intercept_vector_ra' in keys and 'intercept_vector_dec' in keys):
-                    raise CalculationUndefinedAttr('intercept_vector_type', val, "intercept_vector_x/y/z' or 'intercept_vector_ra/dec")
+            if not(
+                'intercept_vector_x' in keys and  # noqa: W504
+                'intercept_vector_y' in keys and  # noqa: W504
+                'intercept_vector_z' in keys
+            ) and not(
+                'intercept_vector_ra' in keys and  # noqa: W504
+                'intercept_vector_dec' in keys
+            ):
+                raise CalculationUndefinedAttr(
+                    'intercept_vector_type', val,
+                    "intercept_vector_x/y/z' or 'intercept_vector_ra/dec")
 
     @SetterProperty
     def intercept_instrument(self, val):
@@ -1367,14 +1495,18 @@ class Calculation(object):
         CalculationIncompatibleAttr
             If :py:attr:`intercept_vector_type` not in ``INSTRUMENT_BORESIGHT``,
             ``INSTRUMENT_FOV_BOUNDARY_VECTORS`` or ``VECTOR_IN_INSTRUMENT_FOV``.
+
         '''
         if 'intercept_vector_type' not in self.params.keys():
-            raise CalculationUndefinedAttr('intercept_instrument', val, 'intercept_vector_type')
+            raise CalculationUndefinedAttr(
+                'intercept_instrument', val, 'intercept_vector_type')
 
-        CHOICES = ['INSTRUMENT_BORESIGHT', 'INSTRUMENT_FOV_BOUNDARY_VECTORS', 'VECTOR_IN_INSTRUMENT_FOV']
-        if not self.params['intercept_vector_type'] in CHOICES:
-            raise CalculationIncompatibleAttr('intercept_instrument', val, 'intercept_vector_type',
-                                              self.params['intercept_vector_type'], CHOICES)
+        choices = ['INSTRUMENT_BORESIGHT', 'INSTRUMENT_FOV_BOUNDARY_VECTORS',
+                   'VECTOR_IN_INSTRUMENT_FOV']
+        if not self.params['intercept_vector_type'] in choices:
+            raise CalculationIncompatibleAttr(
+                'intercept_instrument', val, 'intercept_vector_type',
+                self.params['intercept_vector_type'], choices)
 
         self.__interceptInstrument = val if isinstance(val, int) else val.upper()
 
@@ -1394,14 +1526,17 @@ class Calculation(object):
         CalculationIncompatibleAttr
             If :py:attr:`intercept_vector_type` is not in ``REFERENCE_FRAME_AXIS``
             or ``VECTOR_IN_REFERENCE_FRAME``.
+
         '''
         if 'intercept_vector_type' not in self.params.keys():
-            raise CalculationUndefinedAttr('intercept_frame', val, 'intercept_vector_type')
+            raise CalculationUndefinedAttr(
+                'intercept_frame', val, 'intercept_vector_type')
 
-        CHOICES = ['REFERENCE_FRAME_AXIS', 'VECTOR_IN_REFERENCE_FRAME']
-        if not self.params['intercept_vector_type'] in CHOICES:
-            raise CalculationIncompatibleAttr('intercept_frame', val, 'intercept_vector_type',
-                                              self.params['intercept_vector_type'], CHOICES)
+        choices = ['REFERENCE_FRAME_AXIS', 'VECTOR_IN_REFERENCE_FRAME']
+        if not self.params['intercept_vector_type'] in choices:
+            raise CalculationIncompatibleAttr(
+                'intercept_frame', val, 'intercept_vector_type',
+                self.params['intercept_vector_type'], choices)
 
         self.__interceptFrame = val
 
@@ -1426,13 +1561,16 @@ class Calculation(object):
             If :py:attr:`intercept_vector_type` is not ``REFERENCE_FRAME_AXIS``.
         CalculationInvalidAttr
             If the value provided is invalid.
+
         '''
         if 'intercept_vector_type' not in self.params.keys():
-            raise CalculationUndefinedAttr('intercept_frame_axis', val, 'intercept_vector_type')
+            raise CalculationUndefinedAttr(
+                'intercept_frame_axis', val, 'intercept_vector_type')
 
         if self.params['intercept_vector_type'] != 'REFERENCE_FRAME_AXIS':
-            raise CalculationIncompatibleAttr('intercept_frame_axis', val, 'intercept_vector_type',
-                                              self.params['intercept_vector_type'], ['REFERENCE_FRAME_AXIS'])
+            raise CalculationIncompatibleAttr(
+                'intercept_frame_axis', val, 'intercept_vector_type',
+                self.params['intercept_vector_type'], ['REFERENCE_FRAME_AXIS'])
 
         if val in AXIS:
             self.__interceptFrameAxis = val
@@ -1456,14 +1594,17 @@ class Calculation(object):
         CalculationIncompatibleAttr
             If :py:attr:`intercept_vector_type` is not in ``VECTOR_IN_INSTRUMENT_FOV``
             or ``VECTOR_IN_REFERENCE_FRAME``.
+
         '''
         if 'intercept_vector_type' not in self.params.keys():
-            raise CalculationUndefinedAttr('intercept_vector_' + axis, val, 'intercept_vector_type')
+            raise CalculationUndefinedAttr(
+                'intercept_vector_' + axis, val, 'intercept_vector_type')
 
-        CHOICES = ['VECTOR_IN_INSTRUMENT_FOV', 'VECTOR_IN_REFERENCE_FRAME']
-        if not self.params['intercept_vector_type'] in CHOICES:
-            raise CalculationIncompatibleAttr('intercept_vector_' + axis, val, 'intercept_vector_type',
-                                              self.params['intercept_vector_type'], CHOICES)        
+        choices = ['VECTOR_IN_INSTRUMENT_FOV', 'VECTOR_IN_REFERENCE_FRAME']
+        if not self.params['intercept_vector_type'] in choices:
+            raise CalculationIncompatibleAttr(
+                'intercept_vector_' + axis, val, 'intercept_vector_type',
+                self.params['intercept_vector_type'], choices)
         return val
 
     @SetterProperty
@@ -1474,6 +1615,7 @@ class Calculation(object):
         ----------
         intercept_vector_x: float
             Intercept x-coordinate. See :py:func:`intercept_vector`.
+
         '''
         self.__interceptVectorX = self.intercept_vector('x', val)
 
@@ -1485,6 +1627,7 @@ class Calculation(object):
         ----------
         intercept_vector_y: float
             Intercept y-coordinate. See :py:func:`intercept_vector`.
+
         '''
         self.__interceptVectorY = self.intercept_vector('y', val)
 
@@ -1496,6 +1639,7 @@ class Calculation(object):
         ----------
         intercept_vector_z: float
             Intercept z-coordinate. See :py:func:`intercept_vector`.
+
         '''
         self.__interceptVectorZ = self.intercept_vector('z', val)
 
@@ -1507,6 +1651,7 @@ class Calculation(object):
         ----------
         intercept_vector_ra: float
             Intercept RA-coordinate. See :py:func:`intercept_vector`.
+
         '''
         self.__interceptVectorRA = self.intercept_vector('ra', val)
 
@@ -1518,14 +1663,17 @@ class Calculation(object):
         ----------
         intercept_vector_dec: float
             Intercept DEC-coordinate. See :py:func:`intercept_vector`.
+
         '''
         self.__interceptVectorDec = self.intercept_vector('dec', val)
 
 
-
 class StateVector(Calculation):
-    '''Calculates the position of one body relative to another, calculated in a desired reference frame.
-    
+    '''State vector calculation.
+
+    Calculates the position of one body relative to another,
+    calculated in a desired reference frame.
+
     Parameters
     ----------
     aberration_correction: str, optional
@@ -1541,7 +1689,7 @@ class StateVector(Calculation):
         See: :py:attr:`.kernel_paths`
     times: str or [str]
         See: :py:attr:`.times`
-    intervals: [str, str] or [[str, str], ...] or {'startTime': str, 'endTime': str} or [{'startTime': str, 'endTime': str}, ...]
+    intervals: [str, str] or {'startTime': str, 'endTime': str} or [interval, ...]
         See: :py:attr:`.intervals`
     time_step: int
         See: :py:attr:`.time_step`
@@ -1561,13 +1709,16 @@ class StateVector(Calculation):
     Raises
     ------
     CalculationRequiredAttr
-        If :py:attr:`.target`, :py:attr:`.observer` and :py:attr:`.reference_frame` are not provided.
+        If :py:attr:`.target`, :py:attr:`.observer` and
+        :py:attr:`.reference_frame` are not provided.
+
     '''
 
-    def __init__(self, aberration_correction='CN', state_representation='RECTANGULAR', **kwargs):
+    def __init__(self, aberration_correction='CN',
+                 state_representation='RECTANGULAR', **kwargs):
 
-        self.required(['target', 'observer', 'reference_frame'], kwargs)
-        
+        self._required(['target', 'observer', 'reference_frame'], kwargs)
+
         kwargs['calculation_type'] = 'STATE_VECTOR'
         kwargs['aberration_correction'] = aberration_correction
         kwargs['state_representation'] = state_representation
@@ -1575,8 +1726,10 @@ class StateVector(Calculation):
         super().__init__(**kwargs)
 
 class AngularSeparation(Calculation):
-    '''Calculates the angular separation of two bodies as seen by an observer body.
-    
+    '''Angular separation calculation.
+
+    Calculates the angular separation of two bodies as seen by an observer body.
+
     Parameters
     ----------
     shape_1: str, optional
@@ -1594,7 +1747,7 @@ class AngularSeparation(Calculation):
         See: :py:attr:`.kernel_paths`
     times: str or [str]
         See: :py:attr:`.times`
-    intervals: [str, str] or [[str, str], ...] or {'startTime': str, 'endTime': str} or [{'startTime': str, 'endTime': str}, ...]
+    intervals: [str, str] or {'startTime': str, 'endTime': str} or [interval, ...]
         See: :py:attr:`.intervals`
     time_step: int
         See: :py:attr:`.time_step`
@@ -1614,13 +1767,16 @@ class AngularSeparation(Calculation):
     Raises
     ------
     CalculationRequiredAttr
-        If :py:attr:`.target_1`, :py:attr:`.target_2` and :py:attr:`.observer` are not provided.
+        If :py:attr:`.target_1`, :py:attr:`.target_2` and
+        :py:attr:`.observer` are not provided.
+
     '''
 
-    def __init__(self, shape_1='POINT', shape_2='POINT', aberration_correction='CN', **kwargs):
+    def __init__(self, shape_1='POINT', shape_2='POINT',
+                 aberration_correction='CN', **kwargs):
 
-        self.required(['target_1', 'target_2', 'observer'], kwargs)
-        
+        self._required(['target_1', 'target_2', 'observer'], kwargs)
+
         kwargs['calculation_type'] = 'ANGULAR_SEPARATION'
         kwargs['shape_1'] = shape_1
         kwargs['shape_2'] = shape_2
@@ -1629,8 +1785,10 @@ class AngularSeparation(Calculation):
         super().__init__(**kwargs)
 
 class AngularSize(Calculation):
-    '''Calculates the angular size of a target as seen by an observer.
-    
+    '''Angular size calculation.
+
+    Calculates the angular size of a target as seen by an observer.
+
     Parameters
     ----------
     aberration_correction: str, optional
@@ -1644,7 +1802,7 @@ class AngularSize(Calculation):
         See: :py:attr:`.kernel_paths`
     times: str or [str]
         See: :py:attr:`.times`
-    intervals: [str, str] or [[str, str], ...] or {'startTime': str, 'endTime': str} or [{'startTime': str, 'endTime': str}, ...]
+    intervals: [str, str] or {'startTime': str, 'endTime': str} or [interval, ...]
         See: :py:attr:`.intervals`
     time_step: int
         See: :py:attr:`.time_step`
@@ -1663,12 +1821,13 @@ class AngularSize(Calculation):
     ------
     CalculationRequiredAttr
         If :py:attr:`.target` and :py:attr:`.observer` are not provided.
+
     '''
 
     def __init__(self, aberration_correction='CN', **kwargs):
 
-        self.required(['target', 'observer'], kwargs)
-        
+        self._required(['target', 'observer'], kwargs)
+
         kwargs['calculation_type'] = 'ANGULAR_SIZE'
         kwargs['aberration_correction'] = aberration_correction
 
@@ -1676,8 +1835,11 @@ class AngularSize(Calculation):
 
 
 class FrameTransformation(Calculation):
-    '''Calculate the transformation from one reference frame (Frame 1) to another reference frame (Frame 2).
-    
+    '''Frame transforme calculation.
+
+    Calculate the transformation from one reference frame (Frame 1)
+    to another reference frame (Frame 2).
+
     Parameters
     ----------
     aberration_correction: str, optional
@@ -1707,8 +1869,9 @@ class FrameTransformation(Calculation):
         Attributes :py:attr:`.axis_1`, :py:attr:`.axis_2` and :py:attr:`.axis_3`
         are imported only if :py:attr:`.orientation_representation` is ``EULER_ANGLES``.
 
-        Attribute :py:attr:`.angular_units` is imported only if 
-        :py:attr:`.orientation_representation` is ``EULER_ANGLES`` or ``ANGLE_AND_AXIS``.
+        Attribute :py:attr:`.angular_units` is imported only
+        if :py:attr:`.orientation_representation` is ``EULER_ANGLES``
+        or ``ANGLE_AND_AXIS``.
 
         Attribute :py:attr:`.angular_velocity_units` is imported only if
         :py:attr:`.angular_velocity_representation` is ``VECTOR_IN_FRAME1``,
@@ -1722,7 +1885,7 @@ class FrameTransformation(Calculation):
         See: :py:attr:`.kernel_paths`
     times: str or [str]
         See: :py:attr:`.times`
-    intervals: [str, str] or [[str, str], ...] or {'startTime': str, 'endTime': str} or [{'startTime': str, 'endTime': str}, ...]
+    intervals: [str, str] or {'startTime': str, 'endTime': str} or [interval, ...]
         See: :py:attr:`.intervals`
     time_step: int
         See: :py:attr:`.time_step`
@@ -1742,7 +1905,9 @@ class FrameTransformation(Calculation):
     CalculationRequiredAttr
         If :py:attr:`.frame_1` and :py:attr:`.frame_2` are not provided.
     CalculationInvalidAttr
-        If :py:attr:`.aberration_correction` is in ``LT+S``, ``CN+S``, ``XLT+S`` or ``XCN+S``.
+        If :py:attr:`.aberration_correction` is in ``LT+S``, ``CN+S``,
+        ``XLT+S`` or ``XCN+S``.
+
     '''
 
     def __init__(self, aberration_correction='CN', time_location='FRAME1',
@@ -1753,11 +1918,15 @@ class FrameTransformation(Calculation):
                  angular_velocity_units='deg/s',
                  **kwargs):
 
-        self.required(['frame_1', 'frame_2'], kwargs)
+        self._required(['frame_1', 'frame_2'], kwargs)
 
-        ABERRATION_CORRECTION_ALLOWED = list(filter(lambda x: '+S' not in x, ABERRATION_CORRECTION))
-        if aberration_correction not in ABERRATION_CORRECTION_ALLOWED:
-            raise CalculationInvalidAttr('aberration_correction', aberration_correction, ABERRATION_CORRECTION_ALLOWED)
+        aberration_correction_allowed = list(filter(
+            lambda x: '+S' not in x, ABERRATION_CORRECTION))
+
+        if aberration_correction not in aberration_correction_allowed:
+            raise CalculationInvalidAttr(
+                'aberration_correction', aberration_correction,
+                aberration_correction_allowed)
 
         kwargs['calculation_type'] = 'FRAME_TRANSFORMATION'
         kwargs['aberration_correction'] = aberration_correction
@@ -1773,15 +1942,19 @@ class FrameTransformation(Calculation):
         if orientation_representation in ['EULER_ANGLES', 'ANGLE_AND_AXIS']:
             kwargs['angular_units'] = angular_units
 
-        if angular_velocity_representation in ['VECTOR_IN_FRAME1', 'VECTOR_IN_FRAME2', 'EULER_ANGLE_DERIVATIVES']:
+        if angular_velocity_representation in ['VECTOR_IN_FRAME1', 'VECTOR_IN_FRAME2',
+                                               'EULER_ANGLE_DERIVATIVES']:
             kwargs['angular_velocity_units'] = angular_velocity_units
 
         super().__init__(**kwargs)
 
 
 class IlluminationAngles(Calculation):
-    '''Calculate the emission, phase and solar incidence angles at a point on a target as seen from an observer.
-    
+    '''Illumination angles calculation.
+
+    Calculate the emission, phase and solar incidence angles
+    at a point on a target as seen from an observer.
+
     Parameters
     ----------
     shape_1: str, optional
@@ -1799,7 +1972,7 @@ class IlluminationAngles(Calculation):
         See: :py:attr:`.kernel_paths`
     times: str or [str]
         See: :py:attr:`.times`
-    intervals: [str, str] or [[str, str], ...] or {'startTime': str, 'endTime': str} or [{'startTime': str, 'endTime': str}, ...]
+    intervals: [str, str] or {'startTime': str, 'endTime': str} or [interval, ...]
         See: :py:attr:`.intervals`
     time_step: int
         See: :py:attr:`.time_step`
@@ -1827,11 +2000,14 @@ class IlluminationAngles(Calculation):
         :py:attr:`.latitude` and :py:attr:`.longitude` are not provided.
     CalculationInvalidAttr
         If :py:attr:`.shape_1` is not ``ELLIPSOID`` or ``DSK``.
+
     '''
 
-    def __init__(self, shape_1='ELLIPSOID', coordinate_representation='LATITUDINAL', aberration_correction='CN', **kwargs):
+    def __init__(self, shape_1='ELLIPSOID', coordinate_representation='LATITUDINAL',
+                 aberration_correction='CN', **kwargs):
 
-        self.required(['target', 'target_frame', 'observer', 'latitude', 'longitude'], kwargs)
+        self._required(['target', 'target_frame', 'observer',
+                       'latitude', 'longitude'], kwargs)
 
         kwargs['calculation_type'] = 'ILLUMINATION_ANGLES'
         kwargs['coordinate_representation'] = coordinate_representation
@@ -1846,8 +2022,10 @@ class IlluminationAngles(Calculation):
 
 
 class SubSolarPoint(Calculation):
-    '''Calculates the sub-solar point on a target as seen from an observer.
-    
+    '''Sub-solar point calculation.
+
+    Calculates the sub-solar point on a target as seen from an observer.
+
     Parameters
     ----------
     sub_point_type: str, optional
@@ -1870,7 +2048,7 @@ class SubSolarPoint(Calculation):
         See: :py:attr:`.kernel_paths`
     times: str or [str]
         See: :py:attr:`.times`
-    intervals: [str, str] or [[str, str], ...] or {'startTime': str, 'endTime': str} or [{'startTime': str, 'endTime': str}, ...]
+    intervals: [str, str] or {'startTime': str, 'endTime': str} or [interval, ...]
         See: :py:attr:`.intervals`
     time_step: int
         See: :py:attr:`.time_step`
@@ -1890,18 +2068,26 @@ class SubSolarPoint(Calculation):
     Raises
     ------
     CalculationRequiredAttr
-        If :py:attr:`.target`, :py:attr:`.target_frame` and :py:attr:`.observer` are not provided.
+        If :py:attr:`.target`, :py:attr:`.target_frame` and :py:attr:`.observer`
+        are not provided.
     CalculationInvalidAttr
-        If :py:attr:`.aberration_correction` is in ``XLT``, ``XLT+S``, ``XCN+S`` or ``XCN+S``.
+        If :py:attr:`.aberration_correction` is in ``XLT``, ``XLT+S``,
+        ``XCN+S`` or ``XCN+S``.
+
     '''
 
-    def __init__(self, sub_point_type='Near point: ellipsoid', aberration_correction='CN', state_representation='RECTANGULAR', **kwargs):
+    def __init__(self, sub_point_type='Near point: ellipsoid', aberration_correction='CN',
+                 state_representation='RECTANGULAR', **kwargs):
 
-        self.required(['target', 'target_frame', 'observer'], kwargs)
+        self._required(['target', 'target_frame', 'observer'], kwargs)
 
-        ABERRATION_CORRECTION_ALLOWED = list(filter(lambda x: 'X' not in x, ABERRATION_CORRECTION))
-        if aberration_correction not in ABERRATION_CORRECTION_ALLOWED:
-            raise CalculationInvalidAttr('aberration_correction', aberration_correction, ABERRATION_CORRECTION_ALLOWED)
+        aberration_correction_allowed = list(filter(
+            lambda x: 'X' not in x, ABERRATION_CORRECTION))
+
+        if aberration_correction not in aberration_correction_allowed:
+            raise CalculationInvalidAttr(
+                'aberration_correction', aberration_correction,
+                aberration_correction_allowed)
 
         kwargs['calculation_type'] = 'SUB_SOLAR_POINT'
         kwargs['sub_point_type'] = sub_point_type
@@ -1911,8 +2097,10 @@ class SubSolarPoint(Calculation):
         super().__init__(**kwargs)
 
 class SubObserverPoint(Calculation):
-    '''Calculate the sub-observer point on a target as seen from an observer.
-    
+    '''Sub-observer point calculation.
+
+    Calculate the sub-observer point on a target as seen from an observer.
+
     Parameters
     ----------
     sub_point_type: str, optional
@@ -1930,7 +2118,7 @@ class SubObserverPoint(Calculation):
         See: :py:attr:`.kernel_paths`
     times: str or [str]
         See: :py:attr:`.times`
-    intervals: [str, str] or [[str, str], ...] or {'startTime': str, 'endTime': str} or [{'startTime': str, 'endTime': str}, ...]
+    intervals: [str, str] or {'startTime': str, 'endTime': str} or [interval, ...]
         See: :py:attr:`.intervals`
     time_step: int
         See: :py:attr:`.time_step`
@@ -1950,12 +2138,15 @@ class SubObserverPoint(Calculation):
     Raises
     ------
     CalculationRequiredAttr
-        If :py:attr:`.target`, :py:attr:`.target_frame` and :py:attr:`.observer` are not provided.
+        If :py:attr:`.target`, :py:attr:`.target_frame`
+        and :py:attr:`.observer` are not provided.
+
     '''
 
-    def __init__(self, sub_point_type='Near point: ellipsoid', aberration_correction='CN', state_representation='RECTANGULAR', **kwargs):
+    def __init__(self, sub_point_type='Near point: ellipsoid', aberration_correction='CN',
+                 state_representation='RECTANGULAR', **kwargs):
 
-        self.required(['target', 'target_frame', 'observer'], kwargs)
+        self._required(['target', 'target_frame', 'observer'], kwargs)
 
         kwargs['calculation_type'] = 'SUB_OBSERVER_POINT'
         kwargs['sub_point_type'] = sub_point_type
@@ -1966,8 +2157,11 @@ class SubObserverPoint(Calculation):
 
 
 class SurfaceInterceptPoint(Calculation):
-    '''Calculate the intercept point of a vector or vectors on a target as seen from an observer.
-    
+    '''Surface intercept point calculation.
+
+    Calculate the intercept point of a vector or vectors
+    on a target as seen from an observer.
+
     Parameters
     ----------
     shape_1: str, optional
@@ -1987,7 +2181,7 @@ class SurfaceInterceptPoint(Calculation):
         See: :py:attr:`.kernel_paths`
     times: str or [str]
         See: :py:attr:`.times`
-    intervals: [str, str] or [[str, str], ...] or {'startTime': str, 'endTime': str} or [{'startTime': str, 'endTime': str}, ...]
+    intervals: [str, str] or {'startTime': str, 'endTime': str} or [interval, ...]
         See: :py:attr:`.intervals`
     time_step: int
         See: :py:attr:`.time_step`
@@ -2039,15 +2233,18 @@ class SurfaceInterceptPoint(Calculation):
     Raises
     ------
     CalculationRequiredAttr
-        If :py:attr:`.target`, :py:attr:`.target_frame` and :py:attr:`.observer` are not provided.
+        If :py:attr:`.target`, :py:attr:`.target_frame`
+        and :py:attr:`.observer` are not provided.
     CalculationInvalidAttr
         If :py:attr:`.shape_1` is not ``ELLIPSOID`` or ``DSK``.
+
     '''
 
-    def __init__(self, shape_1='ELLIPSOID', intercept_vector_type='INSTRUMENT_BORESIGHT', \
-                 aberration_correction='CN', state_representation='RECTANGULAR', **kwargs):
+    def __init__(self, shape_1='ELLIPSOID', intercept_vector_type='INSTRUMENT_BORESIGHT',
+                 aberration_correction='CN', state_representation='RECTANGULAR',
+                 **kwargs):
 
-        self.required(['target', 'target_frame', 'observer'], kwargs)
+        self._required(['target', 'target_frame', 'observer'], kwargs)
 
         kwargs['calculation_type'] = 'SURFACE_INTERCEPT_POINT'
         kwargs['intercept_vector_type'] = intercept_vector_type
@@ -2062,9 +2259,12 @@ class SurfaceInterceptPoint(Calculation):
         super().__init__(**kwargs)
 
 class OsculatingElements(Calculation):
-    '''Calculate the osculating elements of the orbit of a target body around a central body.
+    '''Osculating elements calculation.
+
+    Calculate the osculating elements of the orbit of a target body around a central body.
+
     The orbit may be elliptical, parabolic, or hyperbolic.
-    
+
     Parameters
     ----------
     reference_frame: str, optional
@@ -2078,7 +2278,7 @@ class OsculatingElements(Calculation):
         See: :py:attr:`.kernel_paths`
     times: str or [str]
         See: :py:attr:`.times`
-    intervals: [str, str] or [[str, str], ...] or {'startTime': str, 'endTime': str} or [{'startTime': str, 'endTime': str}, ...]
+    intervals: [str, str] or {'startTime': str, 'endTime': str} or [interval, ...]
         See: :py:attr:`.intervals`
     time_step: int
         See: :py:attr:`.time_step`
@@ -2097,20 +2297,23 @@ class OsculatingElements(Calculation):
     ------
     CalculationRequiredAttr
         If :py:attr:`.orbiting_body` and :py:attr:`.center_body` are not provided.
+
     '''
 
     def __init__(self, reference_frame='J2000', **kwargs):
 
-        self.required(['orbiting_body', 'center_body'], kwargs)
-        
+        self._required(['orbiting_body', 'center_body'], kwargs)
+
         kwargs['calculation_type'] = 'OSCULATING_ELEMENTS'
         kwargs['reference_frame'] = reference_frame
 
         super().__init__(**kwargs)
 
 class TimeConversion(Calculation):
-    '''Convert times from one time system or format to another.
-    
+    '''Time conversion calculation.
+
+    Convert times from one time system or format to another.
+
     Parameters
     ----------
     output_time_system: str, optional
@@ -2126,7 +2329,7 @@ class TimeConversion(Calculation):
         See: :py:attr:`.kernel_paths`
     times: str or [str]
         See: :py:attr:`.times`
-    intervals: [str, str] or [[str, str], ...] or {'startTime': str, 'endTime': str} or [{'startTime': str, 'endTime': str}, ...]
+    intervals: [str, str] or {'startTime': str, 'endTime': str} or [interval, ...]
         See: :py:attr:`.intervals`
     time_step: int
         See: :py:attr:`.time_step`
@@ -2145,16 +2348,16 @@ class TimeConversion(Calculation):
         --------
         Attributes :py:attr:`.output_sclk_id` is needed only if
         :py:attr:`output_time_system` is ``SPACECRAFT_CLOCK``.
-        
+
         Attributes :py:attr:`.output_time_custom_format` is needed only if
         :py:attr:`output_time_format` is ``CUSTOM``.
+
     '''
 
     def __init__(self, output_time_system='UTC', output_time_format='CALENDAR', **kwargs):
-     
+
         kwargs['calculation_type'] = 'TIME_CONVERSION'
         kwargs['output_time_system'] = output_time_system
         kwargs['output_time_format'] = output_time_format
 
         super().__init__(**kwargs)
-

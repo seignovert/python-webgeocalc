@@ -1,82 +1,101 @@
 # -*- coding: utf-8 -*-
+'''Test WGC surface intercpt point calculation.'''
+
 import pytest
-import requests_mock
 
 from webgeocalc import SurfaceInterceptPoint
 from webgeocalc.errors import CalculationInvalidAttr, CalculationUndefinedAttr
 
 @pytest.fixture
 def kernels():
-    return 5 # Cassini-Huygens
+    '''Cassini kernel set.'''
+    return 5
 
 @pytest.fixture
 def time():
+    '''Input time.'''
     return '2012-10-19T08:24:00.000'
 
 @pytest.fixture
 def target():
+    '''Input target.'''
     return 'ENCELADUS'
 
 @pytest.fixture
 def target_frame():
+    '''Input target frame.'''
     return 'IAU_ENCELADUS'
 
 @pytest.fixture
 def observer():
+    '''Input observer.'''
     return 'CASSINI'
 
 @pytest.fixture
-def intercept_vector_type():
+def intercept_vector_type_1():
+    '''Input intercept vector type 1.'''
     return 'INSTRUMENT_BORESIGHT'
 
 @pytest.fixture
 def intercept_vector_type_2():
+    '''Input intercept vector type 2.'''
     return 'REFERENCE_FRAME_AXIS'
 
 @pytest.fixture
 def intercept_vector_type_3():
+    '''Input intercept vector type 3.'''
     return 'VECTOR_IN_INSTRUMENT_FOV'
 
 @pytest.fixture
 def intercept_vector_type_4():
+    '''Input intercept vector type 4.'''
     return 'VECTOR_IN_REFERENCE_FRAME'
 
 @pytest.fixture
 def intercept_instrument():
+    '''Input intercept instrument.'''
     return 'CASSINI_ISS_NAC'
 
 @pytest.fixture
 def intercept_frame():
+    '''Input intercept frame.'''
     return 'CASSINI_ISS_NAC'
 
 @pytest.fixture
 def intercept_frame_axis():
+    '''Input intercept axis.'''
     return 'Z'
 
 @pytest.fixture
 def corr():
+    '''Input aberration correction.'''
     return 'NONE'
 
 @pytest.fixture
 def state():
+    '''Input state.'''
     return 'LATITUDINAL'
 
 @pytest.fixture
-def params(kernels, time, target, target_frame, observer, intercept_vector_type, intercept_instrument, corr, state):
+def params_1(kernels, time, target, target_frame, observer, intercept_vector_type_1,
+             intercept_instrument, corr, state):
+    '''Input parameters from WGC API example 1.'''
     return {
         'kernels': kernels,
         'times': time,
         'target': target,
         'target_frame': target_frame,
         'observer': observer,
-        'intercept_vector_type': intercept_vector_type,
+        'intercept_vector_type': intercept_vector_type_1,
         'intercept_instrument': intercept_instrument,
         'aberration_correction': corr,
         'state_representation': state,
     }
 
 @pytest.fixture
-def payload(kernels, time, target, target_frame, observer, intercept_vector_type, intercept_instrument, corr, state):
+def payload_1(kernels, time, target, target_frame, observer, intercept_vector_type_1,
+              intercept_instrument, corr, state):
+    '''Payload from WGC API example 1.'''
     return {
         "kernels": [{
             "type": "KERNEL_SET",
@@ -92,14 +111,16 @@ def payload(kernels, time, target, target_frame, observer, intercept_vector_type
         "shape1": "ELLIPSOID",
         "targetFrame": target_frame,
         "observer": observer,
-        "interceptVectorType": intercept_vector_type,
+        "interceptVectorType": intercept_vector_type_1,
         "interceptInstrument": intercept_instrument,
         "aberrationCorrection": corr,
         "stateRepresentation": state,
     }
 
 @pytest.fixture
-def params_2(kernels, time, target, target_frame, observer, intercept_vector_type_2, intercept_frame, intercept_frame_axis, corr):
+def params_2(kernels, time, target, target_frame, observer, intercept_vector_type_2,
+             intercept_frame, intercept_frame_axis, corr):
+    '''Input parameters from WGC API example 2.'''
     return {
         'kernels': kernels,
         'times': time,
@@ -113,7 +134,9 @@ def params_2(kernels, time, target, target_frame, observer, intercept_vector_typ
     }
 
 @pytest.fixture
-def payload_2(kernels, time, target, target_frame, observer, intercept_vector_type_2, intercept_frame, intercept_frame_axis, corr):
+def payload_2(kernels, time, target, target_frame, observer, intercept_vector_type_2,
+              intercept_frame, intercept_frame_axis, corr):
+    '''Payload from WGC API example 2.'''
     return {
         "kernels": [{
             "type": "KERNEL_SET",
@@ -137,7 +160,9 @@ def payload_2(kernels, time, target, target_frame, observer, intercept_vector_ty
     }
 
 @pytest.fixture
-def params_3(kernels, time, target, target_frame, observer, intercept_vector_type_3, intercept_instrument, corr):
+def params_3(kernels, time, target, target_frame, observer, intercept_vector_type_3,
+             intercept_instrument, corr):
+    '''Input parameters from WGC API example 3.'''
     return {
         'kernels': kernels,
         'times': time,
@@ -153,7 +178,9 @@ def params_3(kernels, time, target, target_frame, observer, intercept_vector_typ
     }
 
 @pytest.fixture
-def payload_3(kernels, time, target, target_frame, observer, intercept_vector_type_3, intercept_instrument, corr):
+def payload_3(kernels, time, target, target_frame, observer, intercept_vector_type_3,
+              intercept_instrument, corr):
+    '''Payload from WGC API example 3.'''
     return {
         "kernels": [{
             "type": "KERNEL_SET",
@@ -179,7 +206,9 @@ def payload_3(kernels, time, target, target_frame, observer, intercept_vector_ty
     }
 
 @pytest.fixture
-def params_4(kernels, time, target, target_frame, observer, intercept_vector_type_4, intercept_frame, corr):
+def params_4(kernels, time, target, target_frame, observer, intercept_vector_type_4,
+             intercept_frame, corr):
+    '''Input parameters from WGC API example 4.'''
     return {
         'kernels': kernels,
         'times': time,
@@ -194,7 +223,9 @@ def params_4(kernels, time, target, target_frame, observer, intercept_vector_typ
     }
 
 @pytest.fixture
-def payload_4(kernels, time, target, target_frame, observer, intercept_vector_type_4, intercept_frame, corr):
+def payload_4(kernels, time, target, target_frame, observer, intercept_vector_type_4,
+              intercept_frame, corr):
+    '''Payload from WGC API example 4.'''
     return {
         "kernels": [{
             "type": "KERNEL_SET",
@@ -219,24 +250,30 @@ def payload_4(kernels, time, target, target_frame, observer, intercept_vector_ty
     }
 
 
-def test_surface_intercept_point_payload_boresight(params, payload):
-    assert SurfaceInterceptPoint(**params).payload == payload
+def test_surface_intercept_point_payload_boresight(params_1, payload_1):
+    '''Test surface intercept point payload with INSTRUMENT_BORESIGHT.'''
+    assert SurfaceInterceptPoint(**params_1).payload == payload_1
 
 def test_surface_intercept_point_payload_reference_frame_axis(params_2, payload_2):
+    '''Test surface intercept point payload with REFERENCE_FRAME_AXIS.'''
     assert SurfaceInterceptPoint(**params_2).payload == payload_2
 
 def test_surface_intercept_point_payload_vector_in_instrument_fov(params_3, payload_3):
+    '''Test surface intercept point payload with VECTOR_IN_INSTRUMENT_FOV.'''
     assert SurfaceInterceptPoint(**params_3).payload == payload_3
 
-
 def test_surface_intercept_point_payload_vector_in_reference_frame(params_4, payload_4):
+    '''Test surface intercept point payload with VECTOR_IN_REFERENCE_FRAME.'''
     assert SurfaceInterceptPoint(**params_4).payload == payload_4
 
-def test_surface_intercept_point_attr_error(params, payload):
+def test_surface_intercept_point_attr_error(params_1):
+    '''Test errors when surface intercept point attributes is invalid.'''
     with pytest.raises(CalculationInvalidAttr):
-        SurfaceInterceptPoint(shape_1='POINT', **params)
+        SurfaceInterceptPoint(shape_1='POINT', **params_1)
 
-def test_surface_intercept_point_payload_vector_in_instrument_fov_err(params_3, payload_3):
+def test_surface_intercept_point_payload_vector_in_instrument_fov_err(params_3):
+    '''Test errors when VECTOR_IN_INSTRUMENT_FOV is invalid.'''
     del params_3['intercept_vector_x']
     with pytest.raises(CalculationUndefinedAttr):
-        SurfaceInterceptPoint(**params_3)  # Missing 'intercept_vector_x'
+        # Missing 'intercept_vector_x'
+        SurfaceInterceptPoint(**params_3)

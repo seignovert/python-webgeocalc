@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+'''Packaging Webgeocalc.'''
 
 # This will try to import setuptools. If not here, it fails with a message
 try:
