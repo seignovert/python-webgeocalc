@@ -29,6 +29,8 @@ Python package for NAIF WebGeoCalc API
         :target: https://pypi.org/project/webgeocalc
 .. |Status| image:: https://img.shields.io/pypi/status/webgeocalc.svg?label=Status
         :target: https://pypi.org/project/webgeocalc
+.. |DOI| image:: https://zenodo.org/badge/xxxxxxxx.svg
+        :target: https://zenodo.org/badge/latestdoi/xxxxxxxx
 .. |License| image:: https://img.shields.io/github/license/seignovert/test-python-docs.svg?label=License
              :target: https://github.com/seignovert/test-python-docs/
 .. |Examples| image:: https://img.shields.io/badge/Jupyter%20Notebook-examples-blue.svg?logo=jupyter&logoColor=orange
