@@ -12,8 +12,6 @@ install:
   - pip install tox-travis
 script:
   - tox
-after_success:
-  - test $JOB = "tests" && pip install python-coveralls && coveralls
 
 deploy:
   - provider: pypi

@@ -3,32 +3,34 @@ Python package for NAIF WebGeoCalc API
 
 |Docs| |Build| |Coverage|
 
-|PyPI| |Python| |Version| |Status| |License|
+|Python| |PyPI|
+
+|Version| |Status| |License|
 
 |Examples|
 
 .. |Docs| image:: https://img.shields.io/readthedocs/webgeocalc.svg?label=Docs&logo=read-the-docs&logoColor=white
         :target: https://webgeocalc.readthedocs.io/
-.. |Build| image:: https://img.shields.io/travis/seignovert/python-webgeocalc.svg?label=CI&logo=travis-ci&logoColor=white
+.. |Build| image:: https://img.shields.io/travis/seignovert/python-webgeocalc.svg?label=Build&logo=travis-ci&logoColor=white
         :target: https://travis-ci.org/seignovert/python-webgeocalc
-.. |Coverage| image:: https://img.shields.io/coveralls/github/seignovert/python-webgeocalc.svg?label=Coverage
-        :target: https://coveralls.io/github/seignovert/python-webgeocalc?branch=master
-.. |PyPI| image:: https://img.shields.io/badge/PyPI-webgeocalc-blue.svg?logo=python&logoColor=white
-        :target: https://pypi.org/project/webgeocalc
+.. |Coverage| image:: https://img.shields.io/codecov/c/github/seignovert/python-webgeocalc.svg?label=Codecov&logo=codecov&logoColor=white
+              :target: https://codecov.io/gh/seignovert/python-webgeocalc
 .. |Python| image:: https://img.shields.io/pypi/pyversions/webgeocalc.svg?label=Python
+        :target: https://pypi.org/project/webgeocalc
+.. |PyPI| image:: https://img.shields.io/badge/PyPI-webgeocalc-blue.svg?logo=python&logoColor=white
         :target: https://pypi.org/project/webgeocalc
 .. |Version| image:: https://img.shields.io/pypi/v/webgeocalc.svg?label=Version
         :target: https://pypi.org/project/webgeocalc
 .. |Status| image:: https://img.shields.io/pypi/status/webgeocalc.svg?label=Status
         :target: https://pypi.org/project/webgeocalc
-.. |License| image:: https://img.shields.io/pypi/l/webgeocalc.svg?label=License
-        :target: https://pypi.org/project/webgeocalc
+.. |License| image:: https://img.shields.io/github/license/seignovert/test-python-docs.svg?label=License
+             :target: https://github.com/seignovert/test-python-docs/
 .. |Examples| image:: https://img.shields.io/badge/Jupyter%20Notebook-examples-blue.svg?logo=jupyter&logoColor=orange
         :target: https://nbviewer.jupyter.org/github/seignovert/python-webgeocalc/blob/master/examples/api.ipynb
 
 
 In december 2018, `JPL/NAIF`_ announced an **experimental**
-`API RESTful interface`_ for their new `WebGeocalc server`_
+`API RESTful interface`_ for their new `WebGeoCalc server`_
 (which make online SPICE calculations).
 Documentation_ and `JavaScript examples`_ are already available.
 
@@ -37,7 +39,7 @@ make SPICE calculation through this API.
 
 .. _`JPL/NAIF`: https://naif.jpl.nasa.gov/naif/webgeocalc.html
 .. _`API RESTful interface`: https://naif.jpl.nasa.gov/naif/WebGeocalc_announcement.pdf
-.. _`WebGeocalc server`: https://wgc2.jpl.nasa.gov:8443/webgeocalc
+.. _`WebGeoCalc server`: https://wgc2.jpl.nasa.gov:8443/webgeocalc
 .. _Documentation: https://wgc2.jpl.nasa.gov:8443/webgeocalc/documents/api-info.html
 .. _`JavaScript examples`: https://wgc2.jpl.nasa.gov:8443/webgeocalc/example/perform-calculation.html
 
@@ -48,7 +50,7 @@ Note the user
     If you need to make intensive queries, use `Spiceypy`_ or `SpiceMiner`_
     package with locally hosted kernels.
 
-.. _`WebGeocalc`: https://wgc.jpl.nasa.gov:8443/webgeocalc
+.. _`WebGeoCalc`: https://wgc.jpl.nasa.gov:8443/webgeocalc
 .. _`Spiceypy`: https://github.com/AndrewAnnex/Spiceypy
 .. _`SpiceMiner`: https://github.com/DaRasch/spiceminer
 
@@ -88,7 +90,7 @@ Usage
      ...
      <FrameData> ITRF93 (id: 13000)]
 
-    >>> API.instruments('Cassini Huygens') # /kernel-set/{kernelSetId}/intruments
+    >>> API.instruments('Cassini Huygens') # /kernel-set/{kernelSetId}/instruments
     [<InstrumentData> CASSINI_CIRS_RAD (id: -82898),
      ...
      <InstrumentData> CASSINI_SRU-A (id: -82001)]
