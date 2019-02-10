@@ -3,9 +3,11 @@ Python package for NAIF WebGeoCalc API
 
 |Docs| |Build| |Coverage|
 
-|Python| |PyPI|
+|PyPI| |Conda|
 
-|Version| |Status| |License|
+|Python| |Version| |Status| |Conda Platform|
+
+|License|
 
 |Examples|
 
@@ -15,10 +17,14 @@ Python package for NAIF WebGeoCalc API
         :target: https://travis-ci.org/seignovert/python-webgeocalc
 .. |Coverage| image:: https://img.shields.io/codecov/c/github/seignovert/python-webgeocalc.svg?label=Codecov&logo=codecov&logoColor=white
               :target: https://codecov.io/gh/seignovert/python-webgeocalc
-.. |Python| image:: https://img.shields.io/pypi/pyversions/webgeocalc.svg?label=Python
-        :target: https://pypi.org/project/webgeocalc
 .. |PyPI| image:: https://img.shields.io/badge/PyPI-webgeocalc-blue.svg?logo=python&logoColor=white
         :target: https://pypi.org/project/webgeocalc
+.. |Conda| image:: https://img.shields.io/badge/Conda|seignovert-webgeocalc-blue.svg?logo=python&logoColor=white
+        :target: https://anaconda.org/seignovert/webgeocalc
+.. |Python| image:: https://img.shields.io/pypi/pyversions/webgeocalc.svg?label=Python
+        :target: https://pypi.org/project/webgeocalc
+.. |Conda Platform| image:: https://img.shields.io/conda/pn/seignovert/webgeocalc.svg
+          :target: https://anaconda.org/seignovert/webgeocalc
 .. |Version| image:: https://img.shields.io/pypi/v/webgeocalc.svg?label=Version
         :target: https://pypi.org/project/webgeocalc
 .. |Status| image:: https://img.shields.io/pypi/status/webgeocalc.svg?label=Status

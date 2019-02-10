@@ -31,7 +31,7 @@ deploy:
   - provider: script
     script: bash recipe/deploy.sh
     on:
-    #   tags: true
+      tags: true
       condition: $JOB = "tests"
 
   - provider: releases
