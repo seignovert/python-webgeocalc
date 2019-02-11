@@ -7,7 +7,7 @@ Python package for NAIF WebGeoCalc API
 
 |Python| |Version| |Status| |Conda Platform|
 
-|License|
+|DOI| |License|
 
 |Examples|
 
@@ -29,8 +29,8 @@ Python package for NAIF WebGeoCalc API
         :target: https://pypi.org/project/webgeocalc
 .. |Status| image:: https://img.shields.io/pypi/status/webgeocalc.svg?label=Status
         :target: https://pypi.org/project/webgeocalc
-.. |DOI| image:: https://zenodo.org/badge/xxxxxxxx.svg
-        :target: https://zenodo.org/badge/latestdoi/xxxxxxxx
+.. |DOI| image:: https://zenodo.org/badge/165558532.svg
+        :target: https://zenodo.org/badge/latestdoi/165558532
 .. |License| image:: https://img.shields.io/github/license/seignovert/test-python-docs.svg?label=License
              :target: https://github.com/seignovert/test-python-docs/
 .. |Examples| image:: https://img.shields.io/badge/Jupyter%20Notebook-examples-blue.svg?logo=jupyter&logoColor=orange
@@ -42,8 +42,8 @@ In december 2018, `JPL/NAIF`_ announced an **experimental**
 (which make online SPICE calculations).
 Documentation_ and `JavaScript examples`_ are already available.
 
-This package is an **early attempt** to provide a Python interface to
-make SPICE calculation through this API.
+This package provides a Python interface to make SPICE
+calculation through this API.
 
 .. _`JPL/NAIF`: https://naif.jpl.nasa.gov/naif/webgeocalc.html
 .. _`API RESTful interface`: https://naif.jpl.nasa.gov/naif/WebGeocalc_announcement.pdf

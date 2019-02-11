@@ -3,26 +3,36 @@ Python package for NAIF WebGeoCalc API
 
 |Docs| |Build| |Coverage|
 
-|PyPI| |Python| |Version| |Status| |License|
+|PyPI| |Conda|
+
+|Python| |Version| |Status| |Conda Platform|
+
+|DOI| |License|
 
 |Examples|
 
 .. |Docs| image:: https://img.shields.io/readthedocs/webgeocalc.svg?label=Docs&logo=read-the-docs&logoColor=white
         :target: https://webgeocalc.readthedocs.io/
-.. |Build| image:: https://img.shields.io/travis/seignovert/python-webgeocalc.svg?label=CI&logo=travis-ci&logoColor=white
+.. |Build| image:: https://img.shields.io/travis/seignovert/python-webgeocalc.svg?label=Build&logo=travis-ci&logoColor=white
         :target: https://travis-ci.org/seignovert/python-webgeocalc
-.. |Coverage| image:: https://img.shields.io/coveralls/github/seignovert/python-webgeocalc.svg?label=Coverage
-        :target: https://coveralls.io/github/seignovert/python-webgeocalc?branch=master
+.. |Coverage| image:: https://img.shields.io/codecov/c/github/seignovert/python-webgeocalc.svg?label=Codecov&logo=codecov&logoColor=white
+              :target: https://codecov.io/gh/seignovert/python-webgeocalc
 .. |PyPI| image:: https://img.shields.io/badge/PyPI-webgeocalc-blue.svg?logo=python&logoColor=white
         :target: https://pypi.org/project/webgeocalc
+.. |Conda| image:: https://img.shields.io/badge/conda|seignovert-webgeocalc-blue.svg?logo=python&logoColor=white
+        :target: https://anaconda.org/seignovert/webgeocalc
 .. |Python| image:: https://img.shields.io/pypi/pyversions/webgeocalc.svg?label=Python
         :target: https://pypi.org/project/webgeocalc
+.. |Conda Platform| image:: https://img.shields.io/conda/pn/seignovert/webgeocalc.svg
+          :target: https://anaconda.org/seignovert/webgeocalc
 .. |Version| image:: https://img.shields.io/pypi/v/webgeocalc.svg?label=Version
         :target: https://pypi.org/project/webgeocalc
 .. |Status| image:: https://img.shields.io/pypi/status/webgeocalc.svg?label=Status
         :target: https://pypi.org/project/webgeocalc
-.. |License| image:: https://img.shields.io/pypi/l/webgeocalc.svg?label=License
-        :target: https://pypi.org/project/webgeocalc
+.. |DOI| image:: https://zenodo.org/badge/165558532.svg
+        :target: https://zenodo.org/badge/latestdoi/165558532
+.. |License| image:: https://img.shields.io/github/license/seignovert/test-python-docs.svg?label=License
+             :target: https://github.com/seignovert/test-python-docs/
 .. |Examples| image:: https://img.shields.io/badge/Jupyter%20Notebook-examples-blue.svg?logo=jupyter&logoColor=orange
         :target: https://nbviewer.jupyter.org/github/seignovert/python-webgeocalc/blob/master/examples/api.ipynb
 
