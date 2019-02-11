@@ -19,7 +19,7 @@ Python package for NAIF WebGeoCalc API
               :target: https://codecov.io/gh/seignovert/python-webgeocalc
 .. |PyPI| image:: https://img.shields.io/badge/PyPI-webgeocalc-blue.svg?logo=python&logoColor=white
         :target: https://pypi.org/project/webgeocalc
-.. |Conda| image:: https://img.shields.io/badge/Conda|seignovert-webgeocalc-blue.svg?logo=python&logoColor=white
+.. |Conda| image:: https://img.shields.io/badge/conda|seignovert-webgeocalc-blue.svg?logo=python&logoColor=white
         :target: https://anaconda.org/seignovert/webgeocalc
 .. |Python| image:: https://img.shields.io/pypi/pyversions/webgeocalc.svg?label=Python
         :target: https://pypi.org/project/webgeocalc
@@ -70,6 +70,12 @@ With ``pip``:
 .. code:: bash
 
     $ pip install webgeocalc
+
+With ``conda``:
+
+.. code:: bash
+
+    $ conda install -c seignovert webgeocalc
 
 Usage
 -----

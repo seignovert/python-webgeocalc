@@ -32,8 +32,8 @@ In december 2018, `JPL/NAIF`_ announced an **experimental**
 (which make online SPICE calculations).
 Documentation_ and `JavaScript examples`_ are already available.
 
-This package is an **early attempt** to provide a Python interface to
-make SPICE calculation through this API.
+This package provides a Python interface to make SPICE
+calculations through this API.
 
 .. _`JPL/NAIF`: https://naif.jpl.nasa.gov/naif/webgeocalc.html
 .. _`API RESTful interface`: https://naif.jpl.nasa.gov/naif/WebGeocalc_announcement.pdf
@@ -52,6 +52,28 @@ make SPICE calculation through this API.
 .. _`Spiceypy`: https://github.com/AndrewAnnex/Spiceypy
 .. _`SpiceMiner`: https://github.com/DaRasch/spiceminer
 
+Install
+-------
+With ``pip``:
+
+.. code:: bash
+
+    $ pip install webgeocalc
+
+With ``conda``:
+
+.. code:: bash
+
+    $ conda install -c seignovert webgeocalc
+
+From the sources:
+
+.. code:: bash
+
+    $ git clone https://github.com/seignovert/python-webgeocalc.git webgeocalc
+    $ cd webgeocalc
+    $ python setup.py install
+
 
 Documentation
 -------------
@@ -63,7 +85,7 @@ Documentation
    calculation
    cli
 
-.. note::
+.. important::
 
     This project is not supported or endorsed by either JPL, NAIF or NASA.
     The code is provided *"as is"*, use at your own risk.
