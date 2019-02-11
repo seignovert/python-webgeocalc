@@ -1,21 +1,22 @@
 package:
   name: webgeocalc
-  version: "{{ environ.get('TRAVIS_TAG', 'dev').lstrip('v') }}"
+  version: {{ environ.get('GIT_DESCRIBE_TAG', '') }}
 
 source:
-  git_url: ../
+  git_url: .
 
 build:
   noarch: python
+  number: {{ environ.get('GIT_DESCRIBE_NUMBER', 0) }}
   script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -v "
 
 requirements:
   build:
+    - python {{ python }}
     - pip
-    - python
     - pbr
   run:
-    - python
+    - python {{ python }}
     - requests
     - pbr
 
