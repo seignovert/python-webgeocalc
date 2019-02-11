@@ -2,20 +2,14 @@ Command line interface
 ======================
 
 Some entry points are available through the command line
-interface to get the list of available kernels, the body
-objects, the frames and instruments available on the
-WebGeoCalc API.
-
-.. note::
-
-    For now, calculation can not be submitted directly
-    through the command line.
+interface.
 
 
 Kernel sets
 -----------
 
-List all the available kernel sets:
+List all the available kernel sets available on the
+WebGeoCalc API:
 
 .. code:: bash
 
@@ -106,3 +100,119 @@ List and search instruments for a specific kernel set:
      - CASSINI_ISS_NAC_RAD: (id: -82368)
      - CASSINI_ISS_WAC: (id: -82361)
      - CASSINI_ISS_NAC: (id: -82360)
+
+
+Calculations
+------------
+
+The command line can submit generic and specific calculation directly
+with the command line interface:
+
+.. code:: bash
+
+    $ wgc-calculation --help
+    usage: wgc-calculation [-h] [--quiet] [--payload] [--dry-run]
+                        [--KEY [VALUE [VALUE ...]]]
+
+    Submit generic calculation to the WebGeoCalc API
+
+    optional arguments:
+    -h, --help            show this help message and exit
+    --quiet, -q           Disable verbose output status.
+    --payload, -p         Display payload before the calculation results.
+    --dry-run, -d         Dry run. Show only the payload.
+    --KEY [VALUE [VALUE ...]]
+                            Key parameter and its value(s).
+
+Example:
+
+.. code:: bash
+
+    $ wgc-calculation --payload \
+                      --kernels 1 \
+                      --times '2012-10-19T08:24:00.000' \
+                      --calculation_type 'STATE_VECTOR' \
+                      --target 'CASSINI' \
+                      --observer 'SATURN' \
+                      --reference_frame 'IAU_SATURN' \
+                      --aberration_correction 'NONE' \
+                      --state_representation 'PLANETOGRAPHIC'
+    Payload:
+    {
+      kernels: [{'type': 'KERNEL_SET', 'id': 5}],
+      times: ['2012-10-19T08:24:00.000'],
+      calculationType: STATE_VECTOR,
+      target: CASSINI,
+      observer: SATURN,
+      referenceFrame: IAU_SATURN,
+      aberrationCorrection: NONE,
+      stateRepresentation: PLANETOGRAPHIC,
+      timeSystem: UTC,
+      timeFormat: CALENDAR,
+    }
+
+    API status:
+    [Calculation submit] Status: COMPLETE (id: 37d10124-a65b-44fa-9489-6c0d28cf25d2)
+
+    Results:
+    DATE:
+    > 2012-10-19 08:24:00.000000 UTC
+    LONGITUDE:
+    > 46.18900522
+    LATITUDE:
+    > 21.26337134
+    ALTITUDE:
+    > 694259.8921163
+    D_LONGITUDE_DT:
+    > 0.00888655
+    D_LATITUDE_DT:
+    > -0.00031533
+    D_ALTITUDE_DT:
+    > 4.77080305
+    SPEED:
+    > 109.34997994
+    TIME_AT_TARGET:
+    > 2012-10-19 08:24:00.000000 UTC
+    LIGHT_TIME:
+    > 2.51438831
+
+The *key* parameter can be in ``underscore_case`` or ``camelCase``.
+Multiple *values* can be inserted after the *key* (with ``<space>`` or ``,`` separator),
+as well as duplicated *keys*. Assignation with ``=`` sign can also be used:
+
+.. code:: bash
+
+    $ wgc-state-vector --dry-run \
+                       --kernels 1 5 \
+                       --times '2012-10-19T09:00:00' \
+                       --times '2012-10-19T10:00:00' \
+                       --target='CASSINI' \
+                       --observer = 'SATURN' \
+                       --referenceFrame 'IAU_SATURN'
+    Payload:
+    {
+      kernels: [{'type': 'KERNEL_SET', 'id': 1}, {'type': 'KERNEL_SET', 'id': 5}],
+      times: ['2012-10-19T09:00:00', '2012-10-19T10:00:00'],
+      target: CASSINI,
+      observer: SATURN,
+      referenceFrame: IAU_SATURN,
+      calculationType: STATE_VECTOR,
+      aberrationCorrection: CN,
+      stateRepresentation: RECTANGULAR,
+      timeSystem: UTC,
+      timeFormat: CALENDAR,
+    }
+
+Here is the list of all the calculation entry point available on the CLI:
+
+    - ``wgc-calculation``
+    - ``wgc-state-vector``
+    - ``wgc-angular-separation``
+    - ``wgc-angular-size``
+    - ``wgc-frame-transformation``
+    - ``wgc-illumination-angles``
+    - ``wgc-subsolar-point``
+    - ``wgc-subobserver-point``
+    - ``wgc-surface-intercept-point``
+    - ``wgc-osculating-elements``
+    - ``wgc-time-conversion``

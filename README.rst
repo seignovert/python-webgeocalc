@@ -178,8 +178,43 @@ The webgeocalc API can be call directly from the command line interface:
     ...
      - SPICE Class -- Binary PCK Lesson Kernels (Earth): (id: 39)
 
-    $ wgc-kernels --kernel Solar
-     - Solar System Kernels: (id: 1)
+    $ wgc-instruments 'Cassini Huygens' --name 'ISS'
+     - CASSINI_ISS_WAC_RAD: (id: -82369)
+     - CASSINI_ISS_NAC_RAD: (id: -82368)
+     - CASSINI_ISS_WAC: (id: -82361)
+     - CASSINI_ISS_NAC: (id: -82360)
+
+    $ wgc-state-vector --kernels 5 \
+                       --times '2012-10-19T09:00:00' \
+                       --target 'CASSINI' \
+                       --observer 'SATURN' \
+                       --reference_frame 'IAU_SATURN'
+    API status:
+    [Calculation submit] Status: COMPLETE (id: 041bf912-178f-4450-b787-12a49c8a3101)
+
+    Results:
+    DATE:
+    > 2012-10-19 09:00:00.000000 UTC
+    DISTANCE:
+    > 764142.63776247
+    SPEED:
+    > 111.54765899
+    X:
+    > 298292.85744169
+    Y:
+    > -651606.58468976
+    Z:
+    > 265224.81187627
+    D_X_DT:
+    > -98.8032491
+    D_Y_DT:
+    > -51.73211296
+    D_Z_DT:
+    > -2.1416539
+    TIME_AT_TARGET:
+    > 2012-10-19 08:59:57.451094 UTC
+    LIGHT_TIME:
+    > 2.54890548
 
 More examples can be found in here_.
 

@@ -2,8 +2,12 @@
 '''Command line interface.'''
 
 import argparse
+import re
 
 from .api import API
+from .calculation import AngularSeparation, AngularSize, \
+    Calculation, FrameTransformation, IlluminationAngles, OsculatingElements, \
+    StateVector, SubObserverPoint, SubSolarPoint, SurfaceInterceptPoint, TimeConversion
 from .errors import KernelSetNotFound, TooManyKernelSets
 
 def cli_kernel_sets(argv=None):
@@ -12,7 +16,7 @@ def cli_kernel_sets(argv=None):
     GET: /kernel-sets
     '''
     parser = argparse.ArgumentParser(
-        description='List and search kernel sets available in WebGeocalc API.')
+        description='List and search kernel sets available in WebGeoCalc API.')
     parser.add_argument('--all', '-a', action='store_true',
                         help='List all kernel sets available')
     parser.add_argument('--kernel', '-k', metavar='NAME|ID', nargs='+',
@@ -46,7 +50,7 @@ def cli_bodies(argv=None):
     GET: /kernel-set/{kernelSetId}/bodies
     '''
     parser = argparse.ArgumentParser(
-        description='List bodies available in WebGeocalc API for a specific kernel set.')
+        description='List bodies available in WebGeoCalc API for a specific kernel set.')
     parser.add_argument('kernel', nargs='?', help='Kernel set name or id')
     parser.add_argument('--name', '-n', metavar='BODY', nargs='+',
                         help='Search a specific body by name or id')
@@ -77,7 +81,7 @@ def cli_frames(argv=None):
     GET: /kernel-set/{kernelSetId}/frames
     '''
     parser = argparse.ArgumentParser(
-        description='List frames available in WebGeocalc API for a specific kernel set.')
+        description='List frames available in WebGeoCalc API for a specific kernel set.')
     parser.add_argument('kernel', nargs='?', help='Kernel set name or id')
     parser.add_argument('--name', '-n', metavar='FRAME',
                         nargs='+', help='Search a specific frame by name or id')
@@ -108,7 +112,7 @@ def cli_instruments(argv=None):
     GET: /kernel-set/{kernelSetId}/instruments
     '''
     parser = argparse.ArgumentParser(description='List instruments available'
-                                     'in WebGeocalc API for a specific kernel set.')
+                                     'in WebGeoCalc API for a specific kernel set.')
     parser.add_argument('kernel', nargs='?', help='Kernel set name or id')
     parser.add_argument('--name', '-n', metavar='INSTRUMENT', nargs='+',
                         help='Search a specific instrument by name or id')
@@ -134,3 +138,146 @@ def cli_instruments(argv=None):
                  for instrument in instruments]))
     else:
         parser.print_help()
+
+def _split(string, sep=',', replace=['[', ']', '=', '"', "'"]):
+    # Replace and split string
+    for char in replace:
+        string = string.replace(char, '')
+    return string.split(sep)
+
+def _underscore_case(string):
+    # Convert string to underscore case (ie. snake case)
+    string = string.replace('-', '_')
+    s1 = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', string)
+    return re.sub('([a-z0-9])([A-Z])', r'\1_\2', s1).lower()
+
+def _params(params):
+    # Parse input parameters
+    out = {}
+    key = None
+    for param in params:
+        if param.startswith('--'):
+            if '=' in param:
+                key = param[2:].split('=')
+                param = ','.join(key[1:])
+                key = _underscore_case(key[0])
+            else:
+                key = _underscore_case(param[2:])
+                continue
+
+        if key is None:
+            continue
+
+        for value in _split(param):
+            if value == '':
+                continue
+
+            try:
+                value = int(value)
+            except ValueError:
+                try:
+                    value = float(value)
+                except ValueError:
+                    pass
+
+            if key not in out:
+                out[key] = value
+            elif not isinstance(out[key], list):
+                out[key] = [out[key], value]
+            else:
+                out[key] += [value]
+
+    return out
+
+def cli_calculation(argv=None, calculation=Calculation, desc='generic'):
+    '''Submit and get calculation results.
+
+    - POST: /calculation/new + payload
+    - GET: /calculation/{id}
+    - GET: /calculation/{id}/results
+    '''
+    parser = argparse.ArgumentParser(
+        description=f'Submit {desc} calculation to the WebGeoCalc API')
+
+    parser.add_argument('--quiet', '-q', action='store_true',
+                        help='Disable verbose output status.')
+    parser.add_argument('--payload', '-p', action='store_true',
+                        help='Display payload before the calculation results.')
+    parser.add_argument('--dry-run', '-d', action='store_true',
+                        help='Dry run. Show only the payload.')
+    parser.add_argument('--KEY', metavar='VALUE', nargs='*',
+                        help='Key parameter and its value(s).')
+
+    args, others = parser.parse_known_args(argv)
+    params = _params(others)
+
+    if len(params) > 0:
+        params['verbose'] = not(args.quiet)
+        try:
+            calc = calculation(**params)
+
+            if (args.payload or args.dry_run) and not(args.quiet):
+
+                payload = calc.payload
+                print('Payload:\n{')
+
+                for key, value in payload.items():
+                    print(f'  {key}: {value},')
+                print('}')
+
+            if not(args.dry_run):
+                if not(args.quiet):
+                    print('\nAPI status:')
+
+                res = calc.run()
+                if not(args.quiet):
+                    print('\nResults:')
+
+                for key, value in res.items():
+                    print(f'{key}:\n> {value}')
+
+        except Exception as err:
+            print(err)
+    else:
+        parser.print_help()
+
+
+def cli_state_vector(argv=None):
+    '''Submit state vector calculation with the CLI.'''
+    cli_calculation(argv, StateVector, desc='State Vector')
+
+def cli_angular_separation(argv=None):
+    '''Submit angular separation calcultion with the CLI.'''
+    cli_calculation(argv, AngularSeparation, desc='Angular Separation')
+
+def cli_angular_size(argv=None):
+    '''Submit angular size calcultion with the CLI.'''
+    cli_calculation(argv, AngularSize, desc='Angular Size')
+
+def cli_frame_transformation(argv=None):
+    '''Submit frame transformation calcultion with the CLI.'''
+    cli_calculation(argv, FrameTransformation, desc='Frame Transformation')
+
+def cli_illumination_angles(argv=None):
+    '''Submit illumination angles calcultion with the CLI.'''
+    cli_calculation(argv, IlluminationAngles, desc='Illumination Angles')
+
+def cli_subsolar_point(argv=None):
+    '''Submit sub-solar point calcultion with the CLI.'''
+    cli_calculation(argv, SubSolarPoint, desc='Sub-Solar Point')
+
+def cli_subobserver_point(argv=None):
+    '''Submit sub-observer point calcultion with the CLI.'''
+    cli_calculation(argv, SubObserverPoint, desc='Sub-Observer Point')
+
+def cli_surface_intercept_point(argv=None):
+    '''Submit surface intercept point calcultion with the CLI.'''
+    cli_calculation(argv, SurfaceInterceptPoint, desc='Surface Intercept Point')
+
+def cli_osculating_elements(argv=None):
+    '''Submit osculating elements calcultion with the CLI.'''
+    cli_calculation(argv, OsculatingElements, desc='Osculating Elements')
+
+def cli_time_conversion(argv=None):
+    '''Submit time conversion calcultion with the CLI.'''
+    cli_calculation(argv, TimeConversion, desc='Time Conversion')

@@ -38,7 +38,7 @@ Python package for NAIF WebGeoCalc API
 
 
 In december 2018, `JPL/NAIF`_ announced an **experimental**
-`API RESTful interface`_ for their new `WebGeocalc server`_
+`API RESTful interface`_ for their new `WebGeoCalc server`_
 (which make online SPICE calculations).
 Documentation_ and `JavaScript examples`_ are already available.
 
@@ -47,7 +47,7 @@ calculations through this API.
 
 .. _`JPL/NAIF`: https://naif.jpl.nasa.gov/naif/webgeocalc.html
 .. _`API RESTful interface`: https://naif.jpl.nasa.gov/naif/WebGeocalc_announcement.pdf
-.. _`WebGeocalc server`: https://wgc2.jpl.nasa.gov:8443/webgeocalc
+.. _`WebGeoCalc server`: https://wgc2.jpl.nasa.gov:8443/webgeocalc
 .. _Documentation: https://wgc2.jpl.nasa.gov:8443/webgeocalc/documents/api-info.html
 .. _`JavaScript examples`: https://wgc2.jpl.nasa.gov:8443/webgeocalc/example/perform-calculation.html
 
@@ -58,7 +58,7 @@ calculations through this API.
     If you need to make intensive queries, use `Spiceypy`_ or `SpiceMiner`_
     package with locally hosted kernels.
 
-.. _`WebGeocalc`: https://wgc.jpl.nasa.gov:8443/webgeocalc
+.. _`WebGeoCalc`: https://wgc.jpl.nasa.gov:8443/webgeocalc
 .. _`Spiceypy`: https://github.com/AndrewAnnex/Spiceypy
 .. _`SpiceMiner`: https://github.com/DaRasch/spiceminer
 
