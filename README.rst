@@ -178,17 +178,17 @@ The webgeocalc API can be call directly from the command line interface:
     ...
      - SPICE Class -- Binary PCK Lesson Kernels (Earth): (id: 39)
 
-    $ wgc-instruments 'Cassini Huygens' --name 'ISS'
+    $ wgc-instruments 'Cassini Huygens' --name ISS
      - CASSINI_ISS_WAC_RAD: (id: -82369)
      - CASSINI_ISS_NAC_RAD: (id: -82368)
      - CASSINI_ISS_WAC: (id: -82361)
      - CASSINI_ISS_NAC: (id: -82360)
 
     $ wgc-state-vector --kernels 5 \
-                       --times '2012-10-19T09:00:00' \
-                       --target 'CASSINI' \
-                       --observer 'SATURN' \
-                       --reference_frame 'IAU_SATURN'
+                       --times 2012-10-19T09:00:00 \
+                       --target CASSINI \
+                       --observer SATURN \
+                       --reference_frame IAU_SATURN
     API status:
     [Calculation submit] Status: COMPLETE (id: 041bf912-178f-4450-b787-12a49c8a3101)
 

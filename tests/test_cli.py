@@ -118,8 +118,8 @@ def test_cli_input_parameters(capsys):
     assert parse('null --kernels=1') == {'kernels': 1}
 
     assert parse('--kernels Cassini') == {'kernels': 'Cassini'}
-    assert parse('--kernels "Cassini"') == {'kernels': 'Cassini'}
     assert parse("--kernels 'Cassini'") == {'kernels': 'Cassini'}
+    assert parse('--kernels "Cassini"') == {'kernels': 'Cassini'}
     assert parse('--kernels "Cassini" "Solar"') == {'kernels': ['Cassini', 'Solar']}
 
     assert parse("--times '2012-10-19T08:24:00'") == {'times': '2012-10-19T08:24:00'}

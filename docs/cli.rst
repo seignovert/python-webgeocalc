@@ -42,7 +42,7 @@ Search multiple kernels at once (``name`` and ``id`` can be mixed):
 
 .. code:: bash
 
-    $ wgc-kernels --kernel 5 'Solar'
+    $ wgc-kernels --kernel 5 Solar
 
      - Cassini Huygens: (id: 5)
      - Solar System Kernels: (id: 1)
@@ -130,13 +130,13 @@ Example:
 
     $ wgc-calculation --payload \
                       --kernels 1 \
-                      --times '2012-10-19T08:24:00.000' \
-                      --calculation_type 'STATE_VECTOR' \
-                      --target 'CASSINI' \
-                      --observer 'SATURN' \
-                      --reference_frame 'IAU_SATURN' \
-                      --aberration_correction 'NONE' \
-                      --state_representation 'PLANETOGRAPHIC'
+                      --times 2012-10-19T08:24:00.000 \
+                      --calculation_type STATE_VECTOR \
+                      --target CASSINI \
+                      --observer SATURN \
+                      --reference_frame IAU_SATURN \
+                      --aberration_correction NONE \
+                      --state_representation PLANETOGRAPHIC
     Payload:
     {
       kernels: [{'type': 'KERNEL_SET', 'id': 5}],
@@ -178,17 +178,18 @@ Example:
 
 The *key* parameter can be in ``underscore_case`` or ``camelCase``.
 Multiple *values* can be inserted after the *key* (with ``<space>`` or ``,`` separator),
-as well as duplicated *keys*. Assignation with ``=`` sign can also be used:
+as well as duplicated *keys*. Use single (``'``) or double (``"``) quotes if the
+value contains spaces. Assignation with ``=`` sign can also be used:
 
 .. code:: bash
 
     $ wgc-state-vector --dry-run \
                        --kernels 1 5 \
-                       --times '2012-10-19T09:00:00' \
+                       --times 2012-10-19T09:00:00 \
                        --times '2012-10-19T10:00:00' \
-                       --target='CASSINI' \
-                       --observer = 'SATURN' \
-                       --referenceFrame 'IAU_SATURN'
+                       --target=CASSINI \
+                       --observer = SATURN \
+                       --referenceFrame "IAU_SATURN"
     Payload:
     {
       kernels: [{'type': 'KERNEL_SET', 'id': 1}, {'type': 'KERNEL_SET', 'id': 5}],
