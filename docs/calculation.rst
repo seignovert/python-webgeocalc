@@ -1,9 +1,9 @@
 WebGeoCalc calculations
 =======================
 
-.. currentmodule:: webgeocalc.calculation
+.. currentmodule:: webgeocalc
 
-For now only the geometry calculations are implemented:
+For now only the geometry/time calculations are implemented:
 
 - :py:class:`StateVector`
 - :py:class:`AngularSeparation`
@@ -552,7 +552,7 @@ from an observer.
         - :py:attr:`.time_system`: ``UTC``
         - :py:attr:`.time_format`: ``CALENDAR``
         - :py:attr:`shape_1`: ``ELLIPSOID``
-        - :py:attr:`intercept_vector_type`: ``INSTRUMENT_BORESIGHT``
+        - :py:attr:`.intercept_vector_type`: ``INSTRUMENT_BORESIGHT``
         - :py:attr:`.aberration_correction`: ``CN``
         - :py:attr:`.state_representation`: ``RECTANGULAR``
 
@@ -599,7 +599,7 @@ central body. The orbit may be elliptical, parabolic, or hyperbolic.
     Default parameters:
         - :py:attr:`.time_system`: ``UTC``
         - :py:attr:`.time_format`: ``CALENDAR``
-        - :py:attr:`reference_frame`: ``J2000``
+        - :py:attr:`.reference_frame`: ``J2000``
 
 .. autoclass:: OsculatingElements
 
@@ -632,7 +632,7 @@ Convert times from one time system or format to another.
     Default parameters:
         - :py:attr:`.time_system`: ``UTC``
         - :py:attr:`.time_format`: ``CALENDAR``
-        - :py:attr:`output_time_system`: ``UTC``
-        - :py:attr:`output_time_format`: ``CALENDAR``
+        - :py:attr:`.output_time_system`: ``UTC``
+        - :py:attr:`.output_time_format`: ``CALENDAR``
 
 .. autoclass:: TimeConversion

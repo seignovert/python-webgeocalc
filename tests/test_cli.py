@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 '''Test WGC command line inputs.'''
 
-from webgeocalc.cli import _params, cli_angular_separation, cli_angular_size, cli_bodies,\
-    cli_frame_transformation, cli_frames, cli_illumination_angles, cli_instruments, \
-    cli_kernel_sets, cli_osculating_elements, cli_state_vector, cli_subobserver_point, \
-    cli_subsolar_point, cli_surface_intercept_point, cli_time_conversion
+from webgeocalc.cli import (_params, cli_angular_separation, cli_angular_size, cli_bodies,
+                            cli_frame_transformation, cli_frames, cli_illumination_angles,
+                            cli_instruments, cli_kernel_sets, cli_osculating_elements,
+                            cli_state_vector, cli_subobserver_point, cli_subsolar_point,
+                            cli_surface_intercept_point, cli_time_conversion)
 
 def test_cli_kernel_sets(capsys):
     '''Test GET kernels with CLI.'''

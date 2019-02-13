@@ -6,8 +6,8 @@ import pytest
 from requests import HTTPError
 
 from webgeocalc import API
-from webgeocalc.errors import APIError, APIReponseError, KernelSetNotFound, \
-    ResultAttributeError, TooManyKernelSets
+from webgeocalc.errors import (APIError, APIReponseError, KernelSetNotFound,
+                               ResultAttributeError, TooManyKernelSets)
 from webgeocalc.vars import API_URL
 
 @pytest.fixture

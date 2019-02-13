@@ -4,8 +4,9 @@
 import pytest
 
 from webgeocalc import Calculation
-from webgeocalc.errors import CalculationConflictAttr, CalculationIncompatibleAttr, \
-    CalculationInvalidAttr, CalculationRequiredAttr, CalculationUndefinedAttr
+from webgeocalc.errors import (CalculationConflictAttr, CalculationIncompatibleAttr,
+                               CalculationInvalidAttr, CalculationRequiredAttr,
+                               CalculationUndefinedAttr)
 
 @pytest.fixture
 def kernels():

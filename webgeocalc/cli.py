@@ -5,9 +5,11 @@ import argparse
 import re
 
 from .api import API
-from .calculation import AngularSeparation, AngularSize, \
-    Calculation, FrameTransformation, IlluminationAngles, OsculatingElements, \
-    StateVector, SubObserverPoint, SubSolarPoint, SurfaceInterceptPoint, TimeConversion
+from .calculation_types import (AngularSeparation, AngularSize,
+                                Calculation, FrameTransformation,
+                                IlluminationAngles, OsculatingElements,
+                                StateVector, SubObserverPoint, SubSolarPoint,
+                                SurfaceInterceptPoint, TimeConversion)
 from .errors import KernelSetNotFound, TooManyKernelSets
 
 def cli_kernel_sets(argv=None):

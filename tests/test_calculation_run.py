@@ -4,8 +4,8 @@
 import pytest
 
 from webgeocalc import Calculation, StateVector
-from webgeocalc.errors import CalculationAlreadySubmitted, CalculationNotCompleted, \
-    CalculationTimeOut, ResultAttributeError
+from webgeocalc.errors import (CalculationAlreadySubmitted, CalculationNotCompleted,
+                               CalculationTimeOut, ResultAttributeError)
 from webgeocalc.vars import API_URL
 
 @pytest.fixture

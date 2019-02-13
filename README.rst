@@ -45,7 +45,7 @@ In december 2018, `JPL/NAIF`_ announced an **experimental**
 Documentation_ and `JavaScript examples`_ are already available.
 
 This package provides a Python interface to make SPICE
-calculation through this API.
+calculations through this API.
 
 .. _`JPL/NAIF`: https://naif.jpl.nasa.gov/naif/webgeocalc.html
 .. _`API RESTful interface`: https://naif.jpl.nasa.gov/naif/WebGeocalc_announcement.pdf
