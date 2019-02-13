@@ -4,9 +4,6 @@
 class APIError(IOError):
     '''This exception is raised when the status of the API reponse is not OK.'''
 
-    def __init__(self, msg):
-        super().__init__(msg)
-
 class APIReponseError(NotImplementedError):
     '''This exception is raised when the format of the API reponse is not implemented.'''
 

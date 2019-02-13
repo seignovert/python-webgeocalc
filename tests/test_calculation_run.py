@@ -278,7 +278,7 @@ def test_calculation_run(requests_mock, params, response, results):
         API_URL + '/calculation/' + response['calculationId'] + '/results', json=results)
 
     with pytest.raises(CalculationNotCompleted):
-        calc.results
+        _ = calc.results
 
     calc.run()
     assert calc.id == response['calculationId']
@@ -325,7 +325,7 @@ def test_state_vector_single_time(requests_mock, params_sv, response_sv, results
         assert value in column_sv.values()
 
     with pytest.raises(ResultAttributeError):
-        column.wrong_attr
+        _ = column.wrong_attr
 
 def test_calculation_timeout(requests_mock, params, loading_kernels):
     '''Test error if response exceed timeout.'''

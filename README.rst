@@ -1,7 +1,7 @@
 Python package for NAIF WebGeoCalc API
 ======================================
 
-|Docs| |Build| |Coverage|
+|Docs| |Build| |Coverage| |CodeFactor|
 
 |PyPI| |Conda|
 
@@ -17,6 +17,8 @@ Python package for NAIF WebGeoCalc API
         :target: https://travis-ci.org/seignovert/python-webgeocalc
 .. |Coverage| image:: https://img.shields.io/codecov/c/github/seignovert/python-webgeocalc.svg?label=Codecov&logo=codecov&logoColor=white
               :target: https://codecov.io/gh/seignovert/python-webgeocalc
+.. |CodeFactor| image:: https://www.codefactor.io/repository/github/seignovert/python-webgeocalc/badge/master
+                :target: https://www.codefactor.io/repository/github/seignovert/python-webgeocalc/overview/master
 .. |PyPI| image:: https://img.shields.io/badge/PyPI-webgeocalc-blue.svg?logo=python&logoColor=white
         :target: https://pypi.org/project/webgeocalc
 .. |Conda| image:: https://img.shields.io/badge/conda|seignovert-webgeocalc-blue.svg?logo=python&logoColor=white

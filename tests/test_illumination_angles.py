@@ -88,7 +88,7 @@ def test_illumination_angles_payload(params, payload):
     '''Test illumination angles payload.'''
     assert IlluminationAngles(**params).payload == payload
 
-def test_illumination_angles_attr_error(params, payload):
+def test_illumination_angles_attr_error(params):
     '''Test erros whent illumination angles attribues are invalid.'''
     with pytest.raises(CalculationInvalidAttr):
         IlluminationAngles(shape_1='POINT', **params)
@@ -96,7 +96,7 @@ def test_illumination_angles_attr_error(params, payload):
     with pytest.raises(CalculationInvalidAttr):
         IlluminationAngles(coordinate_representation='WRONG', **params)
 
-def test_illumination_angles_value_error(params, payload):
+def test_illumination_angles_value_error(params):
     '''Test latitude and longitude invalid inputs.'''
     params['latitude'] = 100
     with pytest.raises(CalculationInvalidValue):

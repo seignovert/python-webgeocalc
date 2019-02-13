@@ -73,7 +73,7 @@ def test_frame_transformation_payload(params, payload):
     '''Test angular frame transformation payload.'''
     assert FrameTransformation(**params).payload == payload
 
-def test_frame_transformation_attr_err(params, payload):
+def test_frame_transformation_attr_err(params):
     '''Test errors when frame transformation is invalid.'''
     del params['aberration_correction']
     with pytest.raises(CalculationInvalidAttr):

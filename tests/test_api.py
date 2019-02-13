@@ -102,12 +102,12 @@ def test_kernel_sets(solar_system_kernel_set):
     for value in kernel_set.values():
         assert value in solar_system_kernel_set.values()
 
-    for key, values in kernel_set.items():
+    for key, value in kernel_set.items():
         assert key in solar_system_kernel_set.keys()
         assert value in solar_system_kernel_set.values()
 
     with pytest.raises(ResultAttributeError):
-        kernel_set.wrong_attr
+        _ = kernel_set.wrong_attr
 
 def test_kernel_set_by_id():
     '''Test kernel set id.'''

@@ -7,7 +7,7 @@ from .errors import APIError, APIReponseError, KernelSetNotFound, TooManyKernelS
 from .types import ColumnResult, KernelSetDetails, get_type
 from .vars import API_URL
 
-class Api(object):
+class Api:
     '''WebGeoCalc API object.
 
     Parameters
@@ -49,8 +49,8 @@ class Api(object):
         response = requests.get(self.url + url)
         if response.ok:
             return self.read(response.json())
-        else:
-            response.raise_for_status()
+
+        return response.raise_for_status()
 
     def post(self, url, payload):
         '''Generic POST request on the API.
@@ -82,10 +82,11 @@ class Api(object):
         response = requests.post(self.url + url, json=payload)
         if response.ok:
             return self.read(response.json())
-        else:
-            response.raise_for_status()
 
-    def read(self, json):
+        return response.raise_for_status()
+
+    @staticmethod
+    def read(json):
         '''Read content from API JSON reponse.
 
         Parameters
@@ -132,16 +133,15 @@ class Api(object):
             dtype = get_type(json['resultType'])
             return [dtype(item) for item in json['items']]
 
-        elif 'result' in keys:
+        if 'result' in keys:
             return (json['calculationId'], json['result']['phase'],
                     json['result']['progress'])
 
-        elif 'columns' in keys and 'rows' in keys:
+        if 'columns' in keys and 'rows' in keys:
             cols = [ColumnResult(col) for col in json['columns']]
             return cols, json['rows']
 
-        else:
-            raise APIReponseError(json)
+        raise APIReponseError(json)
 
     def kernel_sets(self):
         '''Get list of all kernel sets available on the webgeocalc server.
@@ -175,10 +175,11 @@ class Api(object):
         kernel_sets = list(filter(lambda x: kernel_set in x, self.kernel_sets()))
         if len(kernel_sets) == 1:
             return kernel_sets[0]
-        elif len(kernel_sets) > 1:
+
+        if len(kernel_sets) > 1:
             raise TooManyKernelSets(kernel_set, kernel_sets)
-        else:
-            raise KernelSetNotFound(kernel_set)
+
+        raise KernelSetNotFound(kernel_set)
 
     def kernel_set_id(self, kernel_set):
         '''Extract kernel set ``id`` based on ``id``, ``name`` or `object`.
@@ -196,13 +197,15 @@ class Api(object):
         '''
         if isinstance(kernel_set, int):
             return kernel_set
-        elif isinstance(kernel_set, str):
+
+        if isinstance(kernel_set, str):
             return int(self.kernel_set(kernel_set))
-        elif isinstance(kernel_set, KernelSetDetails):
+
+        if isinstance(kernel_set, KernelSetDetails):
             return int(kernel_set)
-        else:
-            raise TypeError(f"'kernel_set' must be a 'int', a 'str' of a 'KernelSetDetails' object:\n' + \
-                             '>>> Type({kernel_set}) = {type(kernel_set)}")
+
+        raise TypeError(f"'kernel_set' must be a 'int', a 'str' of a 'KernelSetDetails' object:\n' + \
+                        '>>> Type({kernel_set}) = {type(kernel_set)}")
 
     def bodies(self, kernel_set):
         '''Get list of bodies available in a kernel set.
@@ -293,14 +296,14 @@ class Api(object):
         '''
         return self.post('/calculation/new', payload)
 
-    def status_calculation(self, id):
+    def status_calculation(self, calculation_id):
         '''Gets the status of a calculation.
 
         ``GET: /calculation/{id}``
 
         Parameters
         ----------
-        id: str
+        calculation_id: str
             Calculation id.
 
         Returns
@@ -323,16 +326,16 @@ class Api(object):
         only when applicable.
 
         '''
-        return self.get(f'/calculation/{id}')
+        return self.get(f'/calculation/{calculation_id}')
 
-    def results_calculation(self, id):
+    def results_calculation(self, calculation_id):
         '''Gets the results of a complete calculation.
 
         ``GET: /calculation/{id}/results``
 
         Parameters
         ----------
-        id: str
+        calculation_id: str
             Calculation id.
 
         Returns
@@ -348,7 +351,7 @@ class Api(object):
         ([<ColumnResult> UTC calendar date, ...], [['2000-01-01 00:00:00.000000 UTC', ...], [...]])
 
         '''
-        return self.get(f'/calculation/{id}/results')
+        return self.get(f'/calculation/{calculation_id}/results')
 
 
 # Export default API object

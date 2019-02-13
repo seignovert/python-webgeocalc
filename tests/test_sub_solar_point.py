@@ -75,7 +75,7 @@ def test_sub_solar_point_payload(params, payload):
     assert SubSolarPoint(**params).payload == payload
 
 
-def test_sub_solar_point_attr_error(params, payload):
+def test_sub_solar_point_attr_error(params):
     '''Test erros when sub observer point attributes are invalid.'''
     with pytest.raises(CalculationInvalidAttr):
         SubSolarPoint(sub_point_type='WRONG', **params)

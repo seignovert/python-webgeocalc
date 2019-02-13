@@ -9,7 +9,7 @@ http://www.sphinx-doc.org/en/master/config
 # -- Project information -----------------------------------------------------
 
 project = 'WebGeoCalc API'
-copyright = '2019, Benoit Seignovert'
+copyright = '2019, Benoit Seignovert'  # pylint: disable=W0622
 author = 'Benoit Seignovert'
 
 # -- General configuration ---------------------------------------------------

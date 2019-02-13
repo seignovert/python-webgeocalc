@@ -41,7 +41,7 @@ def test_cli_bodies(capsys):
     argv = '5 --name Titan'.split()
     cli_bodies(argv)
     captured = capsys.readouterr()
-    assert ' - TITAN: (id: 606)\n' == captured.out
+    assert captured.out == ' - TITAN: (id: 606)\n'
 
 def test_cli_frames(capsys):
     '''Test GET frames with CLI.'''
@@ -81,7 +81,7 @@ def test_cli_instruments(capsys):
     assert ' - CASSINI_ISS_WAC: (id: -82361)' in captured.out
     assert ' - CASSINI_VIMS_IR: (id: -82370)' not in captured.out
 
-def test_cli_input_parameters(capsys):
+def test_cli_input_parameters():
     '''Test CLI input parameters parsing.'''
     def parse(x):
         return _params(x.split())
@@ -136,7 +136,7 @@ def test_cli_angular_separation_wrong_attr(capsys):
     argv = '--wrong 123'.split()
     cli_angular_separation(argv)
     captured = capsys.readouterr()
-    assert 'Attribute \'target_1\' required.\n' == captured.out
+    assert captured.out == 'Attribute \'target_1\' required.\n'
 
 def test_cli_angular_size_run(capsys):
     '''Test run angular size calculation parameter with the CLI.'''

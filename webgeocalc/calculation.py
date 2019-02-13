@@ -16,7 +16,7 @@ from .vars import ABERRATION_CORRECTION, ANGULAR_UNITS, ANGULAR_VELOCITY_REPRESE
     TIME_STEP_UNITS, TIME_SYSTEM
 
 
-class SetterProperty(object):
+class SetterProperty:
     '''Setter property decorator.'''
 
     def __init__(self, func, doc=None):
@@ -27,7 +27,7 @@ class SetterProperty(object):
         return self.func(obj, value)
 
 
-class Calculation(object):
+class Calculation:
     '''Webgeocalc calculation object.
 
     Parameters
@@ -353,10 +353,9 @@ class Calculation(object):
 
             if self.status == 'COMPLETE':
                 return self.results
-            else:
-                time.sleep(sleep)
-        else:
-            raise CalculationTimeOut(timeout, sleep)
+            time.sleep(sleep)
+
+        raise CalculationTimeOut(timeout, sleep)
 
     @SetterProperty
     def calculation_type(self, val):
@@ -524,10 +523,10 @@ class Calculation(object):
         if isinstance(interval, dict):
             if 'startTime' in interval.keys() and 'endTime' in interval.keys():
                 return interval
-            else:
-                raise CalculationInvalidAttr('interval', interval, INTERVALS[:2])
-        else:
-            return {'startTime': str(interval[0]), 'endTime': str(interval[1])}
+
+            raise CalculationInvalidAttr('interval', interval, INTERVALS[:2])
+
+        return {'startTime': str(interval[0]), 'endTime': str(interval[1])}
 
     @SetterProperty
     def time_step(self, val):
@@ -1200,8 +1199,8 @@ class Calculation(object):
 
         if val in AXIS:
             return val
-        else:
-            raise CalculationInvalidAttr(name, val, AXIS)
+
+        raise CalculationInvalidAttr(name, val, AXIS)
 
     @SetterProperty
     def angular_units(self, val):
@@ -1360,7 +1359,7 @@ class Calculation(object):
             If ``latitude`` not in [-90, +90] range.
 
         '''
-        if val >= -90 and val <= 90:
+        if -90 <= val <= 90:
             self.__latitude = val
         else:
             raise CalculationInvalidValue('latitude', val, -90, 90)
@@ -1380,7 +1379,7 @@ class Calculation(object):
             If ``longitude`` not in [-180, +180] range.
 
         '''
-        if val >= -180 and val <= 180:
+        if -180 <= val <= 180:
             self.__longitude = val
         else:
             raise CalculationInvalidValue('longitude', val, -180, 180)
@@ -1468,9 +1467,9 @@ class Calculation(object):
         keys = self.params.keys()
         if val in ['VECTOR_IN_INSTRUMENT_FOV', 'VECTOR_IN_REFERENCE_FRAME']:
             if not(
-                'intercept_vector_x' in keys and  # noqa: W504
-                'intercept_vector_y' in keys and  # noqa: W504
-                'intercept_vector_z' in keys
+                    'intercept_vector_x' in keys and  # noqa: W504
+                    'intercept_vector_y' in keys and  # noqa: W504
+                    'intercept_vector_z' in keys
             ) and not(
                 'intercept_vector_ra' in keys and  # noqa: W504
                 'intercept_vector_dec' in keys
@@ -2007,7 +2006,7 @@ class IlluminationAngles(Calculation):
                  aberration_correction='CN', **kwargs):
 
         self._required(['target', 'target_frame', 'observer',
-                       'latitude', 'longitude'], kwargs)
+                        'latitude', 'longitude'], kwargs)
 
         kwargs['calculation_type'] = 'ILLUMINATION_ANGLES'
         kwargs['coordinate_representation'] = coordinate_representation

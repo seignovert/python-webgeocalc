@@ -9,7 +9,7 @@ def get_type(classname):
         raise ResultTypeError(classname)
     return TYPES[classname]
 
-class ColumnResult(object):
+class ColumnResult:
     '''Column result generic object.'''
 
     def __init__(self, json):
@@ -41,9 +41,6 @@ class ColumnResult(object):
 class ResultType(ColumnResult):
     '''Result Type object for item generic interface.'''
 
-    def __init__(self, json):
-        super().__init__(json)
-
     def __int__(self):
         return int(self.id)
 
@@ -59,9 +56,6 @@ class ResultType(ColumnResult):
 class KernelSetDetails(ResultType):
     '''Kernel set details.'''
 
-    def __init__(self, json):
-        super().__init__(json)
-
     def __int__(self):
         return int(self.kernelSetId)
 
@@ -71,20 +65,11 @@ class KernelSetDetails(ResultType):
 class BodyData(ResultType):
     '''Body data.'''
 
-    def __init__(self, json):
-        super().__init__(json)
-
 class FrameData(ResultType):
     '''Frame data.'''
 
-    def __init__(self, json):
-        super().__init__(json)
-
 class InstrumentData(ResultType):
     '''Instrument data.'''
-
-    def __init__(self, json):
-        super().__init__(json)
 
 
 TYPES = globals()

@@ -21,7 +21,7 @@ def cli_kernel_sets(argv=None):
                         help='List all kernel sets available')
     parser.add_argument('--kernel', '-k', metavar='NAME|ID', nargs='+',
                         help='Search a specific kernel by name or id')
-    args, others = parser.parse_known_args(argv)
+    args, _ = parser.parse_known_args(argv)
 
     if args.all:
         kernels = API.kernel_sets()
@@ -55,7 +55,7 @@ def cli_bodies(argv=None):
     parser.add_argument('--name', '-n', metavar='BODY', nargs='+',
                         help='Search a specific body by name or id')
 
-    args, others = parser.parse_known_args(argv)
+    args, _ = parser.parse_known_args(argv)
 
     if args.kernel:
         try:
@@ -86,7 +86,7 @@ def cli_frames(argv=None):
     parser.add_argument('--name', '-n', metavar='FRAME',
                         nargs='+', help='Search a specific frame by name or id')
 
-    args, others = parser.parse_known_args(argv)
+    args, _ = parser.parse_known_args(argv)
 
     if args.kernel:
         try:
@@ -117,7 +117,7 @@ def cli_instruments(argv=None):
     parser.add_argument('--name', '-n', metavar='INSTRUMENT', nargs='+',
                         help='Search a specific instrument by name or id')
 
-    args, others = parser.parse_known_args(argv)
+    args, _ = parser.parse_known_args(argv)
 
     if args.kernel:
         try:
@@ -139,17 +139,17 @@ def cli_instruments(argv=None):
     else:
         parser.print_help()
 
-def _split(string, sep=',', replace=['[', ']', '=', '"', "'"]):
+def _split(string, sep=','):
     # Replace and split string
-    for char in replace:
+    for char in ['[', ']', '=', '"', "'"]:
         string = string.replace(char, '')
     return string.split(sep)
 
 def _underscore_case(string):
     # Convert string to underscore case (ie. snake case)
     string = string.replace('-', '_')
-    s1 = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', string)
-    return re.sub('([a-z0-9])([A-Z])', r'\1_\2', s1).lower()
+    sub = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', string)
+    return re.sub('([a-z0-9])([A-Z])', r'\1_\2', sub).lower()
 
 def _params(params):
     # Parse input parameters
@@ -211,12 +211,12 @@ def cli_calculation(argv=None, calculation=Calculation, desc='generic'):
     args, others = parser.parse_known_args(argv)
     params = _params(others)
 
-    if len(params) > 0:
-        params['verbose'] = not(args.quiet)
+    if params:
+        params['verbose'] = not args.quiet
         try:
             calc = calculation(**params)
 
-            if (args.payload or args.dry_run) and not(args.quiet):
+            if (args.payload or args.dry_run) and not args.quiet:
 
                 payload = calc.payload
                 print('Payload:\n{')
@@ -225,18 +225,18 @@ def cli_calculation(argv=None, calculation=Calculation, desc='generic'):
                     print(f'  {key}: {value},')
                 print('}')
 
-            if not(args.dry_run):
-                if not(args.quiet):
+            if not args.dry_run:
+                if not args.quiet:
                     print('\nAPI status:')
 
                 res = calc.run()
-                if not(args.quiet):
+                if not args.quiet:
                     print('\nResults:')
 
                 for key, value in res.items():
                     print(f'{key}:\n> {value}')
 
-        except Exception as err:
+        except (AttributeError, ValueError, IOError) as err:
             print(err)
     else:
         parser.print_help()
