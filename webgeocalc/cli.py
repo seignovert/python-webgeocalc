@@ -151,6 +151,16 @@ def _underscore_case(string):
     sub = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', string)
     return re.sub('([a-z0-9])([A-Z])', r'\1_\2', sub).lower()
 
+def _int_float_str(value):
+    # Parse value type.
+    try:
+        return int(value)
+    except ValueError:
+        try:
+            return float(value)
+        except ValueError:
+            return value
+
 def _params(params):
     # Parse input parameters
     out = {}
@@ -172,13 +182,7 @@ def _params(params):
             if value == '':
                 continue
 
-            try:
-                value = int(value)
-            except ValueError:
-                try:
-                    value = float(value)
-                except ValueError:
-                    pass
+            value = _int_float_str(value)
 
             if key not in out:
                 out[key] = value
