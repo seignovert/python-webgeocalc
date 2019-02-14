@@ -1082,8 +1082,8 @@ class Calculation:
         CalculationInvalidAttr
             If the value provided is invalid.
 
-        Error
-        -----
+        Warning
+        -------
         NAIF API docs::
 
             `Only needed if aberrationCorrection is not NONE.`
