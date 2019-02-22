@@ -33,8 +33,8 @@ Python package for NAIF WebGeoCalc API
         :target: https://pypi.org/project/webgeocalc
 .. |DOI| image:: https://zenodo.org/badge/165558532.svg
         :target: https://zenodo.org/badge/latestdoi/165558532
-.. |License| image:: https://img.shields.io/github/license/seignovert/test-python-docs.svg?label=License
-             :target: https://github.com/seignovert/test-python-docs/
+.. |License| image:: https://img.shields.io/github/license/seignovert/python-webgeocalc.svg?label=License
+             :target: https://github.com/seignovert/python-webgeocalc/
 .. |Examples| image:: https://img.shields.io/badge/Jupyter%20Notebook-examples-blue.svg?logo=jupyter&logoColor=orange
         :target: https://nbviewer.jupyter.org/github/seignovert/python-webgeocalc/blob/master/examples/api.ipynb
 
