@@ -155,7 +155,7 @@ def test_cli_angular_size_run(capsys):
     assert "times: ['2012-10-19T08:24:00']," in captured.out
     assert "calculationType: ANGULAR_SIZE," in captured.out
     assert "timeSystem: UTC," in captured.out
-    assert 'API status:\n[Calculation submit] Status:' in captured.out
+    assert 'API status:\n[Calculation submit] Phase:' in captured.out
     assert 'Results:\nDATE:\n> 2012-10-19 08:24:00.000000 UTC' in captured.out
     assert 'ANGULAR_SIZE:\n> 0.03037939' in captured.out
 

@@ -284,7 +284,7 @@ def test_calculation_run(requests_mock, params, response, results):
     assert calc.id == response['calculationId']
 
     calc.update()
-    assert calc.status == response['result']['phase']
+    assert calc.phase == response['result']['phase']
 
     with pytest.raises(CalculationAlreadySubmitted):
         calc.submit()

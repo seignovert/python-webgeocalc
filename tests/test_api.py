@@ -28,7 +28,7 @@ def cassini_kernel_set():
     return {
         'caption': 'Cassini Huygens',
         'sclkId': '-82',
-        'description': 'rchived CASSINI kernels covering from 1997-10-15 to 2017-09-15.',
+        'description': 'Archived CASSINI kernels covering from 1997-10-15 to 2017-09-15.',
         'kernelSetId': '5',
         'missionId': 'cassini',
     }

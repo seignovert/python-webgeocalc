@@ -39,7 +39,7 @@ class Calculation:
     time_format: str, optional
         See: :py:attr:`time_format`
     verbose: bool, optional
-        Verbose calculation status during :py:func:`submit`, :py:func:`update`
+        Verbose calculation phase during :py:func:`submit`, :py:func:`update`
         and :py:func:`run`.
 
     Other Parameters
@@ -160,7 +160,7 @@ class Calculation:
         self.params = kwargs
         self.__kernels = []
         self.id = None
-        self.status = 'NOT SUBMITED'
+        self.phase = 'NOT SUBMITED'
         self.columns = None
         self.values = None
         self.verbose = verbose
@@ -180,7 +180,7 @@ class Calculation:
 
     def __repr__(self):
         return '\n'.join([
-            f"<{self.__class__.__name__}> Status: {self.status} (id: {self.id})"
+            f"<{self.__class__.__name__}> Phase: {self.phase} (id: {self.id})"
         ] + [
             f' - {k}: {v}' for k, v in self.payload.items()
         ])
@@ -219,7 +219,7 @@ class Calculation:
         return {k.split('__')[-1]: v for k, v in vars(self).items() if k.startswith('_')}
 
     def submit(self):
-        '''Submit calculation parameters and get calculation ``id``, ``phase`` and ``progress``.
+        '''Submit calculation parameters and get calculation ``id`` and ``phase``.
 
         Raises
         ------
@@ -229,20 +229,20 @@ class Calculation:
         Example
         -------
         >>> calc.submit()  # noqa: E501  # doctest: +SKIP
-        [Calculation submit] Status: LOADING_KERNELS (id: 8750344d-645d-4e43-b159-c8d88d28aac6)
+        [Calculation submit] Phase: LOADING_KERNELS (id: 8750344d-645d-4e43-b159-c8d88d28aac6)
         >>> calc.id        # doctest: +SKIP
         '8750344d-645d-4e43-b159-c8d88d28aac6'
-        >>> calc.status    # doctest: +SKIP
+        >>> calc.phase     # doctest: +SKIP
         'LOADING_KERNELS'
 
         '''
         if self.id is not None:
             raise CalculationAlreadySubmitted(self.id)
 
-        self.id, self.status, self.progress = API.new_calculation(self.payload)
+        self.id, self.phase = API.new_calculation(self.payload)
 
         if self.verbose:
-            print(f'[Calculation submit] Status: {self.status} (id: {self.id})')
+            print(f'[Calculation submit] Phase: {self.phase} (id: {self.id})')
 
     def resubmit(self):
         '''Reset calculation ``id`` and re-submit the calculation.
@@ -253,26 +253,26 @@ class Calculation:
         self.submit()
 
     def update(self):
-        '''Update calculation status ``phase`` and ``progress``.
+        '''Update calculation phase ``phase``.
 
         Example
         -------
         >>> calc.update()  # noqa: E501  # doctest: +SKIP
-        [Calculation update] Status: LOADING_KERNELS (id: 8750344d-645d-4e43-b159-c8d88d28aac6)
+        [Calculation update] Phase: LOADING_KERNELS (id: 8750344d-645d-4e43-b159-c8d88d28aac6)
         >>> calc.update()  # doctest: +SKIP
-        [Calculation update] Status: COMPLETE (id: 8750344d-645d-4e43-b159-c8d88d28aac6)
+        [Calculation update] Phase: COMPLETE (id: 8750344d-645d-4e43-b159-c8d88d28aac6)
         '''
         if self.id is None:
             self.submit()
         else:
-            _, self.status, self.progress = API.status_calculation(self.id)
+            _, self.phase = API.phase_calculation(self.id)
 
             if self.verbose:
-                print(f'[Calculation update] Status: {self.status} (id: {self.id})')
+                print(f'[Calculation update] Phase: {self.phase} (id: {self.id})')
 
     @property
     def results(self):
-        '''Gets the results of a calculation, if its status is `COMPLETE`.
+        '''Gets the results of a calculation, if its phase is `COMPLETE`.
 
         Return
         ------
@@ -284,7 +284,7 @@ class Calculation:
         Raises
         ------
         CalculationNotCompleted
-            If calculation status is not `COMPLETE`.
+            If calculation phase is not `COMPLETE`.
 
         Examples
         --------
@@ -315,8 +315,8 @@ class Calculation:
          'ANGULAR_SEPARATION': [175.17072258, 175.18555938]}
 
         '''
-        if self.status != 'COMPLETE':
-            raise CalculationNotCompleted(self.status)
+        if self.phase != 'COMPLETE':
+            raise CalculationNotCompleted(self.phase)
 
         if self.columns is None or self.values is None:
             self.columns, self.values = API.results_calculation(self.id)
@@ -353,7 +353,7 @@ class Calculation:
         for i in range(int(timeout / sleep)):
             self.update()
 
-            if self.status == 'COMPLETE':
+            if self.phase == 'COMPLETE':
                 return self.results
             time.sleep(sleep)
 

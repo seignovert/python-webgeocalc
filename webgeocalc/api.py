@@ -106,7 +106,7 @@ class Api:
 
             If response contents ``result``, then return type will be:
 
-            (`Calculation id`: str, `Phase`: str, `Progress`: int)
+            (`Calculation id`: str, `Phase`: str)
 
             If the response contents ``columns`` and ``rows``, then
             return type will be:
@@ -134,8 +134,7 @@ class Api:
             return [dtype(item) for item in json['items']]
 
         if 'result' in keys:
-            return (json['calculationId'], json['result']['phase'],
-                    json['result']['progress'])
+            return json['calculationId'], json['result']['phase']
 
         if 'columns' in keys and 'rows' in keys:
             cols = [ColumnResult(col) for col in json['columns']]
@@ -277,27 +276,20 @@ class Api:
         Returns
         -------
         (str, str, int)
-            Tuple of the calculation status:
-            ``(calculation-id, phase, progress)``
+            Tuple of the calculation phase:
+            ``(calculation-id, phase)``
             See: :py:func:`read`.
 
         Example
         -------
         >>> API.calculation_new(calculation_payload)  # doctest: +SKIP
-        ('0788aba2-d4e5-4028-9ef1-4867ad5385e0', 'LOADING_KERNELS', 0)
-
-        Warning
-        ----
-        The ``progress`` attribute is not relevant when ``phase`` is `COMPLETE`.
-
-        In the next release, the API responses may contain ``progress``
-        only when applicable.
+        ('0788aba2-d4e5-4028-9ef1-4867ad5385e0', 'LOADING_KERNELS')
 
         '''
         return self.post('/calculation/new', payload)
 
-    def status_calculation(self, calculation_id):
-        '''Gets the status of a calculation.
+    def phase_calculation(self, calculation_id):
+        '''Gets the phase of a calculation.
 
         ``GET: /calculation/{id}``
 
@@ -308,22 +300,15 @@ class Api:
 
         Returns
         -------
-        (str, str, int)
-            Tuple of the calculation status:
-            ``(calculation-id, phase, progress)``
+        (str, str)
+            Tuple of the calculation phase:
+            ``(calculation-id, phase)``
             See: :py:func:`read`.
 
         Example
         -------
-        >>> API.status_calculation('0788aba2-d4e5-4028-9ef1-4867ad5385e0')  # noqa: E501  # doctest: +SKIP
-        ('0788aba2-d4e5-4028-9ef1-4867ad5385e0', 'COMPLETE', 0)
-
-        Warning
-        ----
-        The ``progress`` attribute is not relevant when ``phase`` is `COMPLETE`.
-
-        In the next release, the API responses may contain ``progress``
-        only when applicable.
+        >>> API.phase_calculation('0788aba2-d4e5-4028-9ef1-4867ad5385e0')  # noqa: E501  # doctest: +SKIP
+        ('0788aba2-d4e5-4028-9ef1-4867ad5385e0', 'COMPLETE')
 
         '''
         return self.get(f'/calculation/{calculation_id}')
