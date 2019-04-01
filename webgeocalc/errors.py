@@ -99,10 +99,17 @@ class CalculationAlreadySubmitted(IOError):
         super().__init__(msg)
 
 class CalculationNotCompleted(IOError):
-    '''This exception is raised when calculation status is not complete.'''
+    '''This exception is raised when calculation phase is not complete.'''
 
-    def __init__(self, status):
-        msg = f"Calculation is status: '{status}'"
+    def __init__(self, phase):
+        msg = f"Calculation phase: '{phase}'"
+        super().__init__(msg)
+
+class CalculationFailed(IOError):
+    '''This exception is raised when calculation failed.'''
+
+    def __init__(self, phase):
+        msg = f"Calculation failed phase: '{phase}'"
         super().__init__(msg)
 
 class CalculationTimeOut(IOError):

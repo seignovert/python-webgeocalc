@@ -4,8 +4,9 @@
 import pytest
 
 from webgeocalc import Calculation, StateVector
-from webgeocalc.errors import (CalculationAlreadySubmitted, CalculationNotCompleted,
-                               CalculationTimeOut, ResultAttributeError)
+from webgeocalc.errors import (CalculationAlreadySubmitted, CalculationFailed,
+                               CalculationNotCompleted, CalculationTimeOut,
+                               ResultAttributeError)
 from webgeocalc.vars import API_URL
 
 @pytest.fixture
@@ -266,7 +267,6 @@ def loading_kernels():
         }
     }
 
-
 def test_calculation_run(requests_mock, params, response, results):
     '''Run generic calculation.'''
     calc = Calculation(**params)
@@ -326,6 +326,17 @@ def test_state_vector_single_time(requests_mock, params_sv, response_sv, results
 
     with pytest.raises(ResultAttributeError):
         _ = column.wrong_attr
+
+def test_calculation_cancel(params):
+    '''Test error if calculation is cancelled.'''
+    calc = Calculation(**params)
+    calc.submit()
+    calc.cancel()
+
+    assert calc.phase == 'CANCELLED'
+
+    with pytest.raises(CalculationFailed):
+        calc.run()
 
 def test_calculation_timeout(requests_mock, params, loading_kernels):
     '''Test error if response exceed timeout.'''

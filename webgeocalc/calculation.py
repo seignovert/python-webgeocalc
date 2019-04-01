@@ -5,15 +5,15 @@ import time
 
 from .api import API
 from .errors import (CalculationAlreadySubmitted, CalculationConflictAttr,
-                     CalculationIncompatibleAttr, CalculationInvalidAttr,
-                     CalculationInvalidValue, CalculationNotCompleted,
-                     CalculationRequiredAttr, CalculationTimeOut,
-                     CalculationUndefinedAttr)
+                     CalculationFailed, CalculationIncompatibleAttr,
+                     CalculationInvalidAttr, CalculationInvalidValue,
+                     CalculationNotCompleted, CalculationRequiredAttr,
+                     CalculationTimeOut, CalculationUndefinedAttr)
 from .types import KernelSetDetails
 from .vars import (ABERRATION_CORRECTION, ANGULAR_UNITS, ANGULAR_VELOCITY_REPRESENTATION,
-                   ANGULAR_VELOCITY_UNITS, AXIS, CALCULATION_TYPE,
-                   COORDINATE_REPRESENTATION, DIRECTION_VECTOR_TYPE, INTERVALS,
-                   ORIENTATION_REPRESENTATION, OUTPUT_TIME_FORMAT, SHAPE,
+                   ANGULAR_VELOCITY_UNITS, AXIS, CALCULATION_FAILED_PHASES,
+                   CALCULATION_TYPE, COORDINATE_REPRESENTATION, DIRECTION_VECTOR_TYPE,
+                   INTERVALS, ORIENTATION_REPRESENTATION, OUTPUT_TIME_FORMAT, SHAPE,
                    STATE_REPRESENTATION, SUB_POINT_TYPE, TIME_FORMAT, TIME_LOCATION,
                    TIME_STEP_UNITS, TIME_SYSTEM)
 
@@ -229,11 +229,11 @@ class Calculation:
         Example
         -------
         >>> calc.submit()  # noqa: E501  # doctest: +SKIP
-        [Calculation submit] Phase: LOADING_KERNELS (id: 8750344d-645d-4e43-b159-c8d88d28aac6)
+        [Calculation submit] Phase: QUEUED | POSITION: 6 (id: 8750344d-645d-4e43-b159-c8d88d28aac6)
         >>> calc.id        # doctest: +SKIP
         '8750344d-645d-4e43-b159-c8d88d28aac6'
         >>> calc.phase     # doctest: +SKIP
-        'LOADING_KERNELS'
+        'QUEUED | POSITION: 6'
 
         '''
         if self.id is not None:
@@ -252,13 +252,27 @@ class Calculation:
         self.id = None
         self.submit()
 
+    def cancel(self):
+        '''Cancels calculation if already submitted.'''
+        if self.id is not None:
+            _, self.phase = API.cancel_calculation(self.id)
+
+            if self.verbose:
+                print(f'[Calculation cancellation] Phase: {self.phase} (id: {self.id})')
+
     def update(self):
         '''Update calculation phase ``phase``.
 
         Example
         -------
         >>> calc.update()  # noqa: E501  # doctest: +SKIP
+        [Calculation update] Phase: QUEUED | POSITION: 3 (id: 8750344d-645d-4e43-b159-c8d88d28aac6)
+        >>> calc.update()  # noqa: E501  # doctest: +SKIP
+        [Calculation update] Phase: STARTING (id: 8750344d-645d-4e43-b159-c8d88d28aac6)
+        >>> calc.update()  # noqa: E501  # doctest: +SKIP
         [Calculation update] Phase: LOADING_KERNELS (id: 8750344d-645d-4e43-b159-c8d88d28aac6)
+        >>> calc.update()  # noqa: E501  # doctest: +SKIP
+        [Calculation update] Phase: CALCULATING (id: 8750344d-645d-4e43-b159-c8d88d28aac6)
         >>> calc.update()  # doctest: +SKIP
         [Calculation update] Phase: COMPLETE (id: 8750344d-645d-4e43-b159-c8d88d28aac6)
         '''
@@ -355,6 +369,10 @@ class Calculation:
 
             if self.phase == 'COMPLETE':
                 return self.results
+
+            if self.phase in CALCULATION_FAILED_PHASES:
+                raise CalculationFailed(self.phase)
+
             time.sleep(sleep)
 
         raise CalculationTimeOut(timeout, sleep)

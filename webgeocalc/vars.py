@@ -3,6 +3,13 @@
 
 API_URL = 'https://wgc2.jpl.nasa.gov:8443/webgeocalc/api'
 
+CALCULATION_FAILED_PHASES = [
+    'FAILED',
+    'CANCELLED',
+    'DISPATCHED',
+    'EXPIRED',
+]
+
 CALCULATION_TYPE = [
     'STATE_VECTOR',
     'ANGULAR_SEPARATION',

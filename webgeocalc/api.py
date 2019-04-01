@@ -125,7 +125,7 @@ class Api:
 
         '''
         if json['status'] != 'OK':
-            raise APIError(json['message'])
+            raise APIError(json['error']['shortDescription'])
 
         keys = json.keys()
 
@@ -134,7 +134,11 @@ class Api:
             return [dtype(item) for item in json['items']]
 
         if 'result' in keys:
-            return json['calculationId'], json['result']['phase']
+            phase = json['result']['phase']
+            if phase == 'QUEUED':
+                phase += f' | POSITION: {json["result"]["position"]}'
+
+            return json['calculationId'], phase
 
         if 'columns' in keys and 'rows' in keys:
             cols = [ColumnResult(col) for col in json['columns']]
@@ -312,6 +316,34 @@ class Api:
 
         '''
         return self.get(f'/calculation/{calculation_id}')
+
+    def cancel_calculation(self, calculation_id):
+        '''Cancels a previously requested calculation, should this not be completed, or its results..
+
+        ``GET: /calculation/{id}/cancel``
+
+        Calculations that have been already ``DISPATCHED``, previously ``CANCELLED`` or
+        that have ``EXPIRED`` cannot be cancelled, and requesting it will produce an `error`.
+
+        Parameters
+        ----------
+        calculation_id: str
+            Calculation id.
+
+        Returns
+        -------
+        (str, str)
+            Tuple of the calculation phase:
+            ``(calculation-id, phase)``
+            See: :py:func:`read`.
+
+        Example
+        -------
+        >>> API.phase_calculation('0788aba2-d4e5-4028-9ef1-4867ad5385e0')  # noqa: E501  # doctest: +SKIP
+        ('0788aba2-d4e5-4028-9ef1-4867ad5385e0', 'CANCELLED')
+
+        '''
+        return self.get(f'/calculation/{calculation_id}/cancel')
 
     def results_calculation(self, calculation_id):
         '''Gets the results of a complete calculation.

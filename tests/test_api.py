@@ -60,12 +60,29 @@ def cassini_instrument():
     }
 
 @pytest.fixture
+def api_queued():
+    '''Queued API response.'''
+    return {
+        "status": "OK",
+        "message": "The request was successful.",
+        "calculationId": "0788aba2-d4e5-4028-9ef1-4867ad5385e0",
+        "result": {
+            "phase": "QUEUED",
+            "position": 6
+        }
+    }
+
+@pytest.fixture
 def api_error():
-    '''Error API output.'''
+    '''Error API reponse.'''
     return {
         "status": "ERROR",
-        "message": None,
-        "calculationId": "0788aba2-d4e5-4028-9ef1-4867ad5385e0"
+        "message": "The request has failed.",
+        "calculationId": "0788aba2-d4e5-4028-9ef1-4867ad5385e0",
+        "error": {
+            "shortDescription": "The provided Calculation ID does not "
+                                "correspond to any requested calculation."
+        }
     }
 
 @pytest.fixture
@@ -175,6 +192,12 @@ def test_instruments(cassini_kernel_set, cassini_instrument):
 
     assert int(instrument) == cassini_instrument['id']
     assert str(instrument) == cassini_instrument['name']
+
+
+def test_api_read_queued(api_queued):
+    '''Test queued position output from API.'''
+    _, phase = API.read(api_queued)
+    assert phase == 'QUEUED | POSITION: 6'
 
 def test_api_read_error(api_error):
     '''Test error output from API.'''
