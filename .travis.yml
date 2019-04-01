@@ -38,6 +38,7 @@ jobs:
         - test -d $HOME/miniconda/bin || (rm -rf $HOME/miniconda && wget https://repo.continuum.io/miniconda/$MINICONDA_VERSION.sh -q -O $HOME/miniconda.sh && bash $HOME/miniconda.sh -b -p $HOME/miniconda)
         - export PATH="$HOME/miniconda/bin:$PATH" && hash -r
         - conda install -q -y conda-build conda-verify anaconda-client
+        - conda config --set anaconda_upload yes
       script:
         - conda build . --user $USERNAME --token $CONDA_TOKEN --python $TRAVIS_PYTHON_VERSION
 
