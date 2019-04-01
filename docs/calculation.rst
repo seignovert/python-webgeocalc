@@ -57,7 +57,7 @@ The payload that will be submitted to
 the WebGeoCalc API can be retrieve with the
 :py:attr:`.payload` attribute:
 
->>> calc.payload   # doctest: +NORMALIZE_WHITESPACE
+>>> calc.payload
 {'kernels': [{'type': 'KERNEL_SET', 'id': 5}],
  'times': ['2012-10-19T08:24:00.000'],
  'calculationType': 'STATE_VECTOR',
@@ -80,7 +80,7 @@ inputs for :py:attr:`.target`, :py:attr:`.observer` and
 ...    target = -82,             # CASSINI
 ...    observer = 699,           # SATURN
 ...    reference_frame = 10016,  # IAU_SATURN
-... ).payload   # doctest: +NORMALIZE_WHITESPACE
+... ).payload
 {'kernels': [{'type': 'KERNEL_SET', 'id': 1},
              {'type': 'KERNEL_SET', 'id': 5}],
  'times': ['2012-10-19T07:00:00', '2012-10-19T09:00:00'],
@@ -111,7 +111,7 @@ with specific :py:attr:`.kernel_paths` and multiple :py:attr:`.intervals`:
 ...    target_1 = 'VENUS',
 ...    target_2 = 'MERCURY',
 ...    observer = 'SUN',
-... ).payload   # doctest: +NORMALIZE_WHITESPACE
+... ).payload
 {'kernels': [{'type': 'KERNEL', 'path': 'pds/wgc/kernels/lsk/naif0012.tls'},
              {'type': 'KERNEL', 'path': 'pds/wgc/kernels/spk/de430.bsp'}],
  'intervals': [{'startTime': '2000-01-01', 'endTime': '2000-01-03'},
@@ -205,7 +205,7 @@ calculated in a desired reference frame:
 ...    observer = 'SATURN',
 ...    reference_frame = 'IAU_SATURN',
 ...    verbose = False,
-... ).run()  # doctest: +NORMALIZE_WHITESPACE
+... ).run()
 {'DATE': '2012-10-19 09:00:00.000000 UTC',
  'DISTANCE': 764142.63776247,
  'SPEED': 111.54765899,
@@ -324,7 +324,7 @@ another reference frame (Frame 2).
 ...     frame_2 = 'IAU_ENCELADUS',
 ...     aberration_correction = 'NONE',
 ...     verbose = False,
-... ).run()  # doctest: +NORMALIZE_WHITESPACE
+... ).run()
 {'DATE': '2012-10-19 08:24:00.000000 UTC',
  'ANGLE3': -20.58940104,
  'ANGLE2': 0.01874004,
@@ -378,7 +378,7 @@ target as seen from an observer.
 ...    latitude = 0.0,
 ...    longitude = 0.0,
 ...    verbose = False,
-... ).run()  # doctest: +NORMALIZE_WHITESPACE
+... ).run()
 {'DATE': '2012-10-19 08:24:00.000000 UTC',
  'INCIDENCE_ANGLE': 24.78527742,
  'EMISSION_ANGLE': 25.56007298,
@@ -425,7 +425,7 @@ Calculates the sub-solar point on a target as seen from an observer.
 ...     observer = 'CASSINI',
 ...     aberration_correction = 'CN+S',
 ...     verbose = False,
-... ).run()  # doctest: +NORMALIZE_WHITESPACE
+... ).run()
 {'DATE': '2012-10-19 08:24:00.000000 UTC',
  'X': 234.00550655,
  'Y': -77.32612213,
@@ -474,7 +474,7 @@ Calculate the sub-observer point on a target as seen from an observer.
 ...     observer = 'CASSINI',
 ...     aberration_correction = 'CN+S',
 ...     verbose = False,
-... ).run()  # doctest: +NORMALIZE_WHITESPACE
+... ).run()
 {'DATE': '2012-10-19 08:24:00.000000 UTC',
  'X': 232.5831733,
  'Y': -81.40386728,
@@ -527,7 +527,7 @@ from an observer.
 ...     aberration_correction = 'NONE',
 ...     state_representation = 'LATITUDINAL',
 ...     verbose = False,
-... ).run()  # doctest: +NORMALIZE_WHITESPACE
+... ).run()
 {'DATE': '2012-10-14 00:00:00.000000 UTC',
  'LONGITUDE': 98.7675609,
  'LATITUDE': -38.69027976,
@@ -575,7 +575,7 @@ central body. The orbit may be elliptical, parabolic, or hyperbolic.
 ...     orbiting_body = 'CASSINI',
 ...     center_body = 'SATURN',
 ...     verbose = False,
-... ).run()  # doctest: +NORMALIZE_WHITESPACE
+... ).run()
 {'DATE': '2012-10-19 08:24:00.000000 UTC',
  'PERIFOCAL_DISTANCE': 474789.03917271,
  'ECCENTRICITY': 0.70348463,

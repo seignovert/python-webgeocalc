@@ -6,6 +6,8 @@ full list see the documentation:
 http://www.sphinx-doc.org/en/master/config
 '''
 
+import doctest
+
 # -- Project information -----------------------------------------------------
 
 project = 'WebGeoCalc API'
@@ -34,6 +36,18 @@ html_theme = 'sphinx_rtd_theme'
 htmlhelp_basename = 'WebGeoCalcAPIdoc'
 
 # -- Extension configuration -------------------------------------------------
-autodoc_default_flags = ['members', 'show-inheritance']
+autodoc_default_options = {
+    'members': True,
+    'show-inheritance': True,
+}
+
 autodoc_member_order = 'bysource'
 pygments_style = None
+
+doctest_default_flags = (
+    0
+    | doctest.DONT_ACCEPT_TRUE_FOR_1
+    | doctest.ELLIPSIS
+    | doctest.IGNORE_EXCEPTION_DETAIL
+    | doctest.NORMALIZE_WHITESPACE
+)
