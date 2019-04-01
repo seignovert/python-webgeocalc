@@ -237,59 +237,59 @@ def test_calculation_angular_velocity_units_error(params):
         Calculation(angular_velocity_representation='NOT_INCLUDED',
                     angular_velocity_units='deg/s', **params)
 
-def test_calculation_intercept_vector_type_error(params):
+def test_calculation_direction_vector_type_error(params):
     '''Test error if intercept vector type is invalid.'''
     with pytest.raises(CalculationInvalidAttr):
-        Calculation(intercept_vector_type='WRONG', **params)
+        Calculation(direction_vector_type='WRONG', **params)
 
-def test_calculation_intercept_instrument_error(params):
+def test_calculation_direction_instrument_error(params):
     '''Test erros when intercept instrument is invalid.'''
     with pytest.raises(CalculationUndefinedAttr):
-        # Missing `intercept_vector_type`
-        Calculation(intercept_instrument='CASSINI_ISS_NAC', **params)
+        # Missing `direction_vector_type`
+        Calculation(direction_instrument='CASSINI_ISS_NAC', **params)
 
     with pytest.raises(CalculationIncompatibleAttr):
-        Calculation(intercept_instrument='CASSINI_ISS_NAC',
-                    intercept_vector_type='VECTOR_IN_REFERENCE_FRAME',
-                    intercept_frame='CASSINI_ISS_NAC', **params)
+        Calculation(direction_instrument='CASSINI_ISS_NAC',
+                    direction_vector_type='VECTOR_IN_REFERENCE_FRAME',
+                    direction_frame='CASSINI_ISS_NAC', **params)
 
-def test_calculation_intercept_frame_error(params):
+def test_calculation_direction_frame_error(params):
     '''Test errors when intercept frame is invalid.'''
     with pytest.raises(CalculationUndefinedAttr):
-        # Missing 'intercept_vector_type'
-        Calculation(intercept_frame='CASSINI_ISS_NAC', **params)
+        # Missing 'direction_vector_type'
+        Calculation(direction_frame='CASSINI_ISS_NAC', **params)
 
     with pytest.raises(CalculationIncompatibleAttr):
-        # Wrong 'intercept_vector_type'
-        Calculation(intercept_frame='CASSINI_ISS_NAC',
-                    intercept_vector_type='INSTRUMENT_BORESIGHT', **params)
+        # Wrong 'direction_vector_type'
+        Calculation(direction_frame='CASSINI_ISS_NAC',
+                    direction_vector_type='INSTRUMENT_BORESIGHT', **params)
 
-def test_calculation_intercept_frame_axis_error(params):
+def test_calculation_direction_frame_axis_error(params):
     '''Test errors when intercept frame axis is invalid.'''
     with pytest.raises(CalculationUndefinedAttr):
-        # Missing 'intercept_frame'
-        Calculation(intercept_frame_axis='Z', **params)
+        # Missing 'direction_frame'
+        Calculation(direction_frame_axis='Z', **params)
 
     with pytest.raises(CalculationIncompatibleAttr):
-        # Wrong 'intercept_vector_type'
-        Calculation(intercept_frame_axis='Z',
-                    intercept_vector_type='INSTRUMENT_BORESIGHT', **params)
+        # Wrong 'direction_vector_type'
+        Calculation(direction_frame_axis='Z',
+                    direction_vector_type='INSTRUMENT_BORESIGHT', **params)
 
     with pytest.raises(CalculationInvalidAttr):
-        # Wrong 'intercept_frame_axis'
-        Calculation(intercept_frame_axis='WRONG',
-                    intercept_vector_type='REFERENCE_FRAME_AXIS', **params)
+        # Wrong 'direction_frame_axis'
+        Calculation(direction_frame_axis='WRONG',
+                    direction_vector_type='REFERENCE_FRAME_AXIS', **params)
 
-def test_calculation_intercept_vector_error(params):
+def test_calculation_direction_vector_error(params):
     '''Test errors when intercept vector is invalid.'''
     with pytest.raises(CalculationUndefinedAttr):
-        # Missing 'intercept_vector_type'
-        Calculation(intercept_vector_x=0, **params)
+        # Missing 'direction_vector_type'
+        Calculation(direction_vector_x=0, **params)
 
     with pytest.raises(CalculationIncompatibleAttr):
-        # Wrong 'intercept_vector_type'
-        Calculation(intercept_vector_x=0,
-                    intercept_vector_type='INSTRUMENT_BORESIGHT', **params)
+        # Wrong 'direction_vector_type'
+        Calculation(direction_vector_x=0,
+                    direction_vector_type='INSTRUMENT_BORESIGHT', **params)
 
 def test_calculation_output_time_system_error(params):
     '''Test errors when output time system is invalid.'''

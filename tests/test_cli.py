@@ -230,8 +230,8 @@ def test_cli_surface_intercept_point_dry_run(capsys):
             '--target SATURN '
             '--target_frame IAU_SATURN '
             '--observer CASSINI '
-            '--intercept_vector_type INSTRUMENT_BORESIGHT '
-            '--intercept_instrument CASSINI_ISS_NAC '
+            '--direction_vector_type INSTRUMENT_BORESIGHT '
+            '--direction_instrument CASSINI_ISS_NAC '
             '--aberration_correction NONE '
             '--state_representation LATITUDINAL').split()
 

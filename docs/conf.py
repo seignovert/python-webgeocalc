@@ -46,8 +46,8 @@ pygments_style = None
 
 doctest_default_flags = (
     0
-    | doctest.DONT_ACCEPT_TRUE_FOR_1
-    | doctest.ELLIPSIS
-    | doctest.IGNORE_EXCEPTION_DETAIL
-    | doctest.NORMALIZE_WHITESPACE
+    | doctest.DONT_ACCEPT_TRUE_FOR_1    # noqa: W503
+    | doctest.ELLIPSIS                  # noqa: W503
+    | doctest.IGNORE_EXCEPTION_DETAIL   # noqa: W503
+    | doctest.NORMALIZE_WHITESPACE      # noqa: W503
 )

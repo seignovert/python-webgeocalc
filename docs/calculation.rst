@@ -524,8 +524,8 @@ from an observer.
 ...     target = 'SATURN',
 ...     target_frame = 'IAU_SATURN',
 ...     observer = 'CASSINI',
-...     intercept_vector_type = 'INSTRUMENT_BORESIGHT',
-...     intercept_instrument = 'CASSINI_ISS_NAC',
+...     direction_vector_type = 'INSTRUMENT_BORESIGHT',
+...     direction_instrument = 'CASSINI_ISS_NAC',
 ...     aberration_correction = 'NONE',
 ...     state_representation = 'LATITUDINAL',
 ...     verbose = False,
@@ -539,7 +539,8 @@ from an observer.
  'EMISSION_ANGLE': 5.8567773,
  'PHASE_ANGLE': 123.77530312,
  'TIME_AT_POINT': '2012-10-14 00:00:00.000000 UTC',
- 'LIGHT_TIME': 6.10771763}
+ 'LIGHT_TIME': 6.10771763,
+ 'LTST': '20:03:06'}
 
 .. important::
 

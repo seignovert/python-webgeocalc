@@ -504,8 +504,8 @@ class SurfaceInterceptPoint(Calculation):
     ----------
     shape_1: str, optional
         See: :py:attr:`.shape_1`
-    intercept_vector_type: str, optional
-        See: :py:attr:`.intercept_vector_type`
+    direction_vector_type: str, optional
+        See: :py:attr:`.direction_vector_type`
     aberration_correction: str, optional
         See: :py:attr:`.aberration_correction`
     state_representation: str, optional
@@ -535,37 +535,37 @@ class SurfaceInterceptPoint(Calculation):
         See: :py:attr:`.target_frame`
     observer: str or int
         See: :py:attr:`.observer`
-    intercept_instrument: str or int
-        See: :py:attr:`.intercept_instrument`
-    intercept_frame: str
-        See: :py:attr:`.intercept_frame`
-    intercept_frame_axis: str
-        See: :py:attr:`.intercept_frame_axis`
-    intercept_vector_x: float
-        See: :py:attr:`.intercept_vector_x`
-    intercept_vector_y: float
-        See: :py:attr:`.intercept_vector_y`
-    intercept_vector_z: float
-        See: :py:attr:`.intercept_vector_z`
-    intercept_vector_ra: float
-        See: :py:attr:`.intercept_vector_ra`
-    intercept_vector_dec: float
-        See: :py:attr:`.intercept_vector_dec`
+    direction_instrument: str or int
+        See: :py:attr:`.direction_instrument`
+    direction_frame: str
+        See: :py:attr:`.direction_frame`
+    direction_frame_axis: str
+        See: :py:attr:`.direction_frame_axis`
+    direction_vector_x: float
+        See: :py:attr:`.direction_vector_x`
+    direction_vector_y: float
+        See: :py:attr:`.direction_vector_y`
+    direction_vector_z: float
+        See: :py:attr:`.direction_vector_z`
+    direction_vector_ra: float
+        See: :py:attr:`.direction_vector_ra`
+    direction_vector_dec: float
+        See: :py:attr:`.direction_vector_dec`
 
         Warnings
         --------
-        Attributes :py:attr:`.intercept_instrument` is needed only if
-        :py:attr:`.intercept_vector_type` is ``INSTRUMENT_BORESIGHT``,
+        Attributes :py:attr:`.direction_instrument` is needed only if
+        :py:attr:`.direction_vector_type` is ``INSTRUMENT_BORESIGHT``,
         ``INSTRUMENT_FOV_BOUNDARY_VECTORS`` or ``VECTOR_IN_INSTRUMENT_FOV``.
 
-        Attributes :py:attr:`.intercept_frame` is needed only if
-        :py:attr:`.intercept_vector_type` is ``REFERENCE_FRAME_AXIS`` or
+        Attributes :py:attr:`.direction_frame` is needed only if
+        :py:attr:`.direction_vector_type` is ``REFERENCE_FRAME_AXIS`` or
         ``VECTOR_IN_REFERENCE_FRAME``.
 
-        Attributes :py:attr:`.intercept_vector_x` + :py:attr:`.intercept_vector_y` +
-        :py:attr:`.intercept_vector_z` or :py:attr:`.intercept_vector_ra` +
-        :py:attr:`.intercept_vector_dec` is needed only if
-        :py:attr:`.intercept_vector_type` is ``VECTOR_IN_INSTRUMENT_FOV`` or
+        Attributes :py:attr:`.direction_vector_x` + :py:attr:`.direction_vector_y` +
+        :py:attr:`.direction_vector_z` or :py:attr:`.direction_vector_ra` +
+        :py:attr:`.direction_vector_dec` is needed only if
+        :py:attr:`.direction_vector_type` is ``VECTOR_IN_INSTRUMENT_FOV`` or
         ``VECTOR_IN_REFERENCE_FRAME``.
 
     Raises
@@ -578,14 +578,14 @@ class SurfaceInterceptPoint(Calculation):
 
     '''
 
-    def __init__(self, shape_1='ELLIPSOID', intercept_vector_type='INSTRUMENT_BORESIGHT',
+    def __init__(self, shape_1='ELLIPSOID', direction_vector_type='INSTRUMENT_BORESIGHT',
                  aberration_correction='CN', state_representation='RECTANGULAR',
                  **kwargs):
 
         self._required(['target', 'target_frame', 'observer'], kwargs)
 
         kwargs['calculation_type'] = 'SURFACE_INTERCEPT_POINT'
-        kwargs['intercept_vector_type'] = intercept_vector_type
+        kwargs['direction_vector_type'] = direction_vector_type
         kwargs['aberration_correction'] = aberration_correction
         kwargs['state_representation'] = state_representation
 

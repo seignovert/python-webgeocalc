@@ -12,7 +12,7 @@ from .errors import (CalculationAlreadySubmitted, CalculationConflictAttr,
 from .types import KernelSetDetails
 from .vars import (ABERRATION_CORRECTION, ANGULAR_UNITS, ANGULAR_VELOCITY_REPRESENTATION,
                    ANGULAR_VELOCITY_UNITS, AXIS, CALCULATION_TYPE,
-                   COORDINATE_REPRESENTATION, INTERCEPT_VECTOR_TYPE, INTERVALS,
+                   COORDINATE_REPRESENTATION, DIRECTION_VECTOR_TYPE, INTERVALS,
                    ORIENTATION_REPRESENTATION, OUTPUT_TIME_FORMAT, SHAPE,
                    STATE_REPRESENTATION, SUB_POINT_TYPE, TIME_FORMAT, TIME_LOCATION,
                    TIME_STEP_UNITS, TIME_SYSTEM)
@@ -120,24 +120,24 @@ class Calculation:
         See: :py:attr:`longitude`
     sub_point_type: str
         See: :py:attr:`sub_point_type`
-    intercept_vector_type: str
-        See: :py:attr:`intercept_vector_type`
-    intercept_instrument: str or int
-        See: :py:attr:`intercept_instrument`
-    intercept_frame: str
-        See: :py:attr:`intercept_frame`
-    intercept_frame_axis: str
-        See: :py:attr:`intercept_frame_axis`
-    intercept_vector_x: float
-        See: :py:attr:`intercept_vector_x`
-    intercept_vector_y: float
-        See: :py:attr:`intercept_vector_y`
-    intercept_vector_z: float
-        See: :py:attr:`intercept_vector_z`
-    intercept_vector_ra: float
-        See: :py:attr:`intercept_vector_ra`
-    intercept_vector_dec: float
-        See: :py:attr:`intercept_vector_dec`
+    direction_vector_type: str
+        See: :py:attr:`direction_vector_type`
+    direction_instrument: str or int
+        See: :py:attr:`direction_instrument`
+    direction_frame: str
+        See: :py:attr:`direction_frame`
+    direction_frame_axis: str
+        See: :py:attr:`direction_frame_axis`
+    direction_vector_x: float
+        See: :py:attr:`direction_vector_x`
+    direction_vector_y: float
+        See: :py:attr:`direction_vector_y`
+    direction_vector_z: float
+        See: :py:attr:`direction_vector_z`
+    direction_vector_ra: float
+        See: :py:attr:`direction_vector_ra`
+    direction_vector_dec: float
+        See: :py:attr:`direction_vector_dec`
 
     Raises
     ------
@@ -1413,12 +1413,12 @@ class Calculation:
             raise CalculationInvalidAttr('sub_point_type', val, SUB_POINT_TYPE)
 
     @SetterProperty
-    def intercept_vector_type(self, val):
-        '''Type of intercept vector.
+    def direction_vector_type(self, val):
+        '''Type of ray's direction vector.
 
         Parameters
         ----------
-        intercept_vector_type: str
+        direction_vector_type: str
             Type of vector to be used as the ray direction. One of:
 
             - INSTRUMENT_BORESIGHT *(the instrument boresight vector)*
@@ -1436,118 +1436,118 @@ class Calculation:
         CalculationRequiredAttr
             If this parameter is ``INSTRUMENT_BORESIGHT``,
             ``INSTRUMENT_FOV_BOUNDARY_VECTORS`` or ``VECTOR_IN_INSTRUMENT_FOV``
-            but :py:attr:`intercept_instrument` is not provided.
+            but :py:attr:`direction_instrument` is not provided.
         CalculationRequiredAttr
             If this parameter is ``REFERENCE_FRAME_AXIS`` or ``VECTOR_IN_REFERENCE_FRAME``
-            but :py:attr:`intercept_frame` is not provided.
+            but :py:attr:`direction_frame` is not provided.
         CalculationRequiredAttr
             If this parameter is ``REFERENCE_FRAME_AXIS`` but
-            :py:attr:`intercept_frame_axis` is not provided.
+            :py:attr:`direction_frame_axis` is not provided.
         CalculationUndefinedAttr
             If this parameter is ``VECTOR_IN_INSTRUMENT_FOV``
-            or ``VECTOR_IN_REFERENCE_FRAME`` but neither :py:attr:`intercept_vector_x`,
-            :py:attr:`intercept_vector_y` and :py:attr:`intercept_vector_z`
-            nor :py:attr:`intercept_vector_ra` and :py:attr:`intercept_vector_dec`
+            or ``VECTOR_IN_REFERENCE_FRAME`` but neither :py:attr:`direction_vector_x`,
+            :py:attr:`direction_vector_y` and :py:attr:`direction_vector_z`
+            nor :py:attr:`direction_vector_ra` and :py:attr:`direction_vector_dec`
             are provided.
 
         '''
-        if val in INTERCEPT_VECTOR_TYPE:
-            self.__interceptVectorType = val
+        if val in DIRECTION_VECTOR_TYPE:
+            self.__directionVectorType = val
         else:
             raise CalculationInvalidAttr(
-                'intercept_vector_type', val, INTERCEPT_VECTOR_TYPE)
+                'direction_vector_type', val, DIRECTION_VECTOR_TYPE)
 
         if val in ['INSTRUMENT_BORESIGHT', 'INSTRUMENT_FOV_BOUNDARY_VECTORS',
                    'VECTOR_IN_INSTRUMENT_FOV']:
-            self._required(['intercept_instrument'], self.params)
+            self._required(['direction_instrument'], self.params)
 
         elif val in ['REFERENCE_FRAME_AXIS', 'VECTOR_IN_REFERENCE_FRAME']:
-            self._required(['intercept_frame'], self.params)
+            self._required(['direction_frame'], self.params)
             if val == 'REFERENCE_FRAME_AXIS':
-                self._required(['intercept_frame_axis'], self.params)
+                self._required(['direction_frame_axis'], self.params)
 
         keys = self.params.keys()
         if val in ['VECTOR_IN_INSTRUMENT_FOV', 'VECTOR_IN_REFERENCE_FRAME']:
             if not(
-                    'intercept_vector_x' in keys and  # noqa: W504
-                    'intercept_vector_y' in keys and  # noqa: W504
-                    'intercept_vector_z' in keys
+                    'direction_vector_x' in keys and  # noqa: W504
+                    'direction_vector_y' in keys and  # noqa: W504
+                    'direction_vector_z' in keys
             ) and not(
-                'intercept_vector_ra' in keys and  # noqa: W504
-                'intercept_vector_dec' in keys
+                'direction_vector_ra' in keys and  # noqa: W504
+                'direction_vector_dec' in keys
             ):
                 raise CalculationUndefinedAttr(
-                    'intercept_vector_type', val,
-                    "intercept_vector_x/y/z' or 'intercept_vector_ra/dec")
+                    'direction_vector_type', val,
+                    "direction_vector_x/y/z' or 'direction_vector_ra/dec")
 
     @SetterProperty
-    def intercept_instrument(self, val):
-        '''Intercept imnstrument.
+    def direction_instrument(self, val):
+        '''Direction imnstrument.
 
         Parameters
         ----------
-        intercept_instrument: str or int
+        direction_instrument: str or int
             The instrument ``name`` or ``id``.
 
         Raises
         ------
         CalculationUndefinedAttr
-            If :py:attr:`intercept_vector_type` is not provided.
+            If :py:attr:`direction_vector_type` is not provided.
         CalculationIncompatibleAttr
-            If :py:attr:`intercept_vector_type` not in ``INSTRUMENT_BORESIGHT``,
+            If :py:attr:`direction_vector_type` not in ``INSTRUMENT_BORESIGHT``,
             ``INSTRUMENT_FOV_BOUNDARY_VECTORS`` or ``VECTOR_IN_INSTRUMENT_FOV``.
 
         '''
-        if 'intercept_vector_type' not in self.params.keys():
+        if 'direction_vector_type' not in self.params.keys():
             raise CalculationUndefinedAttr(
-                'intercept_instrument', val, 'intercept_vector_type')
+                'direction_instrument', val, 'direction_vector_type')
 
         choices = ['INSTRUMENT_BORESIGHT', 'INSTRUMENT_FOV_BOUNDARY_VECTORS',
                    'VECTOR_IN_INSTRUMENT_FOV']
-        if not self.params['intercept_vector_type'] in choices:
+        if not self.params['direction_vector_type'] in choices:
             raise CalculationIncompatibleAttr(
-                'intercept_instrument', val, 'intercept_vector_type',
-                self.params['intercept_vector_type'], choices)
+                'direction_instrument', val, 'direction_vector_type',
+                self.params['direction_vector_type'], choices)
 
-        self.__interceptInstrument = val if isinstance(val, int) else val.upper()
+        self.__directionInstrument = val if isinstance(val, int) else val.upper()
 
     @SetterProperty
-    def intercept_frame(self, val):
-        '''Intercept vector reference frame.
+    def direction_frame(self, val):
+        '''Direction vector reference frame.
 
         Parameters
         ----------
-        intercept_frame: str
+        direction_frame: str
             The vector's reference frame ``name``.
 
         Raises
         ------
         CalculationUndefinedAttr
-            If :py:attr:`intercept_vector_type` is not provided.
+            If :py:attr:`direction_vector_type` is not provided.
         CalculationIncompatibleAttr
-            If :py:attr:`intercept_vector_type` is not in ``REFERENCE_FRAME_AXIS``
+            If :py:attr:`direction_vector_type` is not in ``REFERENCE_FRAME_AXIS``
             or ``VECTOR_IN_REFERENCE_FRAME``.
 
         '''
-        if 'intercept_vector_type' not in self.params.keys():
+        if 'direction_vector_type' not in self.params.keys():
             raise CalculationUndefinedAttr(
-                'intercept_frame', val, 'intercept_vector_type')
+                'direction_frame', val, 'direction_vector_type')
 
         choices = ['REFERENCE_FRAME_AXIS', 'VECTOR_IN_REFERENCE_FRAME']
-        if not self.params['intercept_vector_type'] in choices:
+        if not self.params['direction_vector_type'] in choices:
             raise CalculationIncompatibleAttr(
-                'intercept_frame', val, 'intercept_vector_type',
-                self.params['intercept_vector_type'], choices)
+                'direction_frame', val, 'direction_vector_type',
+                self.params['direction_vector_type'], choices)
 
-        self.__interceptFrame = val
+        self.__directionFrame = val
 
     @SetterProperty
-    def intercept_frame_axis(self, val):
+    def direction_frame_axis(self, val):
         '''The vector's reference frame axis name.
 
         Parameters
         ----------
-        intercept_frame: str
+        direction_frame: str
             The vector's reference frame  axis. One of:
 
             - X
@@ -1557,29 +1557,29 @@ class Calculation:
         Raises
         ------
         CalculationUndefinedAttr
-            If :py:attr:`intercept_vector_type` is not provided.
+            If :py:attr:`direction_vector_type` is not provided.
         CalculationIncompatibleAttr
-            If :py:attr:`intercept_vector_type` is not ``REFERENCE_FRAME_AXIS``.
+            If :py:attr:`direction_vector_type` is not ``REFERENCE_FRAME_AXIS``.
         CalculationInvalidAttr
             If the value provided is invalid.
 
         '''
-        if 'intercept_vector_type' not in self.params.keys():
+        if 'direction_vector_type' not in self.params.keys():
             raise CalculationUndefinedAttr(
-                'intercept_frame_axis', val, 'intercept_vector_type')
+                'direction_frame_axis', val, 'direction_vector_type')
 
-        if self.params['intercept_vector_type'] != 'REFERENCE_FRAME_AXIS':
+        if self.params['direction_vector_type'] != 'REFERENCE_FRAME_AXIS':
             raise CalculationIncompatibleAttr(
-                'intercept_frame_axis', val, 'intercept_vector_type',
-                self.params['intercept_vector_type'], ['REFERENCE_FRAME_AXIS'])
+                'direction_frame_axis', val, 'direction_vector_type',
+                self.params['direction_vector_type'], ['REFERENCE_FRAME_AXIS'])
 
         if val in AXIS:
-            self.__interceptFrameAxis = val
+            self.__directionFrameAxis = val
         else:
-            raise CalculationInvalidAttr('intercept_frame_axis', val, AXIS)
+            raise CalculationInvalidAttr('direction_frame_axis', val, AXIS)
 
-    def intercept_vector(self, axis, val):
-        '''Intercept vector coordinate.
+    def direction_vector(self, axis, val):
+        '''Direction vector coordinate.
 
         Parameters
         ----------
@@ -1591,79 +1591,79 @@ class Calculation:
         Raises
         ------
         CalculationUndefinedAttr
-            If :py:attr:`intercept_vector_type` is not provided.
+            If :py:attr:`direction_vector_type` is not provided.
         CalculationIncompatibleAttr
-            If :py:attr:`intercept_vector_type` is not in ``VECTOR_IN_INSTRUMENT_FOV``
+            If :py:attr:`direction_vector_type` is not in ``VECTOR_IN_INSTRUMENT_FOV``
             or ``VECTOR_IN_REFERENCE_FRAME``.
 
         '''
-        if 'intercept_vector_type' not in self.params.keys():
+        if 'direction_vector_type' not in self.params.keys():
             raise CalculationUndefinedAttr(
-                'intercept_vector_' + axis, val, 'intercept_vector_type')
+                'direction_vector_' + axis, val, 'direction_vector_type')
 
         choices = ['VECTOR_IN_INSTRUMENT_FOV', 'VECTOR_IN_REFERENCE_FRAME']
-        if not self.params['intercept_vector_type'] in choices:
+        if not self.params['direction_vector_type'] in choices:
             raise CalculationIncompatibleAttr(
-                'intercept_vector_' + axis, val, 'intercept_vector_type',
-                self.params['intercept_vector_type'], choices)
+                'direction_vector_' + axis, val, 'direction_vector_type',
+                self.params['direction_vector_type'], choices)
         return val
 
     @SetterProperty
-    def intercept_vector_x(self, val):
-        '''The X intercept vector coordinate.
+    def direction_vector_x(self, val):
+        '''The X ray's direction vector coordinate.
 
         Parameters
         ----------
-        intercept_vector_x: float
-            Intercept x-coordinate. See :py:func:`intercept_vector`.
+        direction_vector_x: float
+            Direction x-coordinate. See :py:func:`direction_vector`.
 
         '''
-        self.__interceptVectorX = self.intercept_vector('x', val)
+        self.__directionVectorX = self.direction_vector('x', val)
 
     @SetterProperty
-    def intercept_vector_y(self, val):
-        '''The Y intercept vector coordinate.
+    def direction_vector_y(self, val):
+        '''The Y ray's direction vector coordinate.
 
         Parameters
         ----------
-        intercept_vector_y: float
-            Intercept y-coordinate. See :py:func:`intercept_vector`.
+        direction_vector_y: float
+            Direction y-coordinate. See :py:func:`direction_vector`.
 
         '''
-        self.__interceptVectorY = self.intercept_vector('y', val)
+        self.__directionVectorY = self.direction_vector('y', val)
 
     @SetterProperty
-    def intercept_vector_z(self, val):
-        '''The Z intercept vector coordinate.
+    def direction_vector_z(self, val):
+        '''The Z ray's direction vector coordinate.
 
         Parameters
         ----------
-        intercept_vector_z: float
-            Intercept z-coordinate. See :py:func:`intercept_vector`.
+        direction_vector_z: float
+            Direction z-coordinate. See :py:func:`direction_vector`.
 
         '''
-        self.__interceptVectorZ = self.intercept_vector('z', val)
+        self.__directionVectorZ = self.direction_vector('z', val)
 
     @SetterProperty
-    def intercept_vector_ra(self, val):
-        '''The right-ascenssion intercept vector coordinate.
+    def direction_vector_ra(self, val):
+        '''The right-ascenssion ray's direction vector coordinate.
 
         Parameters
         ----------
-        intercept_vector_ra: float
-            Intercept RA-coordinate. See :py:func:`intercept_vector`.
+        direction_vector_ra: float
+            Direction RA-coordinate. See :py:func:`direction_vector`.
 
         '''
-        self.__interceptVectorRA = self.intercept_vector('ra', val)
+        self.__directionVectorRA = self.direction_vector('ra', val)
 
     @SetterProperty
-    def intercept_vector_dec(self, val):
-        '''The declination intercept vector coordinate.
+    def direction_vector_dec(self, val):
+        '''The declination ray's direction vector coordinate.
 
         Parameters
         ----------
-        intercept_vector_dec: float
-            Intercept DEC-coordinate. See :py:func:`intercept_vector`.
+        direction_vector_dec: float
+            Direction DEC-coordinate. See :py:func:`direction_vector`.
 
         '''
-        self.__interceptVectorDec = self.intercept_vector('dec', val)
+        self.__directionVectorDec = self.direction_vector('dec', val)
