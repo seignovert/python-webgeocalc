@@ -582,7 +582,7 @@ class Calculation:
 
         '''
         if val in TIME_STEP_UNITS:
-            self.__timeStepUnit = val
+            self.__timeStepUnits = val
         else:
             raise CalculationInvalidAttr('time_step_units', val, TIME_STEP_UNITS)
 

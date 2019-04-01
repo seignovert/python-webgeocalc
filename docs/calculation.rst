@@ -117,7 +117,7 @@ with specific :py:attr:`.kernel_paths` and multiple :py:attr:`.intervals`:
  'intervals': [{'startTime': '2000-01-01', 'endTime': '2000-01-03'},
                {'startTime': '2000-02-01', 'endTime': '2000-02-03'}],
  'timeStep': 1,
- 'timeStepUnit': 'DAYS',
+ 'timeStepUnits': 'DAYS',
  'target1': 'VENUS',
  'target2': 'MERCURY',
  'observer': 'SUN',
