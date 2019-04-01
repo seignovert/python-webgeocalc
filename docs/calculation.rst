@@ -385,7 +385,8 @@ target as seen from an observer.
  'PHASE_ANGLE': 1.00079007,
  'OBSERVER_ALTITUDE': 967668.02765637,
  'TIME_AT_POINT': '2012-10-19 08:23:56.772207 UTC',
- 'LIGHT_TIME': 3.2277931}
+ 'LIGHT_TIME': 3.2277931,
+ 'LTST': '13:15:59'}
 
 .. important::
 
@@ -485,7 +486,8 @@ Calculate the sub-observer point on a target as seen from an observer.
  'EMISSION_ANGLE': 1.66981544e-12,
  'PHASE_ANGLE': 0.99586304,
  'TIME_AT_POINT': '2012-10-19 08:23:56.772287 UTC',
- 'LIGHT_TIME': 3.22771334}
+ 'LIGHT_TIME': 3.22771334,
+ 'LTST': '11:58:49'}
 
 .. important::
 
