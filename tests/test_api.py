@@ -5,10 +5,10 @@ import pytest
 
 from requests import HTTPError
 
-from webgeocalc import API
+from webgeocalc import API, WGC_ESA, WGC_JPL
 from webgeocalc.errors import (APIError, APIReponseError, KernelSetNotFound,
                                ResultAttributeError, TooManyKernelSets)
-from webgeocalc.vars import API_URL
+from webgeocalc.vars import ESA_URL, JPL_URL
 
 @pytest.fixture
 def solar_system_kernel_set():
@@ -96,7 +96,9 @@ def api_empty_data_response():
 
 def test_api_default_url():
     '''Test default API url.'''
-    assert API.url == API_URL
+    assert API.url == JPL_URL
+    assert WGC_JPL.url == JPL_URL
+    assert WGC_ESA.url == ESA_URL
 
 def test_response_err():
     '''Test GET and POST on invalid URLs.'''
