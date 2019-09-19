@@ -4,7 +4,7 @@ import pbr.version
 
 __version__ = pbr.version.VersionInfo('webgeocalc').version_string()
 
-from .api import API
+from .api import API, WGC_ESA, WGC_JPL
 from .calculation import Calculation
 from .calculation_types import (AngularSeparation, AngularSize,
                                 FrameTransformation, IlluminationAngles,
@@ -25,5 +25,7 @@ __all__ = [
     'SubSolarPoint',
     'SurfaceInterceptPoint',
     'TimeConversion',
+    'WGC_JPL',
+    'WGC_ESA',
     '__version__',
 ]

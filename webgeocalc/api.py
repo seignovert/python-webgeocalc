@@ -5,7 +5,7 @@ import requests
 
 from .errors import APIError, APIReponseError, KernelSetNotFound, TooManyKernelSets
 from .types import ColumnResult, KernelSetDetails, get_type
-from .vars import API_URL
+from .vars import ESA_URL, JPL_URL
 
 class Api:
     '''WebGeoCalc API object.
@@ -18,7 +18,7 @@ class Api:
 
     '''
 
-    def __init__(self, url=API_URL):
+    def __init__(self, url=JPL_URL):
         self.url = url
         self._kernel_sets = None
 
@@ -76,7 +76,7 @@ class Api:
         Example
         -------
         >>> API.post('/calculation/new', payload=calculation_payload)  # doctest: +SKIP
-        ('0788aba2-d4e5-4028-9ef1-4867ad5385e0', 'COMPLETE', 0)
+        ('0788aba2-d4e5-4028-9ef1-4867ad5385e0', 'COMPLETE')
 
         '''
         response = requests.post(self.url + url, json=payload)
@@ -279,7 +279,7 @@ class Api:
 
         Returns
         -------
-        (str, str, int)
+        (str, str)
             Tuple of the calculation phase:
             ``(calculation-id, phase)``
             See: :py:func:`read`.
@@ -373,3 +373,5 @@ class Api:
 
 # Export default API object
 API = Api()
+WGC_JPL = Api(JPL_URL)
+WGC_ESA = Api(ESA_URL)
