@@ -7,7 +7,7 @@ from webgeocalc import Calculation, StateVector
 from webgeocalc.errors import (CalculationAlreadySubmitted, CalculationFailed,
                                CalculationNotCompleted, CalculationTimeOut,
                                ResultAttributeError)
-from webgeocalc.vars import API_URL
+from webgeocalc.vars import JPL_URL
 
 @pytest.fixture
 def params():
@@ -271,11 +271,11 @@ def test_calculation_run(requests_mock, params, response, results):
     '''Run generic calculation.'''
     calc = Calculation(**params)
 
-    requests_mock.post(API_URL + '/calculation/new', json=response)
+    requests_mock.post(JPL_URL + '/calculation/new', json=response)
     requests_mock.get(
-        API_URL + '/calculation/' + response['calculationId'], json=response)
+        JPL_URL + '/calculation/' + response['calculationId'], json=response)
     requests_mock.get(
-        API_URL + '/calculation/' + response['calculationId'] + '/results', json=results)
+        JPL_URL + '/calculation/' + response['calculationId'] + '/results', json=results)
 
     with pytest.raises(CalculationNotCompleted):
         _ = calc.results
@@ -299,11 +299,11 @@ def test_state_vector_single_time(requests_mock, params_sv, response_sv, results
     '''Run state vector calculation.'''
     sv = StateVector(**params_sv)
 
-    requests_mock.post(API_URL + '/calculation/new', json=response_sv)
+    requests_mock.post(JPL_URL + '/calculation/new', json=response_sv)
     requests_mock.get(
-        API_URL + '/calculation/' + response_sv['calculationId'], json=response_sv)
+        JPL_URL + '/calculation/' + response_sv['calculationId'], json=response_sv)
     requests_mock.get(
-        API_URL + '/calculation/' + response_sv['calculationId'] + '/results',
+        JPL_URL + '/calculation/' + response_sv['calculationId'] + '/results',
         json=results_sv)
 
     out = sv.run()
@@ -340,7 +340,7 @@ def test_calculation_cancel(params):
 
 def test_calculation_timeout(requests_mock, params, loading_kernels):
     '''Test error if response exceed timeout.'''
-    requests_mock.post(API_URL + '/calculation/new', json=loading_kernels)
+    requests_mock.post(JPL_URL + '/calculation/new', json=loading_kernels)
 
     with pytest.raises(CalculationTimeOut):
         Calculation(**params).run(timeout=0.001, sleep=0.001)

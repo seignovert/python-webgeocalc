@@ -7,6 +7,7 @@ from webgeocalc import Calculation
 from webgeocalc.errors import (CalculationConflictAttr, CalculationIncompatibleAttr,
                                CalculationInvalidAttr, CalculationRequiredAttr,
                                CalculationUndefinedAttr)
+from webgeocalc.vars import ESA_URL, JPL_URL
 
 @pytest.fixture
 def kernels():
@@ -51,6 +52,12 @@ def end():
 def interval(start, end):
     '''Input interval dict.'''
     return {"startTime": start, "endTime": end}
+
+
+def test_calculation_api_url(params):
+    '''Test calculation API URL.'''
+    assert Calculation(**params).api.url == JPL_URL
+    assert Calculation(wgc='ESA', **params).api.url == ESA_URL
 
 
 def test_calculation_required_err(calc, kernels):
