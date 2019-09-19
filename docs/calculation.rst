@@ -53,6 +53,14 @@ All WebGeoCalc calculation objects take their input attributes in
         - :py:attr:`.time_format`: ``CALENDAR``
 
 
+.. note::
+
+    Calculation are submitted to the JPL webgeocalc server (see API_).
+    but calculation can be submitted to ESA webgeocalc server too by adding
+    :py:attr:`wgc` attribute equal to ``ESA``.
+
+    .. _API: api.html
+
 The payload that will be submitted to
 the WebGeoCalc API can be retrieve with the
 :py:attr:`.payload` attribute:
