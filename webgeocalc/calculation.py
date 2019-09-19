@@ -3,7 +3,7 @@
 
 import time
 
-from .api import API
+from .api import WGC_ESA, WGC_JPL
 from .errors import (CalculationAlreadySubmitted, CalculationConflictAttr,
                      CalculationFailed, CalculationIncompatibleAttr,
                      CalculationInvalidAttr, CalculationInvalidValue,
@@ -34,6 +34,8 @@ class Calculation:
 
     Parameters
     ----------
+    wgc: str, optional
+        WebGeoCalc API source: ``JPL`` (default) or ``ESA``.
     time_system: str, optional
         See: :py:attr:`time_system`
     time_format: str, optional
@@ -151,7 +153,8 @@ class Calculation:
 
     '''
 
-    def __init__(self, time_system='UTC', time_format='CALENDAR', verbose=True, **kwargs):
+    def __init__(self, wgc='JPL', time_system='UTC',
+                 time_format='CALENDAR', verbose=True, **kwargs):
         # Add default parameters to kwargs
         kwargs['time_system'] = time_system
         kwargs['time_format'] = time_format
@@ -164,6 +167,7 @@ class Calculation:
         self.columns = None
         self.values = None
         self.verbose = verbose
+        self.api = WGC_ESA if wgc.upper() == 'ESA' else WGC_JPL
 
         # Required parameters
         self._required(['calculation_type', 'time_system', 'time_format'], kwargs)
@@ -239,7 +243,7 @@ class Calculation:
         if self.id is not None:
             raise CalculationAlreadySubmitted(self.id)
 
-        self.id, self.phase = API.new_calculation(self.payload)
+        self.id, self.phase = self.api.new_calculation(self.payload)
 
         if self.verbose:
             print(f'[Calculation submit] Phase: {self.phase} (id: {self.id})')
@@ -255,7 +259,7 @@ class Calculation:
     def cancel(self):
         '''Cancels calculation if already submitted.'''
         if self.id is not None:
-            _, self.phase = API.cancel_calculation(self.id)
+            _, self.phase = self.api.cancel_calculation(self.id)
 
             if self.verbose:
                 print(f'[Calculation cancellation] Phase: {self.phase} (id: {self.id})')
@@ -275,11 +279,12 @@ class Calculation:
         [Calculation update] Phase: CALCULATING (id: 8750344d-645d-4e43-b159-c8d88d28aac6)
         >>> calc.update()  # doctest: +SKIP
         [Calculation update] Phase: COMPLETE (id: 8750344d-645d-4e43-b159-c8d88d28aac6)
+
         '''
         if self.id is None:
             self.submit()
         else:
-            _, self.phase = API.phase_calculation(self.id)
+            _, self.phase = self.api.phase_calculation(self.id)
 
             if self.verbose:
                 print(f'[Calculation update] Phase: {self.phase} (id: {self.id})')
@@ -333,7 +338,7 @@ class Calculation:
             raise CalculationNotCompleted(self.phase)
 
         if self.columns is None or self.values is None:
-            self.columns, self.values = API.results_calculation(self.id)
+            self.columns, self.values = self.api.results_calculation(self.id)
 
         if len(self.values) == 1:
             data = self.values[0]
@@ -439,10 +444,9 @@ class Calculation:
             (int, str, KernelSetDetails)
         ) else list(map(self._kernel_id_obj, kernel_sets))
 
-    @staticmethod
-    def _kernel_id_obj(kernel_set):
+    def _kernel_id_obj(self, kernel_set):
         # Payload kernel set object
-        return {"type": "KERNEL_SET", "id": API.kernel_set_id(kernel_set)}
+        return {"type": "KERNEL_SET", "id": self.api.kernel_set_id(kernel_set)}
 
     @SetterProperty
     def kernel_paths(self, paths):
