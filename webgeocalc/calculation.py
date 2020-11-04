@@ -18,6 +18,13 @@ from .vars import (ABERRATION_CORRECTION, ANGULAR_UNITS, ANGULAR_VELOCITY_REPRES
                    TIME_STEP_UNITS, TIME_SYSTEM)
 
 
+APIs = {
+    '': API,
+    'JPL': JPL_API,
+    'ESA': ESA_API,
+}
+
+
 class SetterProperty:
     '''Setter property decorator.'''
 
@@ -167,7 +174,13 @@ class Calculation:
         self.columns = None
         self.values = None
         self.verbose = verbose
-        self.api = WGC_ESA if wgc.upper() == 'ESA' else WGC_JPL
+
+        # Select API (with caching)
+        api_key = str(api).upper()
+        if api_key not in APIs:
+            APIs[api_key] = api if isinstance(api, Api) else Api(api)
+
+        self.api = APIs[api_key]
 
         # Required parameters
         self._required(['calculation_type', 'time_system', 'time_format'], kwargs)
