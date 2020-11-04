@@ -7,7 +7,7 @@ import pytest
 
 from requests import HTTPError
 
-from webgeocalc import Api, API, ESA_API, JPL_API
+from webgeocalc import API, Api, ESA_API, JPL_API
 from webgeocalc.errors import (APIError, APIReponseError, KernelSetNotFound,
                                ResultAttributeError, TooManyKernelSets)
 from webgeocalc.vars import ESA_URL, JPL_URL
@@ -122,10 +122,25 @@ def test_api_env_url(monkeypatch):
     assert str(api) == api.url == JPL_URL
 
 
+def test_api_metadata():
+    '''Test API metadata.'''
+    assert API['title'] == 'WebGeocalc by NAIF'
+    assert API['description'] == \
+        'WGC2 -- a WebGeocalc Server with enabled API at NAIF, JPL'
+    assert API['documentation'] == \
+        'https://wgc2.jpl.nasa.gov:8443/webgeocalc/documents/api-info.html'
+    assert API['contact'] == 'Boris Semenov <Boris.Semenov@jpl.nasa.gov>'
+    assert API['version'] == '2.2.2'
+    assert API['build_id'] == '5004 N66 23-JUL-2020'
+
+    with pytest.raises(KeyError):
+        _ = API['foo']
+
+
 def test_response_err():
     '''Test GET and POST on invalid URLs.'''
     with pytest.raises(HTTPError):
-        API.get('/')  # 404 error
+        API.get('/foo')  # 404 error
 
     with pytest.raises(HTTPError):
         API.post('/', payload={})  # 404 error
