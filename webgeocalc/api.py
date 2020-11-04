@@ -30,6 +30,9 @@ class Api:
     def __str__(self):
         return self.url
 
+    def __repr__(self):
+        return f'<{self.__class__.__name__}> {self}'
+
     def get(self, url):
         '''Generic GET request on the API.
 

@@ -259,7 +259,7 @@ def results_sv():
 def params_sv_esa():
     '''Input parameters for state vector caclulation (1 time only).'''
     return {
-        "wgc": 'ESA',
+        "api": 'ESA',
         "kernels": 6,
         "times": "2014-01-01T01:23:45.000",
         "target": "67P/CHURYUMOV-GERASIMENKO (1969 R1)",

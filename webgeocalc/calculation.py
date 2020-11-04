@@ -3,7 +3,7 @@
 
 import time
 
-from .api import WGC_ESA, WGC_JPL
+from .api import Api, API, JPL_API, ESA_API
 from .errors import (CalculationAlreadySubmitted, CalculationConflictAttr,
                      CalculationFailed, CalculationIncompatibleAttr,
                      CalculationInvalidAttr, CalculationInvalidValue,
@@ -153,7 +153,7 @@ class Calculation:
 
     '''
 
-    def __init__(self, wgc='JPL', time_system='UTC',
+    def __init__(self, api='', time_system='UTC',
                  time_format='CALENDAR', verbose=True, **kwargs):
         # Add default parameters to kwargs
         kwargs['time_system'] = time_system

@@ -54,10 +54,14 @@ def interval(start, end):
     return {"startTime": start, "endTime": end}
 
 
-def test_calculation_api_url(params):
+def test_calculation_api(params):
     '''Test calculation API URL.'''
-    assert Calculation(**params).api.url == JPL_URL
-    assert Calculation(wgc='ESA', **params).api.url == ESA_URL
+    api = Calculation(**params).api
+    assert api.url == JPL_URL
+
+    api = Calculation(api='ESA', **params).api
+    assert api.url == ESA_URL
+
 
 
 def test_calculation_required_err(calc, kernels):
