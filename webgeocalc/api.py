@@ -381,5 +381,5 @@ class Api:
 
 # Export default API object
 API = Api()
-WGC_JPL = Api(JPL_URL)
-WGC_ESA = Api(ESA_URL)
+JPL_API = Api(JPL_URL)
+ESA_API = Api(ESA_URL)

@@ -7,7 +7,7 @@ import pytest
 
 from requests import HTTPError
 
-from webgeocalc import API, WGC_ESA, WGC_JPL
+from webgeocalc import Api, API, ESA_API, JPL_API
 from webgeocalc.errors import (APIError, APIReponseError, KernelSetNotFound,
                                ResultAttributeError, TooManyKernelSets)
 from webgeocalc.vars import ESA_URL, JPL_URL
@@ -96,8 +96,11 @@ def api_empty_data_response():
         "calculationId": "0788aba2-d4e5-4028-9ef1-4867ad5385e0",
     }
 
-def test_api_default_url():
+def test_api_url():
     '''Test default API url.'''
+    assert str(API) == API.url
+    assert str(JPL_API) == JPL_URL
+    assert str(ESA_API) == ESA_URL
 
 
 def test_api_env_url(monkeypatch):
