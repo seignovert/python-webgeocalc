@@ -41,8 +41,15 @@ class Calculation:
 
     Parameters
     ----------
-    wgc: str, optional
-        WebGeoCalc API source: ``JPL`` (default) or ``ESA``.
+    api: str or webgeocalc.Api, optional
+        WebGeoCalc API endpoint.
+        By default, if no :py:attr:`api` option is provided,
+        the query is sent to the ``WGC_URL`` API
+        (if set in the global environment variables)
+        or :py:obj:`JPL_API` (if not).
+        Keyword are also accepted (``JPL`` and ``ESA``).
+        Custom 3-rd party endpoints can be used
+        (with their ``URL`` or as a custom :py:class:`webgeocalc.api.Api`).
     time_system: str, optional
         See: :py:attr:`time_system`
     time_format: str, optional

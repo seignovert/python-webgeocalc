@@ -17,8 +17,8 @@ class Api:
     ----------
     url : str, optional
         API root URL.
-        Use `WGC_URL` global environment variable if present.
-        If not, fallback on `JPL_URL`:
+        Use ``WGC_URL`` global environment variable if present.
+        If not, fallback on :py:obj:`JPL_URL`:
         ``https://wgc2.jpl.nasa.gov:8443/webgeocalc/api``
 
     '''

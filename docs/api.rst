@@ -2,19 +2,30 @@ Basic usage of WebGeoCalc API
 ==============================
 
 The :obj:`API` variable in :obj:`webgeocalc` provide an access to
-the WebGeoCalc API (on its default ``wgc2`` server at JPL):
+the WebGeoCalc API:
 
 >>> from webgeocalc import API
 >>> API.url
 'https://wgc2.jpl.nasa.gov:8443/webgeocalc/api'
 
+The default API endpoint can be defined with the :obj:`WGC_URL`
+global environment variable.
+If it is not present, the :obj:`API` will fallback
+to the JPL (:obj:`wgc2`) endpoint (as shown above).
 
-You can also select to use ESA webgeocalc server:
+You can also use the ESA webgeocalc server:
 
->>> from webgeocalc import WGC_ESA
->>> WGC_ESA.url
+>>> from webgeocalc import ESA_API
+>>> ESA_API.url
 'http://spice.esac.esa.int/webgeocalc/api'
 
+
+Or any 3rd party WGC endpoint:
+
+>>> from webgeocalc import Api
+>>> obs_api = Api('https://wgc.obspm.fr/webgeocalc/api')
+>>> obs_api.url
+'https://wgc.obspm.fr/webgeocalc/api'
 
 Request kernel sets
 -------------------
