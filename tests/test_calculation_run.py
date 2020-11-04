@@ -7,7 +7,7 @@ from webgeocalc import Calculation, StateVector
 from webgeocalc.errors import (CalculationAlreadySubmitted, CalculationFailed,
                                CalculationNotCompleted, CalculationTimeOut,
                                ResultAttributeError)
-from webgeocalc.vars import JPL_URL, ESA_URL
+from webgeocalc.vars import ESA_URL, JPL_URL
 
 @pytest.fixture
 def params():
@@ -448,7 +448,8 @@ def test_state_vector_single_time_esa(requests_mock,
 
     requests_mock.post(ESA_URL + '/calculation/new', json=response_sv_esa)
     requests_mock.get(
-        ESA_URL + '/calculation/' + response_sv_esa['calculationId'], json=response_sv_esa)
+        ESA_URL + '/calculation/' + response_sv_esa['calculationId'],
+        json=response_sv_esa)
     requests_mock.get(
         ESA_URL + '/calculation/' + response_sv_esa['calculationId'] + '/results',
         json=results_sv_esa)

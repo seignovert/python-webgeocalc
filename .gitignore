@@ -4,8 +4,10 @@
 .eggs/
 build/
 dist/
+venv/
 htmlcov/
 __pycache__/
 AUTHORS
 Changelog
 docs/_build
+coverage.xml
