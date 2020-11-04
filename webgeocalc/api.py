@@ -26,12 +26,18 @@ class Api:
     def __init__(self, url=''):
         self.url = str(url) if url != '' else os.environ.get('WGC_URL', JPL_URL)
         self._kernel_sets = None
+        self._meta = None
 
     def __str__(self):
         return self.url
 
     def __repr__(self):
         return f'<{self.__class__.__name__}> {self}'
+
+    def __getitem__(self, key):
+        if key in self.metadata:
+            return self.metadata[key]
+        raise KeyError(key)
 
     def get(self, url):
         '''Generic GET request on the API.
@@ -135,6 +141,9 @@ class Api:
             If the format of the API response is unexpected.
 
         '''
+        if 'status' not in json:
+            return json
+
         if json['status'] != 'OK':
             raise APIError(json['error']['shortDescription'])
 
@@ -380,6 +389,13 @@ class Api:
 
         '''
         return self.get(f'/calculation/{calculation_id}/results')
+
+    @property
+    def metadata(self):
+        """API metadata."""
+        if self._meta is None:
+            self._meta = self.get('/')
+        return self._meta
 
 
 # Export default API object

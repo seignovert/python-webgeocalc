@@ -27,6 +27,20 @@ Or any 3rd party WGC endpoint:
 >>> obs_api.url
 'https://wgc.obspm.fr/webgeocalc/api'
 
+
+Metadata
+--------
+
+Some metadata are public provided on the home page of the API
+and can be retrieved directly as items:
+
+>>> API['description']
+'WGC2 -- a WebGeocalc Server with enabled API at NAIF, JPL'
+
+>>> API['version']
+'2.2.2'
+
+
 Request kernel sets
 -------------------
 
