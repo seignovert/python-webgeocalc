@@ -7,7 +7,7 @@ from webgeocalc import Calculation, StateVector
 from webgeocalc.errors import (CalculationAlreadySubmitted, CalculationFailed,
                                CalculationNotCompleted, CalculationTimeOut,
                                ResultAttributeError)
-from webgeocalc.vars import JPL_URL
+from webgeocalc.vars import JPL_URL, ESA_URL
 
 @pytest.fixture
 def params():
@@ -254,6 +254,119 @@ def results_sv():
         ]
     }
 
+
+@pytest.fixture
+def params_sv_esa():
+    '''Input parameters for state vector caclulation (1 time only).'''
+    return {
+        "wgc": 'ESA',
+        "kernels": 6,
+        "times": "2014-01-01T01:23:45.000",
+        "target": "67P/CHURYUMOV-GERASIMENKO (1969 R1)",
+        "observer": "ROSETTA ORBITER",
+        "reference_frame": "67P/C-G_CK",
+        "aberration_correction": 'NONE',
+        "state_representation": "LATITUDINAL",
+    }
+
+@pytest.fixture
+def response_sv_esa():
+    '''State vector response status expected from the ESA API.'''
+    return {
+        "status": "OK",
+        "message": "The request was successful.",
+        "calculationId": "94e54e0c-40d1-4676-ba17-92c5e579ca82",
+        "result": {
+            "phase": "COMPLETE",
+            "expiresIn": 600
+        }
+    }
+
+@pytest.fixture
+def results_sv_esa():
+    '''State vector esults expected from the ESA API.'''
+    return {
+        "status": "OK",
+        "message": "The request was successful.",
+        "calculationId": "94e54e0c-40d1-4676-ba17-92c5e579ca82",
+        "columns": [
+            {
+                "name": "UTC calendar date",
+                "type": "DATE",
+                "units": "",
+                "outputID": "DATE"
+            },
+            {
+                "name": "Longitude (deg)",
+                "type": "NUMBER",
+                "units": "deg",
+                "outputID": "LONGITUDE"
+            },
+            {
+                "name": "Latitude (deg)",
+                "type": "NUMBER",
+                "units": "deg",
+                "outputID": "LATITUDE"
+            },
+            {
+                "name": "Radius (km)",
+                "type": "NUMBER",
+                "units": "km",
+                "outputID": "RADIUS"
+            },
+            {
+                "name": "d Longitude/dt (deg/s)",
+                "type": "NUMBER",
+                "units": "deg/s",
+                "outputID": "D_LONGITUDE_DT"
+            },
+            {
+                "name": "d Latitude/dt (deg/s)",
+                "type": "NUMBER",
+                "units": "deg/s",
+                "outputID": "D_LATITUDE_DT"
+            },
+            {
+                "name": "d Radius/dt (km/s)",
+                "type": "NUMBER",
+                "units": "km/s",
+                "outputID": "D_RADIUS_DT"
+            },
+            {
+                "name": "Speed (km/s)",
+                "type": "NUMBER",
+                "units": "km/s",
+                "outputID": "SPEED"
+            },
+            {
+                "name": "Time at Target",
+                "type": "DATE",
+                "units": "",
+                "outputID": "TIME_AT_TARGET"
+            },
+            {
+                "name": "Light Time (s)",
+                "type": "NUMBER",
+                "units": "s",
+                "outputID": "LIGHT_TIME"
+            }
+        ],
+        "rows": [
+            [
+                "2014-01-01 01:23:45.000000 UTC",
+                -4.5904441,
+                -39.43153956,
+                10514625.76042228,
+                -0.00806197,
+                7.01746089e-8,
+                -0.813433,
+                1142.73632133,
+                "2014-01-01 01:23:45.000000 UTC",
+                35.07301628
+            ]
+        ]
+    }
+
 @pytest.fixture
 def loading_kernels():
     '''Uncomplete response status expected from the API.'''
@@ -296,7 +409,7 @@ def test_calculation_run(requests_mock, params, response, results):
     assert len(out['DATE']) == len(results['rows'])
 
 def test_state_vector_single_time(requests_mock, params_sv, response_sv, results_sv):
-    '''Run state vector calculation.'''
+    '''Run state vector calculation on JPL API.'''
     sv = StateVector(**params_sv)
 
     requests_mock.post(JPL_URL + '/calculation/new', json=response_sv)
@@ -326,6 +439,41 @@ def test_state_vector_single_time(requests_mock, params_sv, response_sv, results
 
     with pytest.raises(ResultAttributeError):
         _ = column.wrong_attr
+
+
+def test_state_vector_single_time_esa(requests_mock,
+                                      params_sv_esa, response_sv_esa, results_sv_esa):
+    '''Run state vector calculation on ESA API.'''
+    sv = StateVector(**params_sv_esa)
+
+    requests_mock.post(ESA_URL + '/calculation/new', json=response_sv_esa)
+    requests_mock.get(
+        ESA_URL + '/calculation/' + response_sv_esa['calculationId'], json=response_sv_esa)
+    requests_mock.get(
+        ESA_URL + '/calculation/' + response_sv_esa['calculationId'] + '/results',
+        json=results_sv_esa)
+
+    out = sv.run()
+    assert out['DATE'] == results_sv_esa['rows'][0][0]
+
+    column = sv.columns[0]
+    column_sv_esa = results_sv_esa['columns'][0]
+
+    assert str(column) == column_sv_esa['name']
+
+    for key in column.keys():
+        assert key in column_sv_esa.keys()
+
+    for value in column.values():
+        assert value in column_sv_esa.values()
+
+    for key, value in column.items():
+        assert key in column_sv_esa.keys()
+        assert value in column_sv_esa.values()
+
+    with pytest.raises(ResultAttributeError):
+        _ = column.wrong_attr
+
 
 def test_calculation_cancel(params):
     '''Test error if calculation is cancelled.'''
