@@ -26,6 +26,12 @@ def test_cli_kernel_sets(capsys):
     assert ' - Solar System Kernels: (id: 1)' in captured.out
     assert 'Too many kernel sets contains \'Cassini\' in their names:' in captured.out
 
+    argv = '--api esa --kernel 6'.split()
+    cli_kernel_sets(argv)
+    captured = capsys.readouterr()
+    assert ' - OPS  --     Rosetta               -- Operational: (id: 6)' in captured.out
+    assert '' in captured.out
+
 def test_cli_bodies(capsys):
     '''Test GET bodies with CLI.'''
     argv = ''.split()
@@ -43,6 +49,12 @@ def test_cli_bodies(capsys):
     cli_bodies(argv)
     captured = capsys.readouterr()
     assert captured.out == ' - TITAN: (id: 606)\n'
+
+    argv = '--api esa 6 --name 67P'.split()
+    cli_bodies(argv)
+    captured = capsys.readouterr()
+    assert captured.out == ' - 67P/CHURYUMOV-GERASIMENKO (1969 R1): (id: 1000012)\n'
+
 
 def test_cli_frames(capsys):
     '''Test GET frames with CLI.'''
@@ -63,6 +75,12 @@ def test_cli_frames(capsys):
     assert ' - IAU_TITAN: (id: 10044)' in captured.out
     assert ' - J2000: (id: 1)' not in captured.out
 
+    argv = '--api esa 6 --name 67P'.split()
+    cli_frames(argv)
+    captured = capsys.readouterr()
+    assert '- 67P/C-G_CK: (id: -1000012000)' in captured.out
+    assert ' - J2000: (id: 1)' not in captured.out
+
 def test_cli_instruments(capsys):
     '''Test GET instruments with CLI.'''
     argv = ''.split()
@@ -81,6 +99,13 @@ def test_cli_instruments(capsys):
     captured = capsys.readouterr()
     assert ' - CASSINI_ISS_WAC: (id: -82361)' in captured.out
     assert ' - CASSINI_VIMS_IR: (id: -82370)' not in captured.out
+
+    argv = '--api esa 6 --name NAVCAM'.split()
+    cli_instruments(argv)
+    captured = capsys.readouterr()
+    assert ' - ROS_NAVCAM-A: (id: -226170)' in captured.out
+    assert ' - ROS_NAVCAM-B: (id: -226180)' in captured.out
+    assert ' - ROS_CONSERT: (id: -226160)' not in captured.out
 
 def test_cli_input_parameters():
     '''Test CLI input parameters parsing.'''
@@ -150,6 +175,7 @@ def test_cli_angular_size_run(capsys):
 
     cli_angular_size(argv)
     captured = capsys.readouterr()
+    assert 'API: https://wgc2.jpl.nasa.gov:8443/webgeocalc/api' in captured.out
     assert 'Payload:' in captured.out
     assert "kernels: [{'type': 'KERNEL_SET', 'id': 5}]," in captured.out
     assert "times: ['2012-10-19T08:24:00']," in captured.out
@@ -170,6 +196,7 @@ def test_cli_frame_transformation_dry_run(capsys):
 
     cli_frame_transformation(argv)
     captured = capsys.readouterr()
+    assert 'API: https://wgc2.jpl.nasa.gov:8443/webgeocalc/api' in captured.out
     assert 'Payload:' in captured.out
     assert "calculationType: FRAME_TRANSFORMATION," in captured.out
     assert 'API status:\n[Calculation submit] Status:' not in captured.out
@@ -267,3 +294,34 @@ def test_cli_time_conversion_dry_run(capsys):
     captured = capsys.readouterr()
     assert 'Payload:' in captured.out
     assert "calculationType: TIME_CONVERSION," in captured.out
+
+
+def test_cli_state_vector_esa(capsys):
+    '''Test dry-run state vector calculation on ESA API with the CLI.'''
+    argv = [
+        '--dry-run',
+        '--api', 'ESA',
+        '--kernels', '"OPS  --     Rosetta"',
+        '--times', '2014-01-01T01:23:45.000',
+        '--calculation_type', 'STATE_VECTOR',
+        '--target', '"67P/CHURYUMOV-GERASIMENKO (1969 R1)"',
+        '--observer', '"ROSETTA ORBITER"',
+        '--reference_frame', '"67P/C-G_CK"',
+        '--aberration_correction', 'NONE',
+        '--state_representation', 'LATITUDINAL',
+    ]
+
+    cli_state_vector(argv)
+    captured = capsys.readouterr()
+    assert 'API: http://spice.esac.esa.int/webgeocalc/api' in captured.out
+    assert 'Payload:' in captured.out
+    assert "kernels: [{'type': 'KERNEL_SET', 'id': 6}]" in captured.out
+    assert "times: ['2014-01-01T01:23:45.000']" in captured.out
+    assert 'target: 67P/CHURYUMOV-GERASIMENKO (1969 R1)' in captured.out
+    assert 'observer: ROSETTA ORBITER' in captured.out
+    assert 'referenceFrame: 67P/C-G_CK' in captured.out
+    assert 'calculationType: STATE_VECTOR' in captured.out
+    assert 'aberrationCorrection: NONE' in captured.out
+    assert 'stateRepresentation: LATITUDINAL' in captured.out
+    assert 'timeSystem: UTC' in captured.out
+    assert 'timeFormat: CALENDAR' in captured.out

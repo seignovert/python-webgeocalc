@@ -4,13 +4,33 @@
 import argparse
 import re
 
-from .api import API
+from .api import Api, ESA_API, JPL_API
 from .calculation_types import (AngularSeparation, AngularSize,
                                 Calculation, FrameTransformation,
                                 IlluminationAngles, OsculatingElements,
                                 StateVector, SubObserverPoint, SubSolarPoint,
                                 SurfaceInterceptPoint, TimeConversion)
 from .errors import KernelSetNotFound, TooManyKernelSets
+
+
+class GetApi(argparse.Action):
+    """Custom API from key action."""
+    def __call__(self, parser, args, values, option_string=None):
+        key = values.upper()
+        api = JPL_API if key == 'JPL' else ESA_API if key == 'ESA' else Api(key)
+        setattr(args, self.dest, api)
+
+
+API_ARGS = {
+    'metavar': 'JPL|ESA|URL',
+    'default': Api(),
+    'action': GetApi,
+    'help': 'Webgeocalc endpoint choice '
+            '(default on `WGC_URL` if set '
+            'in global environmnent variables '
+            'or `JPL_URL` if not)',
+}
+
 
 def cli_kernel_sets(argv=None):
     '''Get list of kernel sets available on the server.
@@ -23,10 +43,12 @@ def cli_kernel_sets(argv=None):
                         help='List all kernel sets available')
     parser.add_argument('--kernel', '-k', metavar='NAME|ID', nargs='+',
                         help='Search a specific kernel by name or id')
+    parser.add_argument('--api', **API_ARGS)
+
     args, _ = parser.parse_known_args(argv)
 
     if args.all:
-        kernels = API.kernel_sets()
+        kernels = args.api.kernel_sets()
         print('\n'.join([f" - {str(kernel)}: (id: {int(kernel)})" for kernel in kernels]))
 
     elif args.kernel:
@@ -37,7 +59,7 @@ def cli_kernel_sets(argv=None):
                 pass
 
             try:
-                kernel = API.kernel_set(kernel)
+                kernel = args.api.kernel_set(kernel)
                 print(f" - {str(kernel)}: (id: {int(kernel)})")
 
             except (KernelSetNotFound, TooManyKernelSets) as err:
@@ -56,6 +78,7 @@ def cli_bodies(argv=None):
     parser.add_argument('kernel', nargs='?', help='Kernel set name or id')
     parser.add_argument('--name', '-n', metavar='BODY', nargs='+',
                         help='Search a specific body by name or id')
+    parser.add_argument('--api', **API_ARGS)
 
     args, _ = parser.parse_known_args(argv)
 
@@ -65,7 +88,7 @@ def cli_bodies(argv=None):
         except ValueError:
             kernel = args.kernel
 
-        bodies = API.bodies(kernel)
+        bodies = args.api.bodies(kernel)
 
         if args.name:
             for body in bodies:
@@ -87,6 +110,7 @@ def cli_frames(argv=None):
     parser.add_argument('kernel', nargs='?', help='Kernel set name or id')
     parser.add_argument('--name', '-n', metavar='FRAME',
                         nargs='+', help='Search a specific frame by name or id')
+    parser.add_argument('--api', **API_ARGS)
 
     args, _ = parser.parse_known_args(argv)
 
@@ -96,7 +120,7 @@ def cli_frames(argv=None):
         except ValueError:
             kernel = args.kernel
 
-        frames = API.frames(kernel)
+        frames = args.api.frames(kernel)
 
         if args.name:
             for frame in frames:
@@ -118,6 +142,7 @@ def cli_instruments(argv=None):
     parser.add_argument('kernel', nargs='?', help='Kernel set name or id')
     parser.add_argument('--name', '-n', metavar='INSTRUMENT', nargs='+',
                         help='Search a specific instrument by name or id')
+    parser.add_argument('--api', **API_ARGS)
 
     args, _ = parser.parse_known_args(argv)
 
@@ -127,7 +152,7 @@ def cli_instruments(argv=None):
         except ValueError:
             kernel = args.kernel
 
-        instruments = API.instruments(kernel)
+        instruments = args.api.instruments(kernel)
 
         if args.name:
             for instrument in instruments:
@@ -223,6 +248,8 @@ def cli_calculation(argv=None, calculation=Calculation, desc='generic'):
             calc = calculation(**params)
 
             if (args.payload or args.dry_run) and not args.quiet:
+
+                print(f'API: {calc.api}')
 
                 payload = calc.payload
                 print('Payload:\n{')
