@@ -66,16 +66,16 @@ All WebGeoCalc calculation objects take their input attributes in
     to the any Calculation parameters:
 
     >>> Calculation(
-        api = 'ESA',
-        kernels = 6,
-        times = '2014-01-01T01:23:45.000',
-        calculation_type = 'STATE_VECTOR',
-        target = '67P/CHURYUMOV-GERASIMENKO (1969 R1)',
-        observer = 'ROSETTA ORBITER',
-        reference_frame = '67P/C-G_CK',
-        aberration_correction = 'NONE',
-        state_representation = 'LATITUDINAL',
-    ).api
+    ...    api = 'ESA',
+    ...    kernels = 6,
+    ...    times = '2014-01-01T01:23:45.000',
+    ...    calculation_type = 'STATE_VECTOR',
+    ...    target = '67P/CHURYUMOV-GERASIMENKO (1969 R1)',
+    ...    observer = 'ROSETTA ORBITER',
+    ...    reference_frame = '67P/C-G_CK',
+    ...    aberration_correction = 'NONE',
+    ...    state_representation = 'LATITUDINAL',
+    ... ).api
     <Api> http://spice.esac.esa.int/webgeocalc/api
 
     3-rd party WGC are also supported, either set :obj:`WGC_URL`
@@ -83,16 +83,16 @@ All WebGeoCalc calculation objects take their input attributes in
     its ``URL`` to the :py:attr:`api` parameter:
 
     >>> Calculation(
-        api = 'https://wgc.obspm.fr/webgeocalc/api',
-        kernels = 6,
-        times = '2014-01-01T01:23:45.000',
-        calculation_type = 'STATE_VECTOR',
-        target = '67P/CHURYUMOV-GERASIMENKO (1969 R1)',
-        observer = 'ROSETTA ORBITER',
-        reference_frame = '67P/C-G_CK',
-        aberration_correction = 'NONE',
-        state_representation = 'LATITUDINAL',
-    ).api
+    ...    api = 'https://wgc.obspm.fr/webgeocalc/api',
+    ...    kernels = 6,
+    ...    times = '2014-01-01T01:23:45.000',
+    ...    calculation_type = 'STATE_VECTOR',
+    ...    target = '67P/CHURYUMOV-GERASIMENKO (1969 R1)',
+    ...    observer = 'ROSETTA ORBITER',
+    ...    reference_frame = '67P/C-G_CK',
+    ...    aberration_correction = 'NONE',
+    ...    state_representation = 'LATITUDINAL',
+    ... ).api
     <Api> https://wgc.obspm.fr/webgeocalc/api
 
     In each cases, every new API is cached to improve

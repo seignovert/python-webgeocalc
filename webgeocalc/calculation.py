@@ -3,7 +3,7 @@
 
 import time
 
-from .api import Api, API, JPL_API, ESA_API
+from .api import API, Api, ESA_API, JPL_API
 from .errors import (CalculationAlreadySubmitted, CalculationConflictAttr,
                      CalculationFailed, CalculationIncompatibleAttr,
                      CalculationInvalidAttr, CalculationInvalidValue,
@@ -389,7 +389,7 @@ class Calculation:
         if self.columns is not None and self.values is not None:
             return self.results
 
-        for i in range(int(timeout / sleep)):
+        for _ in range(int(timeout / sleep)):
             self.update()
 
             if self.phase == 'COMPLETE':

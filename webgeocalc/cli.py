@@ -15,7 +15,9 @@ from .errors import KernelSetNotFound, TooManyKernelSets
 
 class GetApi(argparse.Action):
     """Custom API from key action."""
+
     def __call__(self, parser, args, values, option_string=None):
+        """Select API based on the provided key."""
         key = values.upper()
         api = JPL_API if key == 'JPL' else ESA_API if key == 'ESA' else Api(key)
         setattr(args, self.dest, api)
