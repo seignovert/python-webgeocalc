@@ -1,11 +1,14 @@
 # -*- coding: utf-8 -*-
 '''WebGeoCalc API module.'''
 
+import os
+
 import requests
 
 from .errors import APIError, APIReponseError, KernelSetNotFound, TooManyKernelSets
 from .types import ColumnResult, KernelSetDetails, get_type
 from .vars import ESA_URL, JPL_URL
+
 
 class Api:
     '''WebGeoCalc API object.
@@ -13,14 +16,19 @@ class Api:
     Parameters
     ----------
     url : str, optional
-        API root URL. Default:
+        API root URL.
+        Use `WGC_URL` global environment variable if present.
+        If not, fallback on `JPL_URL`:
         ``https://wgc2.jpl.nasa.gov:8443/webgeocalc/api``
 
     '''
 
-    def __init__(self, url=JPL_URL):
-        self.url = url
+    def __init__(self, url=''):
+        self.url = str(url) if url != '' else os.environ.get('WGC_URL', JPL_URL)
         self._kernel_sets = None
+
+    def __str__(self):
+        return self.url
 
     def get(self, url):
         '''Generic GET request on the API.

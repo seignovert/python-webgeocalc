@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 '''Test WGC API base urls.'''
 
+import os
+
 import pytest
 
 from requests import HTTPError
@@ -96,9 +98,26 @@ def api_empty_data_response():
 
 def test_api_default_url():
     '''Test default API url.'''
-    assert API.url == JPL_URL
-    assert WGC_JPL.url == JPL_URL
-    assert WGC_ESA.url == ESA_URL
+
+
+def test_api_env_url(monkeypatch):
+    '''Test default API url from environment variable `WGC_URL`.'''
+    monkeypatch.setenv('WGC_URL', 'https://wgc.obspm.fr/webgeocalc/api')
+
+    assert 'WGC_URL' in os.environ
+    assert os.environ['WGC_URL'] == 'https://wgc.obspm.fr/webgeocalc/api'
+
+    api = Api()
+    assert str(api) == api.url == 'https://wgc.obspm.fr/webgeocalc/api'
+
+    # Remove `WGC_URL`, fallback to JPL API
+    monkeypatch.delenv('WGC_URL')
+
+    assert 'WGC_URL' not in os.environ
+
+    api = Api()
+    assert str(api) == api.url == JPL_URL
+
 
 def test_response_err():
     '''Test GET and POST on invalid URLs.'''
