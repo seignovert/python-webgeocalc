@@ -10,7 +10,8 @@ from .calculation_types import (AngularSeparation, AngularSize,
                                 FrameTransformation, IlluminationAngles,
                                 OsculatingElements, StateVector,
                                 SubObserverPoint, SubSolarPoint,
-                                SurfaceInterceptPoint, TimeConversion)
+                                SurfaceInterceptPoint, TimeConversion,
+                                GFCoordinateSearch)
 
 __all__ = [
     'Api',
@@ -28,5 +29,6 @@ __all__ = [
     'SubSolarPoint',
     'SurfaceInterceptPoint',
     'TimeConversion',
+    'GFCoordinateSearch',
     '__version__',
 ]
