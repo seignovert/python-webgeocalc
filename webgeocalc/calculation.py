@@ -177,7 +177,7 @@ class Calculation:
         self.params = kwargs
         self.__kernels = []
         self.id = None
-        self.phase = 'NOT SUBMITED'
+        self.phase = 'NOT SUBMITTED'
         self.columns = None
         self.values = None
         self.verbose = verbose
