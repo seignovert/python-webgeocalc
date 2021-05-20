@@ -1,11 +1,14 @@
 # -*- coding: utf-8 -*-
 '''WebGeoCalc API module.'''
 
+import os
+
 import requests
 
 from .errors import APIError, APIReponseError, KernelSetNotFound, TooManyKernelSets
 from .types import ColumnResult, KernelSetDetails, get_type
-from .vars import API_URL
+from .vars import ESA_URL, JPL_URL
+
 
 class Api:
     '''WebGeoCalc API object.
@@ -13,14 +16,28 @@ class Api:
     Parameters
     ----------
     url : str, optional
-        API root URL. Default:
+        API root URL.
+        Use ``WGC_URL`` global environment variable if present.
+        If not, fallback on :py:obj:`JPL_URL`:
         ``https://wgc2.jpl.nasa.gov:8443/webgeocalc/api``
 
     '''
 
-    def __init__(self, url=API_URL):
-        self.url = url
+    def __init__(self, url=''):
+        self.url = str(url) if url != '' else os.environ.get('WGC_URL', JPL_URL)
         self._kernel_sets = None
+        self._meta = None
+
+    def __str__(self):
+        return self.url
+
+    def __repr__(self):
+        return f'<{self.__class__.__name__}> {self}'
+
+    def __getitem__(self, key):
+        if key in self.metadata:
+            return self.metadata[key]
+        raise KeyError(key)
 
     def get(self, url):
         '''Generic GET request on the API.
@@ -76,7 +93,7 @@ class Api:
         Example
         -------
         >>> API.post('/calculation/new', payload=calculation_payload)  # doctest: +SKIP
-        ('0788aba2-d4e5-4028-9ef1-4867ad5385e0', 'COMPLETE', 0)
+        ('0788aba2-d4e5-4028-9ef1-4867ad5385e0', 'COMPLETE')
 
         '''
         response = requests.post(self.url + url, json=payload)
@@ -124,6 +141,9 @@ class Api:
             If the format of the API response is unexpected.
 
         '''
+        if 'status' not in json:
+            return json
+
         if json['status'] != 'OK':
             raise APIError(json['error']['shortDescription'])
 
@@ -279,7 +299,7 @@ class Api:
 
         Returns
         -------
-        (str, str, int)
+        (str, str)
             Tuple of the calculation phase:
             ``(calculation-id, phase)``
             See: :py:func:`read`.
@@ -370,6 +390,15 @@ class Api:
         '''
         return self.get(f'/calculation/{calculation_id}/results')
 
+    @property
+    def metadata(self):
+        """API metadata."""
+        if self._meta is None:
+            self._meta = self.get('/')
+        return self._meta
+
 
 # Export default API object
 API = Api()
+JPL_API = Api(JPL_URL)
+ESA_API = Api(ESA_URL)

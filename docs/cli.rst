@@ -47,6 +47,17 @@ Search multiple kernels at once (``name`` and ``id`` can be mixed):
      - Cassini Huygens: (id: 5)
      - Solar System Kernels: (id: 1)
 
+The query can also be performed on the ESA WGC instance wiht the ``api`` keyword:
+
+.. code:: bash
+
+    $ wgc-kernels --api esa --kernel 'OPS  --     Rosetta'
+
+     - OPS  --     Rosetta               -- Operational: (id: 6)
+
+3-rd party WGC are also supported is the ``url`` is provided in the ``api`` keyword.
+
+
 Bodies
 ------
 
@@ -70,6 +81,10 @@ Search for a specific body in a kernel set:
 
      - TITAN: (id: 606)
 
+    $ wgc-bodies --api esa 'OPS  --     Rosetta' --name 67P
+
+     - 67P/CHURYUMOV-GERASIMENKO (1969 R1): (id: 1000012)
+
 
 Frames
 ------
@@ -86,6 +101,14 @@ List and search frames for a specific kernel set:
      - IAU_TITAN: (id: 10044)
      - IAU_TITANIA: (id: 10058)
 
+    $ wgc-frames --api esa 'OPS  --     Rosetta' --name '67P/C'
+
+     - 67P/C-G_CK: (id: -1000012000)
+     - 67P/C-G_SPIN_SUN: (id: -226934)
+     - 67P/C-G_SUN_SPIN: (id: -226933)
+     - 67P/C-G_CSO: (id: -226912)
+     - 67P/C-G_CSEQ: (id: -226910)
+     - 67P/C-G_FIXED: (id: 1000012)
 
 Instruments
 -----------
@@ -101,6 +124,10 @@ List and search instruments for a specific kernel set:
      - CASSINI_ISS_WAC: (id: -82361)
      - CASSINI_ISS_NAC: (id: -82360)
 
+    $ wgc-instruments --api esa 'OPS  --     Rosetta' --name 'NAVCAM'
+
+     - ROS_NAVCAM-B: (id: -226180)
+     - ROS_NAVCAM-A: (id: -226170)
 
 Calculations
 ------------
@@ -137,6 +164,8 @@ Example:
                       --reference_frame IAU_SATURN \
                       --aberration_correction NONE \
                       --state_representation PLANETOGRAPHIC
+
+    API: https://wgc2.jpl.nasa.gov:8443/webgeocalc/api
     Payload:
     {
       kernels: [{'type': 'KERNEL_SET', 'id': 5}],
@@ -190,6 +219,8 @@ value contains spaces. Assignation with ``=`` sign can also be used:
                        --target=CASSINI \
                        --observer = SATURN \
                        --referenceFrame "IAU_SATURN"
+
+    API: https://wgc2.jpl.nasa.gov:8443/webgeocalc/api
     Payload:
     {
       kernels: [{'type': 'KERNEL_SET', 'id': 1}, {'type': 'KERNEL_SET', 'id': 5}],
@@ -204,7 +235,7 @@ value contains spaces. Assignation with ``=`` sign can also be used:
       timeFormat: CALENDAR,
     }
 
-Here is the list of all the calculation entry point available on the CLI:
+Here is the list of all the calculation entry points available on the CLI:
 
     - ``wgc-calculation``
     - ``wgc-state-vector``
@@ -217,3 +248,9 @@ Here is the list of all the calculation entry point available on the CLI:
     - ``wgc-surface-intercept-point``
     - ``wgc-osculating-elements``
     - ``wgc-time-conversion``
+
+All the calculation entry point accept an optional ``api`` attribute
+to submit the query to a custom endpoint.
+If ``WGC_URL`` global environment variable is defined,
+it will be used as the default endpoint.
+If it is not the case, the endpoint will fall back in JPL WGC endpoint.

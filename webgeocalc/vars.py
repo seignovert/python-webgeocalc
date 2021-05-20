@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 '''WebGeoCalc varibales.'''
 
-API_URL = 'https://wgc2.jpl.nasa.gov:8443/webgeocalc/api'
+JPL_URL = 'https://wgc2.jpl.nasa.gov:8443/webgeocalc/api'
+ESA_URL = 'http://spice.esac.esa.int/webgeocalc/api'
 
 CALCULATION_FAILED_PHASES = [
     'FAILED',

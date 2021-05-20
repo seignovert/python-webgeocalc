@@ -1,14 +1,16 @@
 # -*- coding: utf-8 -*-
 '''Test WGC API base urls.'''
 
+import os
+
 import pytest
 
 from requests import HTTPError
 
-from webgeocalc import API
+from webgeocalc import API, Api, ESA_API, JPL_API
 from webgeocalc.errors import (APIError, APIReponseError, KernelSetNotFound,
                                ResultAttributeError, TooManyKernelSets)
-from webgeocalc.vars import API_URL
+from webgeocalc.vars import ESA_URL, JPL_URL
 
 @pytest.fixture
 def solar_system_kernel_set():
@@ -94,14 +96,51 @@ def api_empty_data_response():
         "calculationId": "0788aba2-d4e5-4028-9ef1-4867ad5385e0",
     }
 
-def test_api_default_url():
+def test_api_url():
     '''Test default API url.'''
-    assert API.url == API_URL
+    assert str(API) == API.url
+    assert str(JPL_API) == JPL_URL
+    assert str(ESA_API) == ESA_URL
+
+
+def test_api_env_url(monkeypatch):
+    '''Test default API url from environment variable `WGC_URL`.'''
+    monkeypatch.setenv('WGC_URL', 'https://wgc.obspm.fr/webgeocalc/api')
+
+    assert 'WGC_URL' in os.environ
+    assert os.environ['WGC_URL'] == 'https://wgc.obspm.fr/webgeocalc/api'
+
+    api = Api()
+    assert str(api) == api.url == 'https://wgc.obspm.fr/webgeocalc/api'
+
+    # Remove `WGC_URL`, fallback to JPL API
+    monkeypatch.delenv('WGC_URL')
+
+    assert 'WGC_URL' not in os.environ
+
+    api = Api()
+    assert str(api) == api.url == JPL_URL
+
+
+def test_api_metadata():
+    '''Test API metadata.'''
+    assert API['title'] == 'WebGeocalc by NAIF'
+    assert API['description'] == \
+        'WGC2 -- a WebGeocalc Server with enabled API at NAIF, JPL'
+    assert API['documentation'] == \
+        'https://wgc2.jpl.nasa.gov:8443/webgeocalc/documents/api-info.html'
+    assert API['contact'] == 'Boris Semenov <Boris.Semenov@jpl.nasa.gov>'
+    assert API['version'] == '2.2.2'
+    assert API['build_id'] == '5004 N66 23-JUL-2020'
+
+    with pytest.raises(KeyError):
+        _ = API['foo']
+
 
 def test_response_err():
     '''Test GET and POST on invalid URLs.'''
     with pytest.raises(HTTPError):
-        API.get('/')  # 404 error
+        API.get('/foo')  # 404 error
 
     with pytest.raises(HTTPError):
         API.post('/', payload={})  # 404 error

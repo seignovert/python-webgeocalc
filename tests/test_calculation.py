@@ -4,9 +4,12 @@
 import pytest
 
 from webgeocalc import Calculation
+from webgeocalc.api import API
+from webgeocalc.calculation import APIs
 from webgeocalc.errors import (CalculationConflictAttr, CalculationIncompatibleAttr,
                                CalculationInvalidAttr, CalculationRequiredAttr,
                                CalculationUndefinedAttr)
+from webgeocalc.vars import ESA_URL, JPL_URL
 
 @pytest.fixture
 def kernels():
@@ -51,6 +54,44 @@ def end():
 def interval(start, end):
     '''Input interval dict.'''
     return {"startTime": start, "endTime": end}
+
+
+def test_calculation_api(params):
+    '''Test calculation API URL.'''
+    api = Calculation(**params).api
+    assert api.url == JPL_URL
+
+    api = Calculation(api='ESA', **params).api
+    assert api.url == ESA_URL
+
+
+def test_calculation_apis_cache(params):
+    '''Test calculation APIs caching.'''
+    assert len(APIs) == 3
+    assert str(APIs['JPL']) == JPL_URL
+    assert str(APIs['ESA']) == ESA_URL
+    assert str(APIs['']) == API.url
+
+    # Add 3rd party API
+    assert 'HTTPS://WGC.OBSPM.FR/WEBGEOCALC/API' not in APIs
+
+    api = Calculation(api='https://wgc.obspm.fr/webgeocalc/api', **params).api
+    assert api.url == 'https://wgc.obspm.fr/webgeocalc/api'
+
+    # Check API caching
+    assert len(APIs) == 4
+    assert 'HTTPS://WGC.OBSPM.FR/WEBGEOCALC/API' in APIs
+    assert APIs['HTTPS://WGC.OBSPM.FR/WEBGEOCALC/API'].url == \
+        'https://wgc.obspm.fr/webgeocalc/api'
+
+    api = Calculation(api='https://wgc.obspm.fr/webgeocalc/api', **params).api
+    assert api.url == 'https://wgc.obspm.fr/webgeocalc/api'
+    assert len(APIs) == 4
+
+    # Input directly a `Api` obejct
+    api = Calculation(api=api, **params).api
+    assert api.url == 'https://wgc.obspm.fr/webgeocalc/api'
+    assert len(APIs) == 4
 
 
 def test_calculation_required_err(calc, kernels):
