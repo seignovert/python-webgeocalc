@@ -699,3 +699,74 @@ class TimeConversion(Calculation):
         kwargs['output_time_format'] = output_time_format
 
         super().__init__(**kwargs)
+
+
+class GFCoordinateSearch(Calculation):
+    '''Coordinate Search (Geometry Finder) calculation.
+
+    Search for time intervals with a coordinate condition.
+
+    Parameters
+    ----------
+    output_duration_units: str, optional
+        See: :py:attr:`.output_duration_units`
+    should_complement_window: bool, optional
+        See: :py:attr:`.should_complement_window`
+    interval_adjustment: str, optional
+        See: :py:attr:`.interval_adjustment`
+    interval_filtering: str, optional
+        See: :py:attr:`.interval_filtering`
+    condition: dict
+        See: :py:attr:`.condition`
+    aberration_correction: str, optional
+        See: :py:attr:`.aberration_correction`
+
+    Other Parameters
+    ----------------
+    kernels: str, int, [str or/and int]
+        See: :py:attr:`.kernels`
+    kernel_paths: str, [str]
+        See: :py:attr:`.kernel_paths`
+    times: str or [str]
+        See: :py:attr:`.times`
+    intervals: [str, str] or {'startTime': str, 'endTime': str} or [interval, ...]
+        See: :py:attr:`.intervals`
+    time_step: int
+        See: :py:attr:`.time_step`
+    time_step_units: str
+        See: :py:attr:`.time_step_units`
+    time_system: str
+        See: :py:attr:`.time_system`
+    time_format: str
+        See: :py:attr:`.time_format`
+    target: str or int
+        See: :py:attr:`.target`
+    observer: str or int
+        See: :py:attr:`.observer`
+    reference_frame: str or int
+        See: :py:attr:`.reference_frame`
+
+    Raises
+    ------
+    CalculationRequiredAttr
+        If :py:attr:`.target`, :py:attr:`.observer`,
+        :py:attr:`.reference_frame` and :py:attr:`.condition` are not provided.
+
+    '''
+
+    def __init__(self, output_duration_units='SECONDS',
+                 should_complement_window=False,
+                 interval_adjustment='NO_ADJUSTMENT',
+                 interval_filtering='NO_FILTERING',
+                 aberration_correction='CN', **kwargs):
+
+        self._required(['target', 'observer', 'reference_frame', 'condition'], kwargs)
+
+        kwargs['calculation_type'] = 'GF_COORDINATE_SEARCH'
+        kwargs['aberration_correction'] = aberration_correction
+        kwargs['output_duration_units'] = output_duration_units
+        kwargs['should_complement_window'] = should_complement_window
+        kwargs['interval_adjustment'] = interval_adjustment
+        kwargs['interval_filtering'] = interval_filtering
+
+        super().__init__(**kwargs)
