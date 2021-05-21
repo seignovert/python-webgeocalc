@@ -760,7 +760,7 @@ class GFCoordinateSearch(Calculation):
     ------
     CalculationRequiredAttr
         If :py:attr:`.target`, :py:attr:`.observer`,
-        :py:attr:`.reference_frame` and :py:attr:`.condition` are not provided.
+        :py:attr:`.reference_frame` and :py:attr:`.relational_condition` are not provided.
 
     '''
 
