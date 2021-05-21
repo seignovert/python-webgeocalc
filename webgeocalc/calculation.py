@@ -1809,7 +1809,7 @@ class Calculation:
 
     @SetterProperty
     def interval_adjustment_units(self, val):
-        '''The unit of the interval adjustment amount
+        '''The unit of the interval adjustment amount.
 
         Parameters
         ----------
@@ -1860,7 +1860,7 @@ class Calculation:
 
     @SetterProperty
     def interval_filtering_threshold(self, val):
-        '''Interval duration filtering threshold value
+        '''Interval duration filtering threshold value.
 
         Parameters
         ----------
