@@ -15,6 +15,7 @@ For now only the geometry/time calculations are implemented:
 - :py:class:`SurfaceInterceptPoint`
 - :py:class:`OsculatingElements`
 - :py:class:`TimeConversion`
+- :py:class:`GFConditionSearch`
 
 Import generic WebGeoCalc calculation object:
 
@@ -685,3 +686,55 @@ Convert times from one time system or format to another.
         - :py:attr:`.output_time_format`: ``CALENDAR``
 
 .. autoclass:: TimeConversion
+
+
+Geometry Finder: Coordinate Search
+----------------------------------
+
+
+Find time intervals when a coordinate of an observer-target position vector satisfies a condition.
+
+.. testsetup::
+
+    from webgeocalc import GFCoordinateSearch
+
+>>> GFCoordinateSearch(
+...     kernels = 5,
+...     intervals = ['2012-10-19T07:00:00', '2012-10-19T09:00:00'],
+...     observer = 'CASSINI',
+...     target = 'ENCELADUS',
+...     reference_frame = 'CASSINI_ISS_NAC',
+...     time_step = 1,
+...     time_step_units = 'MINUTES',
+...     aberration_correction = 'NONE',
+...     coordinate_system = 'SPHERICAL',
+...     coordinate = 'COLATITUDE',
+...     relational_condition = '<',
+...     reference_value = 0.25,
+... ).run()
+{'DATE': '2012-10-19 08:39:32.812153 UTC', 'DURATION': 3392.10937738}
+
+.. important::
+
+    Calculation required parameters:
+        - :py:attr:`.kernels` or/and :py:attr:`.kernel_paths`
+        - :py:attr:`.times` or :py:attr:`.intervals` with :py:attr:`.time_step` and :py:attr:`.time_step_units`
+        - :py:attr:`.observer`
+        - :py:attr:`.target`
+        - :py:attr:`.reference_frame`
+        - :py:attr:`coordinate_system`
+        - :py:attr:`coordinate`
+        - :py:attr:`relational_condition`
+        - :py:attr:`reference_value` only if :py:attr:`relationalCondition` is not ``ABSMAX``, ``ABSMIN``, ``LOCMAX``, or ``LOCMIN``
+        - :py:attr:`upper_limit` only if :py:attr:`relationalCondition` is ``RANGE``
+        - :py:attr:`adjustment_value` only if :py:attr:`relationalCondition` is ``ABSMAX`` or ``ABSMIN``
+
+    Default parameters:
+        - :py:attr:`.time_system`: ``UTC``
+        - :py:attr:`.time_format`: ``CALENDAR``
+        - :py:attr:`output_duration_units`: ``SECONDS``
+        - :py:attr:`shouldComplementWindow`: ``False``
+        - :py:attr:`intervalAdjustment`: ``NO_ADJUSTMENT``
+        - :py:attr:`intervalFiltering`: ``NO_FILTERING``
+
+.. autoclass:: GFConditionSearch
