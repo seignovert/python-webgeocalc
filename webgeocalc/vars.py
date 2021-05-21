@@ -195,10 +195,6 @@ INTERVAL_FILTERING_THRESHOLD_UNITS = [
     'DAYS',
 ]
 
-CONDITION = [
-    'dict()',
-]
-
 COORDINATE_SYSTEM = [
     'RECTANGULAR',
     'RA/DEC',
