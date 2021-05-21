@@ -194,3 +194,42 @@ INTERVAL_FILTERING_THRESHOLD_UNITS = [
     'HOURS',
     'DAYS',
 ]
+
+CONDITION = [
+    'dict()',
+]
+
+COORDINATE_SYSTEM = [
+    'RECTANGULAR',
+    'RA/DEC',
+    'LATITUDINAL',
+    'CYLINDRICAL',
+    'SPHERICAL',
+    'GEODETIC',
+    'PLANETOGRAPHIC',
+]
+
+COORDINATE = [
+    'X',
+    'Y',
+    'Z',
+    'LONGITUDE',
+    'LATITUDE',
+    'COLATITUDE',
+    'RIGHT ASCENSION',
+    'DECLINATION',
+    'RANGE',
+    'RADIUS',
+    'ALTITUDE',
+]
+
+RELATIONAL_CONDITION = [
+    '=',
+    '<',
+    '>',
+    'RANGE',
+    'ABSMAX',
+    'ABSMIN',
+    'LOCMAX',
+    'LOCMIN',
+]
