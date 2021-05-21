@@ -1716,7 +1716,9 @@ class Calculation:
 
     @SetterProperty
     def output_duration_units(self, val):
-        '''Time units to use for displaying the duration of each interval found by the
+        '''Output duration time units.
+
+        Time units to use for displaying the duration of each interval found by the
         event search.
 
         Parameters
@@ -1743,9 +1745,10 @@ class Calculation:
 
     @SetterProperty
     def should_complement_window(self, val):
-        '''Specifies whether to complement the intervals in the result window. That is,
-        instead of finding the intervals where the condition is satisfied, find the
-        intervals where the condition is not satisfied.
+        '''Specifies whether to complement the intervals in the result window.
+
+        That is, instead of finding the intervals where the condition is satisfied,
+        find the intervals where the condition is not satisfied.
 
         Parameters
         ----------
@@ -1766,6 +1769,7 @@ class Calculation:
     @SetterProperty
     def interval_adjustment(self, val):
         '''Specifies whether to expand or contract the intervals in the result.
+
         Expanding the intervals will cause intervals that overlap, after expansion,
         to be combined into one interval.
 
@@ -1793,6 +1797,7 @@ class Calculation:
     @SetterProperty
     def interval_adjustment_amount(self, val):
         '''The amount by which to expand or contract each interval at the endpoints.
+
         Each endpoint will be moved by this amount.
 
         Parameters
@@ -1831,6 +1836,7 @@ class Calculation:
     @SetterProperty
     def interval_filtering(self, val):
         '''Specifies whether to omit interval smaller than a minimum threshold size.
+
         This threshold is applied after expansion or contraction of the intervals.
 
         Parameters
@@ -1989,8 +1995,9 @@ class Calculation:
 
     @SetterProperty
     def reference_value(self, val):
-        '''The value to compare against, or the lower value of a range. Only needed if
-        relationalCondition is not ABSMAX, ABSMIN, LOCMAX, or LOCMIN.
+        '''The value to compare against, or the lower value of a range.
+
+        Only needed if relationalCondition is not ABSMAX, ABSMIN, LOCMAX, or LOCMIN.
 
         Parameters
         ----------
@@ -2012,8 +2019,9 @@ class Calculation:
 
     @SetterProperty
     def adjustment_value(self, val):
-        '''The adjustment value to apply for ABSMIN and ABSMAX searches. Required if
-        relationalCondition is ABSMIN or ABSMAX.
+        '''The adjustment value to apply for ABSMIN and ABSMAX searches.
+
+        Required if relationalCondition is ABSMIN or ABSMAX.
 
         Parameters
         ----------
