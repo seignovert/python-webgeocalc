@@ -4,9 +4,7 @@
 import pytest
 
 from webgeocalc import GFCoordinateSearch
-from webgeocalc.errors import CalculationInvalidAttr, CalculationInvalidValue
-
-from webgeocalc.vars import ESA_URL, JPL_URL
+from webgeocalc.errors import CalculationInvalidAttr
 
 
 @pytest.fixture
@@ -53,11 +51,11 @@ def corr():
 def condition():
     '''Input coordinate search condition'''
     return {
-            "coordinateSystem": "PLANETOGRAPHIC",
-            "coordinate": "LONGITUDE",
-            "relationalCondition": "=",
-            "referenceValue": 2.19503
-        }
+        "coordinateSystem": "PLANETOGRAPHIC",
+        "coordinate": "LONGITUDE",
+        "relationalCondition": "=",
+        "referenceValue": 2.19503
+    }
 
 @pytest.fixture
 def params_1(kernels, intervals, target, reference_frame, observer, time_step,
@@ -218,7 +216,6 @@ def test_coordinate_search_filter_interval(params_3, payload_3):
 
 def test_coordinate_search_attr_err(params_1, params_2, params_3):
     '''Test errors Coordinate Search with single interval and default parameters.'''
-
     with pytest.raises(TypeError):
         GFCoordinateSearch(should_complement_window='WRONG', **params_1)
 
