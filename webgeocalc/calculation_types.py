@@ -704,7 +704,8 @@ class TimeConversion(Calculation):
 class GFCoordinateSearch(Calculation):
     '''Coordinate Search (Geometry Finder) calculation.
 
-    Find time intervals when a coordinate of an observer-target position vector satisfies a condition.
+    Find time intervals when a coordinate of an observer-target position vector
+    satisfies a condition.
 
     Parameters
     ----------
@@ -760,7 +761,8 @@ class GFCoordinateSearch(Calculation):
     ------
     CalculationRequiredAttr
         If :py:attr:`.target`, :py:attr:`.observer`,
-        :py:attr:`.reference_frame` and :py:attr:`.relational_condition` are not provided.
+        :py:attr:`.reference_frame` and :py:attr:`.relational_condition` are not
+        provided.
 
     '''
 
