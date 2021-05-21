@@ -15,7 +15,7 @@ For now only the geometry/time calculations are implemented:
 - :py:class:`SurfaceInterceptPoint`
 - :py:class:`OsculatingElements`
 - :py:class:`TimeConversion`
-- :py:class:`GFConditionSearch`
+- :py:class:`GFCoordinateSearch`
 
 Import generic WebGeoCalc calculation object:
 
@@ -242,33 +242,45 @@ calculation feature names accessible from the ``Webgeocalc GUI``
 web portals.
 
 .. list-table:: Webgeocalc API vs GUI calculation names
-   :widths: 50 50
+   :widths: 33 33 33
    :header-rows: 1
 
-   * - Webgeocalc API
-     - Webgeocalc GUI
+   * - python-webgeocalc API classes
+     - Webgeocalc API calculation types
+     - Webgeocalc GUI features
    * - :py:class:`StateVector`
-     - Geometry Calculator: State Vector
+     - ``STATE_VECTOR``
+     - State Vector
    * - :py:class:`AngularSeparation`
-     - Geometry Calculator: Angular Separation
+     - ``ANGULAR_SEPARATION``
+     - Angular Separation
    * - :py:class:`AngularSize`
-     - Geometry Calculator: Angular Size
+     - ``ANGULAR_SIZE``
+     - Angular Size
    * - :py:class:`FrameTransformation`
-     - Geometry Calculator: Frame Transformation
+     - ``FRAME_TRANSFORMATION``
+     - Frame Transformation
    * - :py:class:`IlluminationAngles`
-     - Geometry Calculator: Illumnation Angles
+     - ``ILLUMINATION_ANGLES``
+     - Illumination Angles
    * - :py:class:`SubSolarPoint`
-     - Geometry Calculator: Sub-solar Point
+     - ``SUB_SOLAR_POINT``
+     - Sub-solar Point
    * - :py:class:`SubObserverPoint`
-     - Geometry Calculator: Sub-observer Point
+     - ``SUB_OBSERVER_POINT``
+     - Sub-observer Point
    * - :py:class:`SurfaceInterceptPoint`
-     - Geometry Calculator: Surface Intercept Point
+     - ``SURFACE_INTERCEPT_POINT``
+     - Surface Intercept Point
    * - :py:class:`OsculatingElements`
-     - Geometry Calculator: Orbital Elements
+     - ``OSCULATING_ELEMENTS``
+     - Orbital Elements
    * - :py:class:`TimeConversion`
-     - Time Calculator: Time Conversion
-   * - :py:class:`GFConditionSearch`
-     - Geometric Event Finder: Position Finder
+     - ``TIME_CONVERSION``
+     - Time Conversion
+   * - :py:class:`GFCooordinateSearch`
+     - ``GF_COORDINATE_SEARCH``
+     - Position Event Finder
 
 
 Generic calculation
@@ -748,6 +760,7 @@ Find time intervals when a coordinate of an observer-target position vector sati
 ...     coordinate = 'COLATITUDE',
 ...     relational_condition = '<',
 ...     reference_value = 0.25,
+...     verbose = False,
 ... ).run()
 {'DATE': '2012-10-19 08:39:32.812153 UTC', 'DURATION': 3392.10937738}
 
