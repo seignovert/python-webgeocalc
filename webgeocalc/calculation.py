@@ -15,8 +15,10 @@ from .vars import (ABERRATION_CORRECTION, ANGULAR_UNITS, ANGULAR_VELOCITY_REPRES
                    CALCULATION_TYPE, COORDINATE_REPRESENTATION, DIRECTION_VECTOR_TYPE,
                    INTERVALS, ORIENTATION_REPRESENTATION, OUTPUT_TIME_FORMAT, SHAPE,
                    STATE_REPRESENTATION, SUB_POINT_TYPE, TIME_FORMAT, TIME_LOCATION,
-                   TIME_STEP_UNITS, TIME_SYSTEM, OUTPUT_DURATION_UNITS, INTERVAL_ADJUSTMENT,
-                   INTERVAL_ADJUSTMENT_UNITS, INTERVAL_FILTERING, INTERVAL_FILTERING_THRESHOLD_UNITS)
+                   TIME_STEP_UNITS, TIME_SYSTEM, OUTPUT_DURATION_UNITS,
+                   INTERVAL_ADJUSTMENT, INTERVAL_ADJUSTMENT_UNITS, INTERVAL_FILTERING,
+                   INTERVAL_FILTERING_THRESHOLD_UNITS, CONDITION, COORDINATE_SYSTEM,
+                   COORDINATE, RELATIONAL_CONDITION)
 
 
 APIs = {
@@ -1851,7 +1853,7 @@ class Calculation:
 
     @SetterProperty
     def interval_filtering_threshold_units(self, val):
-        '''Units of the interval duration filtering threshold value
+        '''Units of the interval duration filtering threshold value.
 
         Parameters
         ----------
@@ -1874,11 +1876,139 @@ class Calculation:
             raise CalculationInvalidAttr('interval_filtering_threshold_units', val, INTERVAL_FILTERING_THRESHOLD_UNITS)
 
     @SetterProperty
-    def condition(self, val):
-        '''Coordinate condition for the Coordinate Search
+    def coordinate_system(self, val):
+        '''The name of the coordinate system in which to evaluate the coordinate.
 
-        Parameters
-        ----------
-        condition: dict
+        Only required for GF_COORDINATE_SEARCH, GF_SUB_POINT_SEARCH, and
+        GF_SURFACE_INTERCEPT_POINT_SEARCH.
+
+        Parameter
+        ---------
+        coordinate_system: str
+            One of the following:
+
+            - RECTANGULAR
+            - RA/DEC
+            - LATITUDINAL (planetocentric)
+            - CYLINDRICAL
+            - SPHERICAL
+            - GEODETIC
+            - PLANETOGRAPHIC
+
+        Raises
+        ------
+        CalculationInvalidAttr
+            If the value provided is invalid.
         '''
-        self.__condition = val
+        if val in COORDINATE_SYSTEM:
+            self.gf_condition(coordinateSystem=val)
+        else:
+            raise CalculationInvalidAttr('coordinate_system', val, COORDINATE_SYSTEM)
+
+    @SetterProperty
+    def coordinate(self, val):
+        '''The name of the SPICE coordinate to search on.
+
+        Only needed for GF_COORDINATE_SEARCH, GF_SUB_POINT_SEARCH, and
+        GF_SURFACE_INTERCEPT_POINT_SEARCH.
+
+        Parameter
+        ---------
+        coordinate: str
+             One of the following:
+
+            - X
+            - Y
+            - Z
+            - LONGITUDE
+            - LATITUDE
+            - COLATITUDE
+            - RIGHT ASCENSION
+            - DECLINATION
+            - RANGE
+            - RADIUS
+            - ALTITUDE
+
+        Raises
+        ------
+        CalculationInvalidAttr
+            If the value provided is invalid.
+        '''
+        if val in COORDINATE:
+            self.gf_condition(coordinate=val)
+        else:
+            raise CalculationInvalidAttr('coordinate', val, COORDINATE)
+
+    @SetterProperty
+    def relational_condition(self, val):
+        '''The relationship for the geometry finder test.
+
+        Parameter
+        ---------
+        relational_condition: str
+            One of the following:
+
+            - =
+            - <
+            - >
+            - RANGE
+            - ABSMAX
+            - ABSMIN
+            - LOCMAX
+            - LOCMIN
+
+
+        Raises
+        ------
+        CalculationInvalidAttr
+            If the value provided is invalid.
+        '''
+        if val in RELATIONAL_CONDITION:
+            self.gf_condition(relationalCondition=val)
+        else:
+            raise CalculationInvalidAttr('relational_condition', val, RELATIONAL_CONDITION)
+
+    @SetterProperty
+    def reference_value(self, val):
+        '''The value to compare against, or the lower value of a range. Only needed if
+        relationalCondition is not ABSMAX, ABSMIN, LOCMAX, or LOCMIN.
+
+        Parameter
+        ---------
+        reference_value: float
+
+        '''
+        self.gf_condition(referenceValue=val)
+
+    @SetterProperty
+    def upper_limit(self, val):
+        '''The upper limit of a range. Only needed if relationalCondition is RANGE.
+
+        Parameter
+        ---------
+        upper_limit: float
+
+        '''
+        self.gf_condition(upperLimit=val)
+
+    @SetterProperty
+    def adjustment_value(self, val):
+        '''The adjustment value to apply for ABSMIN and ABSMAX searches. Required if
+        relationalCondition is ABSMIN or ABSMAX.
+
+        Parameter
+        ---------
+        adjustment_value: float
+
+        '''
+        self.gf_condition(adjustmentValue=val)
+
+    def gf_condition(self, **kwargs):
+        '''Geometry Finder condition object.
+
+        See the documentation for gfpos() for more details.
+        '''
+        try:
+            self.__condition.update(kwargs)
+        except AttributeError:
+            self.__condition = kwargs
