@@ -1733,6 +1733,7 @@ class Calculation:
         -------
         CalculationInvalidAttr
             If the value provided is invalid.
+
         '''
         if val in OUTPUT_DURATION_UNITS:
             self.__outputDurationUnits = val
@@ -1755,6 +1756,7 @@ class Calculation:
         -------
         TypeError
             If the value provided is not bool type.
+
         '''
         if isinstance(val, bool):
             self.__shouldComplementWindow = val
@@ -1780,6 +1782,7 @@ class Calculation:
         -------
         CalculationInvalidAttr
             If the value provided is invalid.
+
         '''
         if val in INTERVAL_ADJUSTMENT:
             self.__intervalAdjustment = val
@@ -1817,6 +1820,7 @@ class Calculation:
         -------
         CalculationInvalidAttr
             If the value provided is invalid.
+
         '''
         if val in INTERVAL_ADJUSTMENT_UNITS:
             self.__intervalAdjustmentUnits = val
@@ -1841,6 +1845,7 @@ class Calculation:
         -------
         CalculationInvalidAttr
             If the value provided is invalid.
+
         '''
         if val in INTERVAL_FILTERING:
             self.__intervalFiltering = val
@@ -1854,7 +1859,8 @@ class Calculation:
         Parameters
         ----------
         interval_filtering_threshold: float
-            Interval duration filtering threshold value
+            Interval duration filtering threshold value.
+
         '''
         self.__intervalFilteringThreshold = val
 
@@ -1876,6 +1882,7 @@ class Calculation:
         -------
         CalculationInvalidAttr
             If the value provided is invalid.
+
         '''
         if val in INTERVAL_FILTERING_THRESHOLD_UNITS:
             self.__intervalFilteringThresholdUnits = val
@@ -1907,6 +1914,7 @@ class Calculation:
         ------
         CalculationInvalidAttr
             If the value provided is invalid.
+
         '''
         if val in COORDINATE_SYSTEM:
             self.gf_condition(coordinateSystem=val)
@@ -1941,6 +1949,7 @@ class Calculation:
         ------
         CalculationInvalidAttr
             If the value provided is invalid.
+
         '''
         if val in COORDINATE:
             self.gf_condition(coordinate=val)
@@ -1970,6 +1979,7 @@ class Calculation:
         ------
         CalculationInvalidAttr
             If the value provided is invalid.
+
         '''
         if val in RELATIONAL_CONDITION:
             self.gf_condition(relationalCondition=val)
@@ -2016,6 +2026,7 @@ class Calculation:
         '''Geometry Finder condition object.
 
         See the documentation for gfpos() for more details.
+
         '''
         try:
             self.__condition.update(kwargs)
