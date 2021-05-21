@@ -14,7 +14,7 @@ def kernels():
 
 @pytest.fixture
 def intervals():
-    '''Input time interval'''
+    '''Input time interval.'''
     return ['2012-10-19T07:00:00', '2012-10-19T09:00:00']
 
 @pytest.fixture
@@ -49,32 +49,32 @@ def corr():
 
 @pytest.fixture
 def coordinate_system():
-    '''Input coordinate system search condition'''
+    '''Input coordinate system search condition.'''
     return "SPHERICAL"
 
 @pytest.fixture
 def coordinate():
-    '''Input coordinate search condition'''
+    '''Input coordinate search condition.'''
     return "COLATITUDE"
 
 @pytest.fixture
 def relational_condition():
-    '''Input relational condition search condition'''
+    '''Input relational condition search condition.'''
     return "<"
 
 @pytest.fixture
 def reference_value():
-    '''Input reference value search condition'''
+    '''Input reference value search condition.'''
     return 0.25
 
 @pytest.fixture
 def upper_limit():
-    '''Input upper limit search condition'''
+    '''Input upper limit search condition.'''
     return 0.3
 
 @pytest.fixture
 def adjustment_value():
-    '''Input adjustment value search condition'''
+    '''Input adjustment value search condition.'''
     return 0.1
 
 @pytest.fixture
@@ -139,7 +139,7 @@ def payload_1(kernels, intervals, target, reference_frame, observer, time_step,
 @pytest.fixture
 def params_2(kernels, intervals, target, reference_frame, observer, time_step,
              time_step_units, corr, coordinate_system, coordinate,
-              relational_condition, reference_value, upper_limit, adjustment_value):
+             relational_condition, reference_value, upper_limit, adjustment_value):
     '''Input parameters from WGC API example 1.'''
     return {
         "kernels": kernels,
@@ -203,7 +203,7 @@ def payload_2(kernels, intervals, target, reference_frame, observer, time_step,
 @pytest.fixture
 def params_3(kernels, intervals, target, reference_frame, observer, time_step,
              time_step_units, corr, coordinate_system, coordinate,
-              relational_condition, reference_value, upper_limit, adjustment_value):
+             relational_condition, reference_value, upper_limit, adjustment_value):
     '''Input parameters from WGC API example 1.'''
     return {
         "kernels": kernels,
