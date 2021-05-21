@@ -772,7 +772,8 @@ class GFCoordinateSearch(Calculation):
                  interval_filtering='NO_FILTERING',
                  aberration_correction='CN', **kwargs):
 
-        self._required(['target', 'observer', 'reference_frame', 'relational_condition'], kwargs)
+        self._required(['target', 'observer', 'reference_frame', 'relational_condition'],
+                       kwargs)
 
         kwargs['calculation_type'] = 'GF_COORDINATE_SEARCH'
         kwargs['aberration_correction'] = aberration_correction
