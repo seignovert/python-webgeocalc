@@ -704,7 +704,7 @@ class TimeConversion(Calculation):
 class GFCoordinateSearch(Calculation):
     '''Coordinate Search (Geometry Finder) calculation.
 
-    Search for time intervals with a coordinate condition.
+    Find time intervals when a coordinate of an observer-target position vector satisfies a condition.
 
     Parameters
     ----------
@@ -716,10 +716,20 @@ class GFCoordinateSearch(Calculation):
         See: :py:attr:`.interval_adjustment`
     interval_filtering: str, optional
         See: :py:attr:`.interval_filtering`
-    condition: dict
-        See: :py:attr:`.condition`
     aberration_correction: str, optional
         See: :py:attr:`.aberration_correction`
+    coordinate_system: str, optional
+        See: :py:attr:`.coordinate_system`
+    coordinate: str, optional
+        See: :py:attr:`.coordinate`
+    relational_condition: str
+        See: :py:attr:`.relational_condition`
+    reference_value: float, optional
+        See: :py:attr:`.reference_value`
+    upper_limit: float, optional
+        See: :py:attr:`.upper_limit`
+    adjustment_value, float, optional
+        See: :py:attr:`.adjustment_value`
 
     Other Parameters
     ----------------
@@ -760,7 +770,7 @@ class GFCoordinateSearch(Calculation):
                  interval_filtering='NO_FILTERING',
                  aberration_correction='CN', **kwargs):
 
-        self._required(['target', 'observer', 'reference_frame', 'condition'], kwargs)
+        self._required(['target', 'observer', 'reference_frame', 'relational_condition'], kwargs)
 
         kwargs['calculation_type'] = 'GF_COORDINATE_SEARCH'
         kwargs['aberration_correction'] = aberration_correction
