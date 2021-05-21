@@ -2033,7 +2033,7 @@ class Calculation:
     def gf_condition(self, **kwargs):
         '''Geometry Finder condition object.
 
-        See the documentation for gfpos() for more details.
+        See the documentation for gfposc() for more details.
 
         '''
         try:

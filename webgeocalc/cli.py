@@ -6,7 +6,7 @@ import re
 
 from .api import Api, ESA_API, JPL_API
 from .calculation_types import (AngularSeparation, AngularSize,
-                                Calculation, FrameTransformation,
+                                Calculation, FrameTransformation, GFCoordinateSearch,
                                 IlluminationAngles, OsculatingElements,
                                 StateVector, SubObserverPoint, SubSolarPoint,
                                 SurfaceInterceptPoint, TimeConversion)
@@ -316,3 +316,7 @@ def cli_osculating_elements(argv=None):
 def cli_time_conversion(argv=None):
     '''Submit time conversion calcultion with the CLI.'''
     cli_calculation(argv, TimeConversion, desc='Time Conversion')
+
+def cli_gf_coordinate_search(argv=None):
+    '''Submit geometry finder coordinate search with the CLI.'''
+    cli_calculation(argv, GFCoordinateSearch, desc='Position Event Finder')

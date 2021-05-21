@@ -29,7 +29,7 @@ Inputs examples and payloads
 ----------------------------
 
 All WebGeoCalc calculation objects take their input attributes in
-``underscore_case`` format.
+``snakecase`` format.
 
 >>> calc = Calculation(
 ...    kernels = 5,
@@ -756,13 +756,19 @@ Find time intervals when a coordinate of an observer-target position vector sati
 ...     time_step = 1,
 ...     time_step_units = 'MINUTES',
 ...     aberration_correction = 'NONE',
+...     interval_adjustment = 'EXPAND_INTERVALS',
+...     interval_adjustment_amount = 1,
+...     interval_adjustment_units = 'SECONDS',
+...     interval_filtering = 'FILTER_INTERVALS',
+...     interval_filtering_threshold = 1,
+...     interval_filtering_threshold_units = 'MINUTES',
 ...     coordinate_system = 'SPHERICAL',
 ...     coordinate = 'COLATITUDE',
 ...     relational_condition = '<',
 ...     reference_value = 0.25,
 ...     verbose = False,
 ... ).run()
-{'DATE': '2012-10-19 08:39:32.812153 UTC', 'DURATION': 3392.10937738}
+{'DATE': '2012-10-19 08:39:33.812153 UTC', 'DURATION': 3394.10937738}
 
 .. important::
 
