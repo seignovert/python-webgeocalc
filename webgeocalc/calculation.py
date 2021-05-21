@@ -10,15 +10,16 @@ from .errors import (CalculationAlreadySubmitted, CalculationConflictAttr,
                      CalculationNotCompleted, CalculationRequiredAttr,
                      CalculationTimeOut, CalculationUndefinedAttr)
 from .types import KernelSetDetails
-from .vars import (ABERRATION_CORRECTION, ANGULAR_UNITS, ANGULAR_VELOCITY_REPRESENTATION,
-                   ANGULAR_VELOCITY_UNITS, AXIS, CALCULATION_FAILED_PHASES,
-                   CALCULATION_TYPE, COORDINATE_REPRESENTATION, DIRECTION_VECTOR_TYPE,
-                   INTERVALS, ORIENTATION_REPRESENTATION, OUTPUT_TIME_FORMAT, SHAPE,
+from .vars import (ABERRATION_CORRECTION, ANGULAR_UNITS,
+                   ANGULAR_VELOCITY_REPRESENTATION, ANGULAR_VELOCITY_UNITS,
+                   AXIS, CALCULATION_FAILED_PHASES, CALCULATION_TYPE, COORDINATE,
+                   COORDINATE_REPRESENTATION, COORDINATE_SYSTEM, DIRECTION_VECTOR_TYPE,
+                   INTERVALS, INTERVAL_ADJUSTMENT, INTERVAL_ADJUSTMENT_UNITS,
+                   INTERVAL_FILTERING, INTERVAL_FILTERING_THRESHOLD_UNITS,
+                   ORIENTATION_REPRESENTATION, OUTPUT_DURATION_UNITS,
+                   OUTPUT_TIME_FORMAT, RELATIONAL_CONDITION, SHAPE,
                    STATE_REPRESENTATION, SUB_POINT_TYPE, TIME_FORMAT, TIME_LOCATION,
-                   TIME_STEP_UNITS, TIME_SYSTEM, OUTPUT_DURATION_UNITS,
-                   INTERVAL_ADJUSTMENT, INTERVAL_ADJUSTMENT_UNITS, INTERVAL_FILTERING,
-                   INTERVAL_FILTERING_THRESHOLD_UNITS, COORDINATE_SYSTEM, COORDINATE,
-                   RELATIONAL_CONDITION)
+                   TIME_STEP_UNITS, TIME_SYSTEM)
 
 
 APIs = {
@@ -1715,7 +1716,8 @@ class Calculation:
 
     @SetterProperty
     def output_duration_units(self, val):
-        '''Time units to use for displaying the duration of each interval found by the event search.
+        '''Time units to use for displaying the duration of each interval found by the
+        event search.
 
         Parameters
         ----------
@@ -1735,12 +1737,14 @@ class Calculation:
         if val in OUTPUT_DURATION_UNITS:
             self.__outputDurationUnits = val
         else:
-            raise CalculationInvalidAttr('output_duration_units', val, OUTPUT_DURATION_UNITS)
+            raise CalculationInvalidAttr('output_duration_units', val,
+                                         OUTPUT_DURATION_UNITS)
 
     @SetterProperty
     def should_complement_window(self, val):
-        '''Specifies whether to complement the intervals in the result window. That is, instead of finding the
-        intervals where the condition is satisfied, find the intervals where the condition is not satisfied.
+        '''Specifies whether to complement the intervals in the result window. That is,
+        instead of finding the intervals where the condition is satisfied, find the
+        intervals where the condition is not satisfied.
 
         Parameters
         ----------
@@ -1759,8 +1763,9 @@ class Calculation:
 
     @SetterProperty
     def interval_adjustment(self, val):
-        '''Specifies whether to expand or contract the intervals in the result. Expanding the intervals will cause
-        intervals that overlap, after expansion, to be combined into one interval.
+        '''Specifies whether to expand or contract the intervals in the result.
+        Expanding the intervals will cause intervals that overlap, after expansion,
+        to be combined into one interval.
 
         Parameters
         ----------
@@ -1779,7 +1784,8 @@ class Calculation:
         if val in INTERVAL_ADJUSTMENT:
             self.__intervalAdjustment = val
         else:
-            raise CalculationInvalidAttr('interval_adjustment', val, INTERVAL_ADJUSTMENT)
+            raise CalculationInvalidAttr('interval_adjustment', val,
+                                         INTERVAL_ADJUSTMENT)
 
     @SetterProperty
     def interval_adjustment_amount(self, val):
@@ -1815,12 +1821,13 @@ class Calculation:
         if val in INTERVAL_ADJUSTMENT_UNITS:
             self.__intervalAdjustmentUnits = val
         else:
-            raise CalculationInvalidAttr('interval_adjustment_units', val, INTERVAL_ADJUSTMENT_UNITS)
+            raise CalculationInvalidAttr('interval_adjustment_units', val,
+                                         INTERVAL_ADJUSTMENT_UNITS)
 
     @SetterProperty
     def interval_filtering(self, val):
-        '''Specifies whether to omit interval smaller than a minimum threshold size. This threshold is applied after
-        expansion or contraction of the intervals.
+        '''Specifies whether to omit interval smaller than a minimum threshold size.
+        This threshold is applied after expansion or contraction of the intervals.
 
         Parameters
         ----------
@@ -1873,7 +1880,8 @@ class Calculation:
         if val in INTERVAL_FILTERING_THRESHOLD_UNITS:
             self.__intervalFilteringThresholdUnits = val
         else:
-            raise CalculationInvalidAttr('interval_filtering_threshold_units', val, INTERVAL_FILTERING_THRESHOLD_UNITS)
+            raise CalculationInvalidAttr('interval_filtering_threshold_units', val,
+                                         INTERVAL_FILTERING_THRESHOLD_UNITS)
 
     @SetterProperty
     def coordinate_system(self, val):
@@ -1966,7 +1974,8 @@ class Calculation:
         if val in RELATIONAL_CONDITION:
             self.gf_condition(relationalCondition=val)
         else:
-            raise CalculationInvalidAttr('relational_condition', val, RELATIONAL_CONDITION)
+            raise CalculationInvalidAttr('relational_condition', val,
+                                         RELATIONAL_CONDITION)
 
     @SetterProperty
     def reference_value(self, val):
