@@ -6,6 +6,7 @@ import pytest
 from webgeocalc import SubSolarPoint
 from webgeocalc.errors import CalculationInvalidAttr
 
+
 @pytest.fixture
 def kernels():
     '''Cassini kernel set.'''

@@ -5,6 +5,7 @@ import pytest
 
 from webgeocalc import OsculatingElements
 
+
 @pytest.fixture
 def kernels():
     '''Kernels sets Solar and Cassini.'''

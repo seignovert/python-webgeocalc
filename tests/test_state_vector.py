@@ -5,6 +5,7 @@ import pytest
 
 from webgeocalc import StateVector
 
+
 @pytest.fixture
 def kernels():
     '''Cassini kernel set.'''

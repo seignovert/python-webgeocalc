@@ -9,6 +9,7 @@ from webgeocalc.errors import (CalculationAlreadySubmitted, CalculationFailed,
                                ResultAttributeError)
 from webgeocalc.vars import ESA_URL, JPL_URL
 
+
 @pytest.fixture
 def params():
     '''Input parameters with 2 input time for generic calculation.'''
