@@ -234,6 +234,43 @@ results are retrieved by the :py:attr:`.results` attribute:
      'TIME_AT_TARGET': '2012-10-19 08:59:57.451094 UTC',
      'LIGHT_TIME': 2.54890548}
 
+Calculation names
+-----------------
+
+The ``Webgeocalc API`` calculation names slightly differ from the
+calculation feature names accessible from the ``Webgeocalc GUI``
+web portals.
+
+.. list-table:: Webgeocalc API vs GUI calculation names
+   :widths: 50 50
+   :header-rows: 1
+
+   * - Webgeocalc API
+     - Webgeocalc GUI
+   * - :py:class:`StateVector`
+     - Geometry Calculator: State Vector
+   * - :py:class:`AngularSeparation`
+     - Geometry Calculator: Angular Separation
+   * - :py:class:`AngularSize`
+     - Geometry Calculator: Angular Size
+   * - :py:class:`FrameTransformation`
+     - Geometry Calculator: Frame Transformation
+   * - :py:class:`IlluminationAngles`
+     - Geometry Calculator: Illumnation Angles
+   * - :py:class:`SubSolarPoint`
+     - Geometry Calculator: Sub-solar Point
+   * - :py:class:`SubObserverPoint`
+     - Geometry Calculator: Sub-observer Point
+   * - :py:class:`SurfaceInterceptPoint`
+     - Geometry Calculator: Surface Intercept Point
+   * - :py:class:`OsculatingElements`
+     - Geometry Calculator: Orbital Elements
+   * - :py:class:`TimeConversion`
+     - Time Calculator: Time Conversion
+   * - :py:class:`GFConditionSearch`
+     - Geometry Even Finder: Position Finder
+
+
 Generic calculation
 -------------------
 
