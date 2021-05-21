@@ -10,27 +10,27 @@ from webgeocalc.errors import CalculationInvalidAttr
 @pytest.fixture
 def kernels():
     '''Generic kernel set.'''
-    return 1
+    return 5
 
 @pytest.fixture
 def intervals():
     '''Input time interval'''
-    return ["1986-08-22", "1986-08-23"]
+    return ['2012-10-19T07:00:00', '2012-10-19T09:00:00']
 
 @pytest.fixture
 def reference_frame():
     '''Input reference frame.'''
-    return 'EARTH_FIXED'
+    return 'CASSINI_ISS_NAC'
 
 @pytest.fixture
 def observer():
     '''Input observer.'''
-    return 'EARTH'
+    return 'CASSINI'
 
 @pytest.fixture
 def target():
     '''Input observer.'''
-    return 'JUPITER'
+    return 'ENCELADUS'
 
 @pytest.fixture
 def time_step():
@@ -40,26 +40,47 @@ def time_step():
 @pytest.fixture
 def time_step_units():
     '''Input time step units.'''
-    return 'HOURS'
+    return 'MINUTES'
 
 @pytest.fixture
 def corr():
     '''Input aberration correction.'''
-    return 'LT'
+    return 'NONE'
 
 @pytest.fixture
-def condition():
+def coordinate_system():
+    '''Input coordinate system search condition'''
+    return "SPHERICAL"
+
+@pytest.fixture
+def coordinate():
     '''Input coordinate search condition'''
-    return {
-        "coordinateSystem": "PLANETOGRAPHIC",
-        "coordinate": "LONGITUDE",
-        "relationalCondition": "=",
-        "referenceValue": 2.19503
-    }
+    return "COLATITUDE"
+
+@pytest.fixture
+def relational_condition():
+    '''Input relational condition search condition'''
+    return "<"
+
+@pytest.fixture
+def reference_value():
+    '''Input reference value search condition'''
+    return 0.25
+
+@pytest.fixture
+def upper_limit():
+    '''Input upper limit search condition'''
+    return 0.3
+
+@pytest.fixture
+def adjustment_value():
+    '''Input adjustment value search condition'''
+    return 0.1
 
 @pytest.fixture
 def params_1(kernels, intervals, target, reference_frame, observer, time_step,
-             time_step_units, corr, condition):
+             time_step_units, corr, coordinate_system, coordinate, relational_condition,
+             reference_value, upper_limit, adjustment_value):
     '''Input parameters from WGC API example 1.'''
     return {
         "kernels": kernels,
@@ -70,12 +91,18 @@ def params_1(kernels, intervals, target, reference_frame, observer, time_step,
         "observer": observer,
         "reference_frame": reference_frame,
         "aberration_correction": corr,
-        "condition": condition
+        'coordinate_system': coordinate_system,
+        'coordinate': coordinate,
+        'relational_condition': relational_condition,
+        'reference_value': reference_value,
+        'upper_limit': upper_limit,
+        'adjustment_value': adjustment_value,
     }
 
 @pytest.fixture
 def payload_1(kernels, intervals, target, reference_frame, observer, time_step,
-              time_step_units, corr, condition):
+              time_step_units, corr, coordinate_system, coordinate,
+              relational_condition, reference_value, upper_limit, adjustment_value):
     '''Payload from WGC API example 1.'''
     return {
         "kernels": [{
@@ -91,20 +118,28 @@ def payload_1(kernels, intervals, target, reference_frame, observer, time_step,
         'timeStep': time_step,
         'timeStepUnits': time_step_units,
         'referenceFrame': reference_frame,
-        'condition': condition,
+        'condition': {
+            "coordinateSystem": coordinate_system,
+            "coordinate": coordinate,
+            'relationalCondition': relational_condition,
+            'referenceValue': reference_value,
+            'upperLimit': upper_limit,
+            'adjustmentValue': adjustment_value,
+        },
         'calculationType': 'GF_COORDINATE_SEARCH',
         'aberrationCorrection': corr,
-        'outputDurationUnits': 'SECONDS',
-        'shouldComplementWindow': False,
-        'intervalAdjustment': 'NO_ADJUSTMENT',
-        'intervalFiltering': 'NO_FILTERING',
         'timeSystem': 'UTC',
-        'timeFormat': 'CALENDAR'
+        'timeFormat': 'CALENDAR',
+        "intervalAdjustment": "NO_ADJUSTMENT",
+        "intervalFiltering": "NO_FILTERING",
+        "outputDurationUnits": "SECONDS",
+        "shouldComplementWindow": False,
     }
 
 @pytest.fixture
 def params_2(kernels, intervals, target, reference_frame, observer, time_step,
-             time_step_units, corr, condition):
+             time_step_units, corr, coordinate_system, coordinate,
+              relational_condition, reference_value, upper_limit, adjustment_value):
     '''Input parameters from WGC API example 1.'''
     return {
         "kernels": kernels,
@@ -115,7 +150,12 @@ def params_2(kernels, intervals, target, reference_frame, observer, time_step,
         "observer": observer,
         "reference_frame": reference_frame,
         "aberration_correction": corr,
-        "condition": condition,
+        'coordinate_system': coordinate_system,
+        'coordinate': coordinate,
+        'relational_condition': relational_condition,
+        'reference_value': reference_value,
+        'upper_limit': upper_limit,
+        'adjustment_value': adjustment_value,
         "interval_adjustment": "EXPAND_INTERVALS",
         "interval_adjustment_amount": 30,
         "interval_adjustment_units": "MINUTES",
@@ -123,7 +163,8 @@ def params_2(kernels, intervals, target, reference_frame, observer, time_step,
 
 @pytest.fixture
 def payload_2(kernels, intervals, target, reference_frame, observer, time_step,
-              time_step_units, corr, condition):
+              time_step_units, corr, coordinate_system, coordinate,
+              relational_condition, reference_value, upper_limit, adjustment_value):
     '''Payload from WGC API example 1.'''
     return {
         "kernels": [{
@@ -139,7 +180,14 @@ def payload_2(kernels, intervals, target, reference_frame, observer, time_step,
         'timeStep': time_step,
         'timeStepUnits': time_step_units,
         'referenceFrame': reference_frame,
-        'condition': condition,
+        'condition': {
+            'coordinateSystem': coordinate_system,
+            'coordinate': coordinate,
+            'relationalCondition': relational_condition,
+            'referenceValue': reference_value,
+            'upperLimit': upper_limit,
+            'adjustmentValue': adjustment_value,
+        },
         'calculationType': 'GF_COORDINATE_SEARCH',
         'aberrationCorrection': corr,
         'outputDurationUnits': 'SECONDS',
@@ -154,7 +202,8 @@ def payload_2(kernels, intervals, target, reference_frame, observer, time_step,
 
 @pytest.fixture
 def params_3(kernels, intervals, target, reference_frame, observer, time_step,
-             time_step_units, corr, condition):
+             time_step_units, corr, coordinate_system, coordinate,
+              relational_condition, reference_value, upper_limit, adjustment_value):
     '''Input parameters from WGC API example 1.'''
     return {
         "kernels": kernels,
@@ -165,7 +214,12 @@ def params_3(kernels, intervals, target, reference_frame, observer, time_step,
         "observer": observer,
         "reference_frame": reference_frame,
         "aberration_correction": corr,
-        "condition": condition,
+        'coordinate_system': coordinate_system,
+        'coordinate': coordinate,
+        'relational_condition': relational_condition,
+        'reference_value': reference_value,
+        'upper_limit': upper_limit,
+        'adjustment_value': adjustment_value,
         "interval_filtering": "OMIT_INTERVALS_SMALLER_THAN_A_THRESHOLD",
         "interval_filtering_threshold": 30,
         "interval_filtering_threshold_units": "MINUTES",
@@ -173,7 +227,8 @@ def params_3(kernels, intervals, target, reference_frame, observer, time_step,
 
 @pytest.fixture
 def payload_3(kernels, intervals, target, reference_frame, observer, time_step,
-              time_step_units, corr, condition):
+              time_step_units, corr, coordinate_system, coordinate,
+              relational_condition, reference_value, upper_limit, adjustment_value):
     '''Payload from WGC API example 1.'''
     return {
         "kernels": [{
@@ -189,7 +244,14 @@ def payload_3(kernels, intervals, target, reference_frame, observer, time_step,
         'timeStep': time_step,
         'timeStepUnits': time_step_units,
         'referenceFrame': reference_frame,
-        'condition': condition,
+        'condition': {
+            'coordinateSystem': coordinate_system,
+            'coordinate': coordinate,
+            'relationalCondition': relational_condition,
+            'referenceValue': reference_value,
+            'upperLimit': upper_limit,
+            'adjustmentValue': adjustment_value,
+        },
         'calculationType': 'GF_COORDINATE_SEARCH',
         'aberrationCorrection': corr,
         'outputDurationUnits': 'SECONDS',
