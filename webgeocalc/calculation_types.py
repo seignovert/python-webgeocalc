@@ -699,3 +699,87 @@ class TimeConversion(Calculation):
         kwargs['output_time_format'] = output_time_format
 
         super().__init__(**kwargs)
+
+
+class GFCoordinateSearch(Calculation):
+    '''Coordinate Search (Geometry Finder) calculation.
+
+    Find time intervals when a coordinate of an observer-target position vector
+    satisfies a condition.
+
+    Parameters
+    ----------
+    output_duration_units: str, optional
+        See: :py:attr:`.output_duration_units`
+    should_complement_window: bool, optional
+        See: :py:attr:`.should_complement_window`
+    interval_adjustment: str, optional
+        See: :py:attr:`.interval_adjustment`
+    interval_filtering: str, optional
+        See: :py:attr:`.interval_filtering`
+    aberration_correction: str, optional
+        See: :py:attr:`.aberration_correction`
+    coordinate_system: str, optional
+        See: :py:attr:`.coordinate_system`
+    coordinate: str, optional
+        See: :py:attr:`.coordinate`
+    relational_condition: str
+        See: :py:attr:`.relational_condition`
+    reference_value: float, optional
+        See: :py:attr:`.reference_value`
+    upper_limit: float, optional
+        See: :py:attr:`.upper_limit`
+    adjustment_value, float, optional
+        See: :py:attr:`.adjustment_value`
+
+    Other Parameters
+    ----------------
+    kernels: str, int, [str or/and int]
+        See: :py:attr:`.kernels`
+    kernel_paths: str, [str]
+        See: :py:attr:`.kernel_paths`
+    times: str or [str]
+        See: :py:attr:`.times`
+    intervals: [str, str] or {'startTime': str, 'endTime': str} or [interval, ...]
+        See: :py:attr:`.intervals`
+    time_step: int
+        See: :py:attr:`.time_step`
+    time_step_units: str
+        See: :py:attr:`.time_step_units`
+    time_system: str
+        See: :py:attr:`.time_system`
+    time_format: str
+        See: :py:attr:`.time_format`
+    target: str or int
+        See: :py:attr:`.target`
+    observer: str or int
+        See: :py:attr:`.observer`
+    reference_frame: str or int
+        See: :py:attr:`.reference_frame`
+
+    Raises
+    ------
+    CalculationRequiredAttr
+        If :py:attr:`.target`, :py:attr:`.observer`,
+        :py:attr:`.reference_frame` and :py:attr:`.relational_condition` are not
+        provided.
+
+    '''
+
+    def __init__(self, output_duration_units='SECONDS',
+                 should_complement_window=False,
+                 interval_adjustment='NO_ADJUSTMENT',
+                 interval_filtering='NO_FILTERING',
+                 aberration_correction='CN', **kwargs):
+
+        self._required(['target', 'observer', 'reference_frame', 'relational_condition'],
+                       kwargs)
+
+        kwargs['calculation_type'] = 'GF_COORDINATE_SEARCH'
+        kwargs['aberration_correction'] = aberration_correction
+        kwargs['output_duration_units'] = output_duration_units
+        kwargs['should_complement_window'] = should_complement_window
+        kwargs['interval_adjustment'] = interval_adjustment
+        kwargs['interval_filtering'] = interval_filtering
+
+        super().__init__(**kwargs)

@@ -89,7 +89,7 @@ def test_illumination_angles_payload(params, payload):
     assert IlluminationAngles(**params).payload == payload
 
 def test_illumination_angles_attr_error(params):
-    '''Test erros whent illumination angles attribues are invalid.'''
+    '''Test errors when illumination angles attributes are invalid.'''
     with pytest.raises(CalculationInvalidAttr):
         IlluminationAngles(shape_1='POINT', **params)
 

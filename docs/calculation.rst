@@ -15,6 +15,7 @@ For now only the geometry/time calculations are implemented:
 - :py:class:`SurfaceInterceptPoint`
 - :py:class:`OsculatingElements`
 - :py:class:`TimeConversion`
+- :py:class:`GFCoordinateSearch`
 
 Import generic WebGeoCalc calculation object:
 
@@ -232,6 +233,55 @@ results are retrieved by the :py:attr:`.results` attribute:
      'D_Z_DT': -2.1416539,
      'TIME_AT_TARGET': '2012-10-19 08:59:57.451094 UTC',
      'LIGHT_TIME': 2.54890548}
+
+Calculation names
+-----------------
+
+The ``Webgeocalc API`` calculation names slightly differ from the
+calculation feature names accessible from the ``Webgeocalc GUI``
+web portals.
+
+.. list-table:: Webgeocalc API vs GUI calculation names
+   :widths: 33 33 33
+   :header-rows: 1
+
+   * - python-webgeocalc API classes
+     - Webgeocalc API calculation types
+     - Webgeocalc GUI features
+   * - :py:class:`StateVector`
+     - ``STATE_VECTOR``
+     - State Vector
+   * - :py:class:`AngularSeparation`
+     - ``ANGULAR_SEPARATION``
+     - Angular Separation
+   * - :py:class:`AngularSize`
+     - ``ANGULAR_SIZE``
+     - Angular Size
+   * - :py:class:`FrameTransformation`
+     - ``FRAME_TRANSFORMATION``
+     - Frame Transformation
+   * - :py:class:`IlluminationAngles`
+     - ``ILLUMINATION_ANGLES``
+     - Illumination Angles
+   * - :py:class:`SubSolarPoint`
+     - ``SUB_SOLAR_POINT``
+     - Sub-solar Point
+   * - :py:class:`SubObserverPoint`
+     - ``SUB_OBSERVER_POINT``
+     - Sub-observer Point
+   * - :py:class:`SurfaceInterceptPoint`
+     - ``SURFACE_INTERCEPT_POINT``
+     - Surface Intercept Point
+   * - :py:class:`OsculatingElements`
+     - ``OSCULATING_ELEMENTS``
+     - Orbital Elements
+   * - :py:class:`TimeConversion`
+     - ``TIME_CONVERSION``
+     - Time Conversion
+   * - :py:class:`GFCooordinateSearch`
+     - ``GF_COORDINATE_SEARCH``
+     - Position Event Finder
+
 
 Generic calculation
 -------------------
@@ -685,3 +735,56 @@ Convert times from one time system or format to another.
         - :py:attr:`.output_time_format`: ``CALENDAR``
 
 .. autoclass:: TimeConversion
+
+
+Geometry Finder: Coordinate Search
+----------------------------------
+
+
+Find time intervals when a coordinate of an observer-target position vector satisfies a condition.
+
+.. testsetup::
+
+    from webgeocalc import GFCoordinateSearch
+
+>>> GFCoordinateSearch(
+...     kernels = 5,
+...     intervals = ['2012-10-19T07:00:00', '2012-10-19T09:00:00'],
+...     observer = 'CASSINI',
+...     target = 'ENCELADUS',
+...     reference_frame = 'CASSINI_ISS_NAC',
+...     time_step = 1,
+...     time_step_units = 'MINUTES',
+...     aberration_correction = 'NONE',
+...     coordinate_system = 'SPHERICAL',
+...     coordinate = 'COLATITUDE',
+...     relational_condition = '<',
+...     reference_value = 0.25,
+...     verbose = False,
+... ).run()
+{'DATE': '2012-10-19 08:39:32.812153 UTC', 'DURATION': 3392.10937738}
+
+.. important::
+
+    Calculation required parameters:
+        - :py:attr:`.kernels` or/and :py:attr:`.kernel_paths`
+        - :py:attr:`.times` or :py:attr:`.intervals` with :py:attr:`.time_step` and :py:attr:`.time_step_units`
+        - :py:attr:`.observer`
+        - :py:attr:`.target`
+        - :py:attr:`.reference_frame`
+        - :py:attr:`coordinate_system`
+        - :py:attr:`coordinate`
+        - :py:attr:`relational_condition`
+        - :py:attr:`reference_value` only if :py:attr:`relationalCondition` is not ``ABSMAX``, ``ABSMIN``, ``LOCMAX``, or ``LOCMIN``
+        - :py:attr:`upper_limit` only if :py:attr:`relationalCondition` is ``RANGE``
+        - :py:attr:`adjustment_value` only if :py:attr:`relationalCondition` is ``ABSMAX`` or ``ABSMIN``
+
+    Default parameters:
+        - :py:attr:`.time_system`: ``UTC``
+        - :py:attr:`.time_format`: ``CALENDAR``
+        - :py:attr:`output_duration_units`: ``SECONDS``
+        - :py:attr:`shouldComplementWindow`: ``False``
+        - :py:attr:`intervalAdjustment`: ``NO_ADJUSTMENT``
+        - :py:attr:`intervalFiltering`: ``NO_FILTERING``
+
+.. autoclass:: GFCoordinateSearch

@@ -10,10 +10,14 @@ from .errors import (CalculationAlreadySubmitted, CalculationConflictAttr,
                      CalculationNotCompleted, CalculationRequiredAttr,
                      CalculationTimeOut, CalculationUndefinedAttr)
 from .types import KernelSetDetails
-from .vars import (ABERRATION_CORRECTION, ANGULAR_UNITS, ANGULAR_VELOCITY_REPRESENTATION,
-                   ANGULAR_VELOCITY_UNITS, AXIS, CALCULATION_FAILED_PHASES,
-                   CALCULATION_TYPE, COORDINATE_REPRESENTATION, DIRECTION_VECTOR_TYPE,
-                   INTERVALS, ORIENTATION_REPRESENTATION, OUTPUT_TIME_FORMAT, SHAPE,
+from .vars import (ABERRATION_CORRECTION, ANGULAR_UNITS,
+                   ANGULAR_VELOCITY_REPRESENTATION, ANGULAR_VELOCITY_UNITS,
+                   AXIS, CALCULATION_FAILED_PHASES, CALCULATION_TYPE, COORDINATE,
+                   COORDINATE_REPRESENTATION, COORDINATE_SYSTEM, DIRECTION_VECTOR_TYPE,
+                   INTERVALS, INTERVAL_ADJUSTMENT, INTERVAL_ADJUSTMENT_UNITS,
+                   INTERVAL_FILTERING, INTERVAL_FILTERING_THRESHOLD_UNITS,
+                   ORIENTATION_REPRESENTATION, OUTPUT_DURATION_UNITS,
+                   OUTPUT_TIME_FORMAT, RELATIONAL_CONDITION, SHAPE,
                    STATE_REPRESENTATION, SUB_POINT_TYPE, TIME_FORMAT, TIME_LOCATION,
                    TIME_STEP_UNITS, TIME_SYSTEM)
 
@@ -177,7 +181,7 @@ class Calculation:
         self.params = kwargs
         self.__kernels = []
         self.id = None
-        self.phase = 'NOT SUBMITED'
+        self.phase = 'NOT SUBMITTED'
         self.columns = None
         self.values = None
         self.verbose = verbose
@@ -1709,3 +1713,330 @@ class Calculation:
 
         '''
         self.__directionVectorDec = self.direction_vector('dec', val)
+
+    @SetterProperty
+    def output_duration_units(self, val):
+        '''Output duration time units.
+
+        Time units to use for displaying the duration of each interval found by the
+        event search.
+
+        Parameters
+        ----------
+        output_duration_units: str
+            One of the following:
+
+            - SECONDS
+            - MINUTES
+            - HOURS
+            - DAYS
+
+        Raises
+        -------
+        CalculationInvalidAttr
+            If the value provided is invalid.
+
+        '''
+        if val in OUTPUT_DURATION_UNITS:
+            self.__outputDurationUnits = val
+        else:
+            raise CalculationInvalidAttr('output_duration_units', val,
+                                         OUTPUT_DURATION_UNITS)
+
+    @SetterProperty
+    def should_complement_window(self, val):
+        '''Specifies whether to complement the intervals in the result window.
+
+        That is, instead of finding the intervals where the condition is satisfied,
+        find the intervals where the condition is not satisfied.
+
+        Parameters
+        ----------
+        should_complement_window: bool
+            Complement result window
+
+        Raises
+        -------
+        TypeError
+            If the value provided is not bool type.
+
+        '''
+        if isinstance(val, bool):
+            self.__shouldComplementWindow = val
+        else:
+            raise TypeError('Attribute should_complement_window should be a boolean.')
+
+    @SetterProperty
+    def interval_adjustment(self, val):
+        '''Specifies whether to expand or contract the intervals in the result.
+
+        Expanding the intervals will cause intervals that overlap, after expansion,
+        to be combined into one interval.
+
+        Parameters
+        ----------
+        interval_adjustment: str
+            One of the following:
+
+            - NO_ADJUSTMENT
+            - EXPAND_INTERVALS
+            - CONTRACT_INTERVALS
+
+        Raises
+        -------
+        CalculationInvalidAttr
+            If the value provided is invalid.
+
+        '''
+        if val in INTERVAL_ADJUSTMENT:
+            self.__intervalAdjustment = val
+        else:
+            raise CalculationInvalidAttr('interval_adjustment', val,
+                                         INTERVAL_ADJUSTMENT)
+
+    @SetterProperty
+    def interval_adjustment_amount(self, val):
+        '''The amount by which to expand or contract each interval at the endpoints.
+
+        Each endpoint will be moved by this amount.
+
+        Parameters
+        ----------
+        interval_adjustment_amount: float
+
+        '''
+        self.__intervalAdjustmentAmount = val
+
+    @SetterProperty
+    def interval_adjustment_units(self, val):
+        '''The unit of the interval adjustment amount.
+
+        Parameters
+        ----------
+        interval_adjustment_units: str
+            One of the following:
+
+            - SECONDS
+            - MINUTES
+            - HOURS
+            - DAYS
+
+        Raises
+        -------
+        CalculationInvalidAttr
+            If the value provided is invalid.
+
+        '''
+        if val in INTERVAL_ADJUSTMENT_UNITS:
+            self.__intervalAdjustmentUnits = val
+        else:
+            raise CalculationInvalidAttr('interval_adjustment_units', val,
+                                         INTERVAL_ADJUSTMENT_UNITS)
+
+    @SetterProperty
+    def interval_filtering(self, val):
+        '''Specifies whether to omit interval smaller than a minimum threshold size.
+
+        This threshold is applied after expansion or contraction of the intervals.
+
+        Parameters
+        ----------
+        interval_filtering: str
+            One of the following:
+
+            - NO_FILTERING
+            - OMIT_INTERVALS_SMALLER_THAN_A_THRESHOLD
+
+        Raises
+        -------
+        CalculationInvalidAttr
+            If the value provided is invalid.
+
+        '''
+        if val in INTERVAL_FILTERING:
+            self.__intervalFiltering = val
+        else:
+            raise CalculationInvalidAttr('interval_filtering', val, INTERVAL_FILTERING)
+
+    @SetterProperty
+    def interval_filtering_threshold(self, val):
+        '''Interval duration filtering threshold value.
+
+        Parameters
+        ----------
+        interval_filtering_threshold: float
+            Interval duration filtering threshold value.
+
+        '''
+        self.__intervalFilteringThreshold = val
+
+    @SetterProperty
+    def interval_filtering_threshold_units(self, val):
+        '''Units of the interval duration filtering threshold value.
+
+        Parameters
+        ----------
+        interval_filtering_threshold_units: str
+            One of the following:
+
+            - SECONDS
+            - MINUTES
+            - HOURS
+            - DAYS
+
+        Raises
+        -------
+        CalculationInvalidAttr
+            If the value provided is invalid.
+
+        '''
+        if val in INTERVAL_FILTERING_THRESHOLD_UNITS:
+            self.__intervalFilteringThresholdUnits = val
+        else:
+            raise CalculationInvalidAttr('interval_filtering_threshold_units', val,
+                                         INTERVAL_FILTERING_THRESHOLD_UNITS)
+
+    @SetterProperty
+    def coordinate_system(self, val):
+        '''The name of the coordinate system in which to evaluate the coordinate.
+
+        Only required for GF_COORDINATE_SEARCH, GF_SUB_POINT_SEARCH, and
+        GF_SURFACE_INTERCEPT_POINT_SEARCH.
+
+        Parameters
+        ----------
+        coordinate_system: str
+            One of the following:
+
+            - RECTANGULAR
+            - RA/DEC
+            - LATITUDINAL (planetocentric)
+            - CYLINDRICAL
+            - SPHERICAL
+            - GEODETIC
+            - PLANETOGRAPHIC
+
+        Raises
+        ------
+        CalculationInvalidAttr
+            If the value provided is invalid.
+
+        '''
+        if val in COORDINATE_SYSTEM:
+            self.gf_condition(coordinateSystem=val)
+        else:
+            raise CalculationInvalidAttr('coordinate_system', val, COORDINATE_SYSTEM)
+
+    @SetterProperty
+    def coordinate(self, val):
+        '''The name of the SPICE coordinate to search on.
+
+        Only needed for GF_COORDINATE_SEARCH, GF_SUB_POINT_SEARCH, and
+        GF_SURFACE_INTERCEPT_POINT_SEARCH.
+
+        Parameters
+        ----------
+        coordinate: str
+             One of the following:
+
+            - X
+            - Y
+            - Z
+            - LONGITUDE
+            - LATITUDE
+            - COLATITUDE
+            - RIGHT ASCENSION
+            - DECLINATION
+            - RANGE
+            - RADIUS
+            - ALTITUDE
+
+        Raises
+        ------
+        CalculationInvalidAttr
+            If the value provided is invalid.
+
+        '''
+        if val in COORDINATE:
+            self.gf_condition(coordinate=val)
+        else:
+            raise CalculationInvalidAttr('coordinate', val, COORDINATE)
+
+    @SetterProperty
+    def relational_condition(self, val):
+        '''The relationship for the geometry finder test.
+
+        Parameters
+        ----------
+        relational_condition: str
+            One of the following:
+
+            - =
+            - <
+            - >
+            - RANGE
+            - ABSMAX
+            - ABSMIN
+            - LOCMAX
+            - LOCMIN
+
+
+        Raises
+        ------
+        CalculationInvalidAttr
+            If the value provided is invalid.
+
+        '''
+        if val in RELATIONAL_CONDITION:
+            self.gf_condition(relationalCondition=val)
+        else:
+            raise CalculationInvalidAttr('relational_condition', val,
+                                         RELATIONAL_CONDITION)
+
+    @SetterProperty
+    def reference_value(self, val):
+        '''The value to compare against, or the lower value of a range.
+
+        Only needed if relationalCondition is not ABSMAX, ABSMIN, LOCMAX, or LOCMIN.
+
+        Parameters
+        ----------
+        reference_value: float
+
+        '''
+        self.gf_condition(referenceValue=val)
+
+    @SetterProperty
+    def upper_limit(self, val):
+        '''The upper limit of a range. Only needed if relationalCondition is RANGE.
+
+        Parameters
+        ----------
+        upper_limit: float
+
+        '''
+        self.gf_condition(upperLimit=val)
+
+    @SetterProperty
+    def adjustment_value(self, val):
+        '''The adjustment value to apply for ABSMIN and ABSMAX searches.
+
+        Required if relationalCondition is ABSMIN or ABSMAX.
+
+        Parameters
+        ----------
+        adjustment_value: float
+
+        '''
+        self.gf_condition(adjustmentValue=val)
+
+    def gf_condition(self, **kwargs):
+        '''Geometry Finder condition object.
+
+        See the documentation for gfpos() for more details.
+
+        '''
+        try:
+            self.__condition.update(kwargs)
+        except AttributeError:
+            self.__condition = kwargs

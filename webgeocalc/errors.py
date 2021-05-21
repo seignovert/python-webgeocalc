@@ -2,10 +2,10 @@
 '''WebGeoCalc erros.'''
 
 class APIError(IOError):
-    '''This exception is raised when the status of the API reponse is not OK.'''
+    '''This exception is raised when the status of the API response is not OK.'''
 
 class APIReponseError(NotImplementedError):
-    '''This exception is raised when the format of the API reponse is not implemented.'''
+    '''This exception is raised when the format of the API response is not implemented.'''
 
     def __init__(self, json):
         msg = f'This API JSON response is not implemented yet:\n{json}'
@@ -65,7 +65,7 @@ class CalculationUndefinedAttr(AttributeError):
         super().__init__(msg)
 
 class CalculationIncompatibleAttr(AttributeError):
-    '''Calulation imcompatible attributes.
+    '''Calculation incompatible attributes.
 
     This exception is raised when a calculation attribute is
     not applicable with an other attribute.
@@ -116,6 +116,6 @@ class CalculationTimeOut(IOError):
     '''This exception is raised when calculation time-out.'''
 
     def __init__(self, timeout, sleep):
-        msg = f'Calculation time-out after {timeout} secondes' + \
+        msg = f'Calculation time-out after {timeout} seconds' + \
               f' ({int(timeout/sleep)} attempts)'
         super().__init__(msg)

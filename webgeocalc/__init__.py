@@ -7,9 +7,9 @@ __version__ = pbr.version.VersionInfo('webgeocalc').version_string()
 from .api import API, Api, ESA_API, JPL_API
 from .calculation import Calculation
 from .calculation_types import (AngularSeparation, AngularSize,
-                                FrameTransformation, IlluminationAngles,
-                                OsculatingElements, StateVector,
-                                SubObserverPoint, SubSolarPoint,
+                                FrameTransformation, GFCoordinateSearch,
+                                IlluminationAngles, OsculatingElements,
+                                StateVector, SubObserverPoint, SubSolarPoint,
                                 SurfaceInterceptPoint, TimeConversion)
 
 __all__ = [
@@ -21,6 +21,7 @@ __all__ = [
     'AngularSize',
     'Calculation',
     'FrameTransformation',
+    'GFCoordinateSearch',
     'IlluminationAngles',
     'OsculatingElements',
     'StateVector',
