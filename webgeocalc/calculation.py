@@ -1882,8 +1882,8 @@ class Calculation:
         Only required for GF_COORDINATE_SEARCH, GF_SUB_POINT_SEARCH, and
         GF_SURFACE_INTERCEPT_POINT_SEARCH.
 
-        Parameter
-        ---------
+        Parameters
+        ----------
         coordinate_system: str
             One of the following:
 
@@ -1912,8 +1912,8 @@ class Calculation:
         Only needed for GF_COORDINATE_SEARCH, GF_SUB_POINT_SEARCH, and
         GF_SURFACE_INTERCEPT_POINT_SEARCH.
 
-        Parameter
-        ---------
+        Parameters
+        ----------
         coordinate: str
              One of the following:
 
@@ -1943,8 +1943,8 @@ class Calculation:
     def relational_condition(self, val):
         '''The relationship for the geometry finder test.
 
-        Parameter
-        ---------
+        Parameters
+        ----------
         relational_condition: str
             One of the following:
 
@@ -1973,8 +1973,8 @@ class Calculation:
         '''The value to compare against, or the lower value of a range. Only needed if
         relationalCondition is not ABSMAX, ABSMIN, LOCMAX, or LOCMIN.
 
-        Parameter
-        ---------
+        Parameters
+        ----------
         reference_value: float
 
         '''
@@ -1984,8 +1984,8 @@ class Calculation:
     def upper_limit(self, val):
         '''The upper limit of a range. Only needed if relationalCondition is RANGE.
 
-        Parameter
-        ---------
+        Parameters
+        ----------
         upper_limit: float
 
         '''
@@ -1996,8 +1996,8 @@ class Calculation:
         '''The adjustment value to apply for ABSMIN and ABSMAX searches. Required if
         relationalCondition is ABSMIN or ABSMAX.
 
-        Parameter
-        ---------
+        Parameters
+        ----------
         adjustment_value: float
 
         '''
