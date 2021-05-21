@@ -268,7 +268,7 @@ web portals.
    * - :py:class:`TimeConversion`
      - Time Calculator: Time Conversion
    * - :py:class:`GFConditionSearch`
-     - Geometry Even Finder: Position Finder
+     - Geometric Event Finder: Position Finder
 
 
 Generic calculation
