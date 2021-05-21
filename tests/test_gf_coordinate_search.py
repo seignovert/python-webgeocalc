@@ -291,6 +291,21 @@ def test_coordinate_search_attr_err(params_1, params_2, params_3):
         GFCoordinateSearch(output_duration_units='WRONG', **params_1)
 
     with pytest.raises(CalculationInvalidAttr):
+        p = params_1.copy()
+        del p['coordinate_system']
+        GFCoordinateSearch(coordinate_system='WRONG', **p)
+
+    with pytest.raises(CalculationInvalidAttr):
+        p = params_1.copy()
+        del p['coordinate']
+        GFCoordinateSearch(coordinate='WRONG', **p)
+
+    with pytest.raises(CalculationInvalidAttr):
+        p = params_1.copy()
+        del p['relational_condition']
+        GFCoordinateSearch(relational_condition='WRONG', **p)
+
+    with pytest.raises(CalculationInvalidAttr):
         p = params_2.copy()
         del p['interval_adjustment_units']
         GFCoordinateSearch(interval_adjustment_units='WRONG', **p)
