@@ -737,4 +737,4 @@ Find time intervals when a coordinate of an observer-target position vector sati
         - :py:attr:`intervalAdjustment`: ``NO_ADJUSTMENT``
         - :py:attr:`intervalFiltering`: ``NO_FILTERING``
 
-.. autoclass:: GFConditionSearch
+.. autoclass:: GFCoordinateSearch
