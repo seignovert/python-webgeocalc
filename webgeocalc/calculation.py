@@ -10,7 +10,7 @@ from .errors import (CalculationAlreadySubmitted, CalculationConflictAttr,
                      CalculationNotCompleted, CalculationRequiredAttr,
                      CalculationTimeOut, CalculationUndefinedAttr)
 from .types import KernelSetDetails
-from .vars import get_var, AXIS, CALCULATION_FAILED_PHASES, INTERVALS
+from .vars import AXIS, CALCULATION_FAILED_PHASES, INTERVALS, get_var
 
 
 APIs = {
