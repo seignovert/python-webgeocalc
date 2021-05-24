@@ -2060,11 +2060,11 @@ class Calculation:
                         attr='calculation_type',
                         value=self.params['calculation_type'],
                         missing='coordinate_system'
-                    )
+                    ) from None
                 if 'coordinate' not in self.params.keys():
                     raise CalculationUndefinedAttr(
                         attr='calculation_type',
                         value=self.params['calculation_type'],
                         missing='coordinate'
-                    )
+                    ) from None
             self.__condition = kwargs
