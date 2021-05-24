@@ -4,6 +4,12 @@
 JPL_URL = 'https://wgc2.jpl.nasa.gov:8443/webgeocalc/api'
 ESA_URL = 'http://spice.esac.esa.int/webgeocalc/api'
 
+def get_var(var_name):
+    '''Get variable based on name.'''
+    if var_name not in TYPES.keys():
+        raise KeyError(var_name)
+    return TYPES[var_name]
+
 CALCULATION_FAILED_PHASES = [
     'FAILED',
     'CANCELLED',
@@ -210,3 +216,5 @@ RELATIONAL_CONDITION = [
     'LOCMAX',
     'LOCMIN',
 ]
+
+TYPES = globals()
