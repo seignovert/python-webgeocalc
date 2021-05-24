@@ -10,6 +10,7 @@ def get_var(var_name):
         raise KeyError(var_name)
     return TYPES[var_name]
 
+
 CALCULATION_FAILED_PHASES = [
     'FAILED',
     'CANCELLED',
