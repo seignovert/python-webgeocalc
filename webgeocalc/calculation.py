@@ -10,17 +10,7 @@ from .errors import (CalculationAlreadySubmitted, CalculationConflictAttr,
                      CalculationNotCompleted, CalculationRequiredAttr,
                      CalculationTimeOut, CalculationUndefinedAttr)
 from .types import KernelSetDetails
-from .vars import (ABERRATION_CORRECTION, ANGULAR_UNITS,
-                   ANGULAR_VELOCITY_REPRESENTATION, ANGULAR_VELOCITY_UNITS,
-                   AXIS, CALCULATION_FAILED_PHASES, CALCULATION_TYPE, COORDINATE,
-                   COORDINATE_REPRESENTATION, COORDINATE_SYSTEM, DIRECTION_FRAME_AXIS,
-                   DIRECTION_VECTOR_TYPE, INTERVALS, INTERVAL_ADJUSTMENT,
-                   INTERVAL_ADJUSTMENT_UNITS, INTERVAL_FILTERING,
-                   INTERVAL_FILTERING_THRESHOLD_UNITS, ORIENTATION_REPRESENTATION,
-                   OUTPUT_DURATION_UNITS, OUTPUT_TIME_FORMAT, OUTPUT_TIME_SYSTEM,
-                   RELATIONAL_CONDITION, SHAPE_1, SHAPE_2, STATE_REPRESENTATION,
-                   SUB_POINT_TYPE, TIME_FORMAT, TIME_LOCATION, TIME_STEP_UNITS,
-                   TIME_SYSTEM)
+from .vars import get_var, AXIS, CALCULATION_FAILED_PHASES, INTERVALS
 
 
 APIs = {
@@ -44,11 +34,15 @@ def attribute_list_checker(func):
     '''Property checker decorator.'''
 
     def wrapper(*args, **kwargs):
-        attr_name = func.__name__
-        val = args[1]
-        if val not in eval(attr_name.upper()):
-            raise CalculationInvalidAttr(attr_name, val,
-                                         eval(attr_name.upper()))
+        attribute_name = func.__name__
+        input_value = args[1]
+        valid_list = get_var(attribute_name.upper())
+        if input_value not in valid_list:
+            raise CalculationInvalidAttr(
+                name=attribute_name,
+                attr=input_value,
+                valids=valid_list
+            )
         return func(*args, **kwargs)
     return wrapper
 
