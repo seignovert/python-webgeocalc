@@ -1765,8 +1765,17 @@ class Calculation:
         ----------
         interval_adjustment_amount: float
 
+        Raises
+        ------
+        CalculationUndefinedAttr:
+            If :py:attr:`interval_adjustment_units` is not supplied
+
         '''
         self.__intervalAdjustmentAmount = val
+
+        if 'interval_adjustment_units' not in self.params.keys():
+            raise CalculationUndefinedAttr('interval_adjustment_amount', val,
+                                           'interval_adjustment_units')
 
     @SetterProperty
     @attribute_list_checker
@@ -1788,8 +1797,17 @@ class Calculation:
         CalculationInvalidAttr
             If the value provided is invalid.
 
+        Raises
+        ------
+        CalculationUndefinedAttr:
+            If :py:attr:`interval_adjustment_amount` is not supplied
+
         '''
         self.__intervalAdjustmentUnits = val
+
+        if 'interval_adjustment_amount' not in self.params.keys():
+            raise CalculationUndefinedAttr('interval_adjustment_units', val,
+                                           'interval_adjustment_amount')
 
     @SetterProperty
     @attribute_list_checker
@@ -1823,8 +1841,17 @@ class Calculation:
         interval_filtering_threshold: float
             Interval duration filtering threshold value.
 
+        Raises
+        ------
+        CalculationUndefinedAttr:
+            If :py:attr:`interval_filtering_threshold_units` is not supplied
+
         '''
         self.__intervalFilteringThreshold = val
+
+        if 'interval_filtering_threshold_units' not in self.params.keys():
+            raise CalculationUndefinedAttr('interval_filtering_threshold', val,
+                                           'interval_filtering_threshold_units')
 
     @SetterProperty
     @attribute_list_checker
@@ -1846,8 +1873,17 @@ class Calculation:
         CalculationInvalidAttr
             If the value provided is invalid.
 
+        Raises
+        ------
+        CalculationUndefinedAttr:
+            If :py:attr:`interval_filtering_threshold` is not supplied
+
         '''
         self.__intervalFilteringThresholdUnits = val
+
+        if 'interval_filtering_threshold' not in self.params.keys():
+            raise CalculationUndefinedAttr('interval_filtering_threshold_units', val,
+                                           'interval_filtering_threshold')
 
     @SetterProperty
     @attribute_list_checker
@@ -1930,14 +1966,25 @@ class Calculation:
             - LOCMAX
             - LOCMIN
 
-
         Raises
         ------
         CalculationInvalidAttr
             If the value provided is invalid.
+        CalculationUndefinedAttr:
+            If the value is `RANGE`, and :py:attr:`upper_limit` is not supplied.
+            If the value is `ABSMIN` or `ABSMAX`, and :py:attr:`adjustment_value`
+            is not supplied.
 
         '''
         self.gf_condition(relationalCondition=val)
+
+        if (val == 'RANGE') and ('upper_limit' not in self.params.keys()):
+            raise CalculationUndefinedAttr('relational_condition', val, 'upper_limit')
+
+        if (val in ['ABSMIN', 'ABSMAX']) and \
+                ('adjustment_value' not in self.params.keys()):
+            raise CalculationUndefinedAttr('relational_condition', val,
+                                           'adjustment_value')
 
     @SetterProperty
     def reference_value(self, val):
@@ -1981,8 +2028,33 @@ class Calculation:
 
         See the documentation for gfpos() for more details.
 
+        Raises
+        ------
+        CalculationUndefinedAttr:
+            If :py:attr:`calculation_type` is ``GF_COORDINATE_SEARCH``,
+            ``GF_SUB_POINT_SEARCH`` or ``GF_SURFACE_INTERCEPT_POINT_SEARCH``, and
+            :py:attr:`coordinate_system` or :py:attr:`coordinate` are not present.
         '''
         try:
             self.__condition.update(kwargs)
+
         except AttributeError:
+            # this set of checks is run only once.
+            if self.params['calculation_type'] in (
+                'GF_COORDINATE_SEARCH',
+                'GF_SUB_POINT_SEARCH',
+                'GF_SURFACE_INTERCEPT_POINT_SEARCH'
+            ):
+                if 'coordinate_system' not in self.params.keys():
+                    raise CalculationUndefinedAttr(
+                        attr='calculation_type',
+                        value=self.params['calculation_type'],
+                        missing='coordinate_system'
+                    )
+                if 'coordinate' not in self.params.keys():
+                    raise CalculationUndefinedAttr(
+                        attr='calculation_type',
+                        value=self.params['calculation_type'],
+                        missing='coordinate'
+                    )
             self.__condition = kwargs
