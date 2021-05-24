@@ -277,15 +277,12 @@ def test_coordinate_search_filter_interval(params_3, payload_3):
     assert GFCoordinateSearch(**params_3).payload == payload_3
 
 def test_coordinate_search_attr_type_err(params_1, params_2, params_3):
-    '''Test type errors Coordinate Search with single interval and default
-    parameters.'''
+    '''Test type errors in Coordinate Search.'''
     with pytest.raises(TypeError):
         GFCoordinateSearch(should_complement_window='WRONG', **params_1)
 
 def test_coordinate_search_invalid_attr_err(params_1, params_2, params_3):
-    '''Test Invalid attribute errors Coordinate Search with single interval and
-    default parameters.'''
-
+    '''Test Invalid attribute errors in Coordinate Search.'''
     with pytest.raises(CalculationInvalidAttr):
         GFCoordinateSearch(interval_adjustment='WRONG', **params_1)
 
@@ -321,9 +318,7 @@ def test_coordinate_search_invalid_attr_err(params_1, params_2, params_3):
         GFCoordinateSearch(interval_filtering_threshold_units='WRONG', **p)
 
 def test_coordinate_search_undefined_attr_err(params_1, params_2, params_3):
-    '''Test Undefined attribute errors Coordinate Search with single interval
-    and default parameters.'''
-
+    '''Test Undefined attribute errors in Coordinate Search.'''
     with pytest.raises(CalculationUndefinedAttr):
         p = params_1.copy()
         p['relational_condition'] = 'RANGE'
