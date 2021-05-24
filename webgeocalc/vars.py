@@ -32,7 +32,7 @@ CALCULATION_TYPE = [
     'TIME_CONVERSION',
 ]
 
-TIME_SYSTEM = [
+TIME_SYSTEM = OUTPUT_TIME_SYSTEM = [
     'UTC',
     'TDB',
     'TDT',
@@ -94,7 +94,7 @@ STATE_REPRESENTATION = [
     'SPHERICAL',
 ]
 
-SHAPE = [
+SHAPE_1 = SHAPE_2 = [
     'POINT',
     'SPHERE',
     'ELLIPSOID',
