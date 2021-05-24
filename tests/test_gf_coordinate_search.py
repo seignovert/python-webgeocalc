@@ -4,7 +4,7 @@
 import pytest
 
 from webgeocalc import GFCoordinateSearch
-from webgeocalc.errors import CalculationInvalidAttr
+from webgeocalc.errors import CalculationInvalidAttr, CalculationUndefinedAttr
 
 
 @pytest.fixture
@@ -276,10 +276,15 @@ def test_coordinate_search_filter_interval(params_3, payload_3):
     '''Test Coordinate Search with single interval with filtered interval option.'''
     assert GFCoordinateSearch(**params_3).payload == payload_3
 
-def test_coordinate_search_attr_err(params_1, params_2, params_3):
-    '''Test errors Coordinate Search with single interval and default parameters.'''
+def test_coordinate_search_attr_type_err(params_1, params_2, params_3):
+    '''Test type errors Coordinate Search with single interval and default
+    parameters.'''
     with pytest.raises(TypeError):
         GFCoordinateSearch(should_complement_window='WRONG', **params_1)
+
+def test_coordinate_search_invalid_attr_err(params_1, params_2, params_3):
+    '''Test Invalid attribute errors Coordinate Search with single interval and
+    default parameters.'''
 
     with pytest.raises(CalculationInvalidAttr):
         GFCoordinateSearch(interval_adjustment='WRONG', **params_1)
@@ -314,3 +319,79 @@ def test_coordinate_search_attr_err(params_1, params_2, params_3):
         p = params_3.copy()
         del p['interval_filtering_threshold_units']
         GFCoordinateSearch(interval_filtering_threshold_units='WRONG', **p)
+
+def test_coordinate_search_undefined_attr_err(params_1, params_2, params_3):
+    '''Test Undefined attribute errors Coordinate Search with single interval
+    and default parameters.'''
+
+    with pytest.raises(CalculationUndefinedAttr):
+        p = params_1.copy()
+        p['relational_condition'] = 'RANGE'
+        del p['upper_limit']
+        GFCoordinateSearch(**p)
+
+    with pytest.raises(CalculationUndefinedAttr):
+        p = params_1.copy()
+        p['relational_condition'] = 'RANGE'
+        del p['reference_value']
+        GFCoordinateSearch(**p)
+
+    with pytest.raises(CalculationUndefinedAttr):
+        p = params_1.copy()
+        p['relational_condition'] = '='
+        del p['reference_value']
+        GFCoordinateSearch(**p)
+
+    with pytest.raises(CalculationUndefinedAttr):
+        p = params_1.copy()
+        p['relational_condition'] = '>'
+        del p['reference_value']
+        GFCoordinateSearch(**p)
+
+    with pytest.raises(CalculationUndefinedAttr):
+        p = params_1.copy()
+        p['relational_condition'] = '<'
+        del p['reference_value']
+        GFCoordinateSearch(**p)
+
+    with pytest.raises(CalculationUndefinedAttr):
+        p = params_1.copy()
+        p['relational_condition'] = 'ABSMIN'
+        del p['adjustment_value']
+        GFCoordinateSearch(**p)
+
+    with pytest.raises(CalculationUndefinedAttr):
+        p = params_1.copy()
+        p['relational_condition'] = 'ABSMAX'
+        del p['adjustment_value']
+        GFCoordinateSearch(**p)
+
+    with pytest.raises(CalculationUndefinedAttr):
+        p = params_1.copy()
+        del p['coordinate_system']
+        GFCoordinateSearch(**p)
+
+    with pytest.raises(CalculationUndefinedAttr):
+        p = params_1.copy()
+        del p['coordinate']
+        GFCoordinateSearch(**p)
+
+    with pytest.raises(CalculationUndefinedAttr):
+        p = params_2.copy()
+        del p['interval_adjustment_amount']
+        GFCoordinateSearch(**p)
+
+    with pytest.raises(CalculationUndefinedAttr):
+        p = params_2.copy()
+        del p['interval_adjustment_units']
+        GFCoordinateSearch(**p)
+
+    with pytest.raises(CalculationUndefinedAttr):
+        p = params_3.copy()
+        del p['interval_filtering_threshold']
+        GFCoordinateSearch(**p)
+
+    with pytest.raises(CalculationUndefinedAttr):
+        p = params_3.copy()
+        del p['interval_filtering_threshold_units']
+        GFCoordinateSearch(**p)
