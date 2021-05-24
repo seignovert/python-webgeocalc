@@ -1971,20 +1971,36 @@ class Calculation:
         CalculationInvalidAttr
             If the value provided is invalid.
         CalculationUndefinedAttr:
-            If the value is `RANGE`, and :py:attr:`upper_limit` is not supplied.
-            If the value is `ABSMIN` or `ABSMAX`, and :py:attr:`adjustment_value`
+            If the value is ``RANGE`, and :py:attr:`upper_limit` is not supplied.
+            If the value is ``ABSMIN`` or ``ABSMAX``, and :py:attr:`adjustment_value`
             is not supplied.
-
+            If the value is ``=``,  ``<``, ``>`` or ``RANGE``, and
+            :py:attr:`reference_value` is not supplied.
         '''
         self.gf_condition(relationalCondition=val)
 
         if (val == 'RANGE') and ('upper_limit' not in self.params.keys()):
-            raise CalculationUndefinedAttr('relational_condition', val, 'upper_limit')
+            raise CalculationUndefinedAttr(
+                attr='relational_condition',
+                value=val,
+                missing='upper_limit'
+            )
 
-        if (val in ['ABSMIN', 'ABSMAX']) and \
+        if (val in ('ABSMIN', 'ABSMAX')) and \
                 ('adjustment_value' not in self.params.keys()):
-            raise CalculationUndefinedAttr('relational_condition', val,
-                                           'adjustment_value')
+            raise CalculationUndefinedAttr(
+                attr='relational_condition',
+                value=val,
+                missing='adjustment_value'
+            )
+
+        if (val in ('=', '<', '>', 'RANGE')) and \
+                ('reference_value' not in self.params.keys()):
+            raise CalculationUndefinedAttr(
+                attr='relational_condition',
+                value=val,
+                missing='reference_value'
+            )
 
     @SetterProperty
     def reference_value(self, val):
