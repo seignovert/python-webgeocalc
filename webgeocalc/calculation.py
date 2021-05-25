@@ -10,7 +10,7 @@ from .errors import (CalculationAlreadySubmitted, CalculationConflictAttr,
                      CalculationNotCompleted, CalculationRequiredAttr,
                      CalculationTimeOut, CalculationUndefinedAttr)
 from .types import KernelSetDetails
-from .vars import AXIS, CALCULATION_FAILED_PHASES, INTERVALS, get_var
+from .vars import set_param, VALID_PARAMETERS
 
 
 APIs = {
@@ -18,33 +18,6 @@ APIs = {
     'JPL': JPL_API,
     'ESA': ESA_API,
 }
-
-
-class SetterProperty:
-    '''Setter property decorator.'''
-
-    def __init__(self, func, doc=None):
-        self.func = func
-        self.__doc__ = doc if doc is not None else func.__doc__
-
-    def __set__(self, obj, value):
-        return self.func(obj, value)
-
-def attribute_list_checker(func):
-    '''Property checker decorator.'''
-
-    def wrapper(*args, **kwargs):
-        attribute_name = func.__name__
-        input_value = args[1]
-        valid_list = get_var(attribute_name.upper())
-        if input_value not in valid_list:
-            raise CalculationInvalidAttr(
-                name=attribute_name,
-                attr=input_value,
-                valids=valid_list
-            )
-        return func(*args, **kwargs)
-    return wrapper
 
 class Calculation:
     '''Webgeocalc calculation object.
@@ -412,8 +385,7 @@ class Calculation:
 
         raise CalculationTimeOut(timeout, sleep)
 
-    @SetterProperty
-    @attribute_list_checker
+    @set_param(valid_params='CALCULATION_TYPE')
     def calculation_type(self, val):
         '''The type of calculation to perform.
 
@@ -453,7 +425,7 @@ class Calculation:
         '''
         self.__calculationType = val
 
-    @SetterProperty
+    @set_param
     def kernels(self, kernel_sets):
         '''Add kernel sets.
 
@@ -476,7 +448,7 @@ class Calculation:
         # Payload kernel set object
         return {"type": "KERNEL_SET", "id": self.api.kernel_set_id(kernel_set)}
 
-    @SetterProperty
+    @set_param
     def kernel_paths(self, paths):
         '''Add path for individual kernel paths.
 
@@ -497,7 +469,7 @@ class Calculation:
         # Payloaf individual kernel path object
         return {"type": "KERNEL", "path": server_path}
 
-    @SetterProperty
+    @set_param
     def times(self, times):
         '''Calculation input times.
 
@@ -518,7 +490,7 @@ class Calculation:
         if 'intervals' in self.params:
             raise CalculationConflictAttr('times', 'intervals')
 
-    @SetterProperty
+    @set_param
     def intervals(self, intervals):
         '''Calculation input intervals.
 
@@ -580,7 +552,7 @@ class Calculation:
 
         return {'startTime': str(interval[0]), 'endTime': str(interval[1])}
 
-    @SetterProperty
+    @set_param
     def time_step(self, val):
         '''Time step for intervals.
 
@@ -606,8 +578,7 @@ class Calculation:
         if 'time_step_units' not in self.params:
             raise CalculationUndefinedAttr('time_step', val, 'time_step_units')
 
-    @SetterProperty
-    @attribute_list_checker
+    @set_param(valid_params='TIME_STEP_UNITS')
     def time_step_units(self, val):
         '''Time step units.
 
@@ -639,8 +610,7 @@ class Calculation:
         if 'time_step' not in self.params:
             raise CalculationUndefinedAttr('time_step_units', val, 'time_step')
 
-    @SetterProperty
-    @attribute_list_checker
+    @set_param(valid_params='TIME_SYSTEM')
     def time_system(self, val):
         '''Time System.
 
@@ -668,8 +638,7 @@ class Calculation:
         if val == 'SPACECRAFT_CLOCK' and 'sclk_id' not in self.params:
             raise CalculationUndefinedAttr('time_system', 'SPACECRAFT_CLOCK', 'sclk_id')
 
-    @SetterProperty
-    @attribute_list_checker
+    @set_param(valid_params='TIME_FORMAT')
     def time_format(self, val):
         '''Time format input.
 
@@ -713,7 +682,7 @@ class Calculation:
                 'time_format', val, 'time_system',
                 self.params['time_system'], ['SPACECRAFT_CLOCK'])
 
-    @SetterProperty
+    @set_param
     def sclk_id(self, val):
         '''Spacecraft clock kernel id.
 
@@ -739,8 +708,7 @@ class Calculation:
                 'sclk_id', val, 'time_system',
                 self.params['time_system'], ['SPACECRAFT_CLOCK'])
 
-    @SetterProperty
-    @attribute_list_checker
+    @set_param(valid_params='TIME_SYSTEM')
     def output_time_system(self, val):
         '''The time system for results output times.
 
@@ -769,8 +737,7 @@ class Calculation:
             raise CalculationUndefinedAttr(
                 'output_time_system', 'SPACECRAFT_CLOCK', 'output_sclk_id')
 
-    @SetterProperty
-    @attribute_list_checker
+    @set_param(valid_params='OUTPUT_TIME_FORMAT')
     def output_time_format(self, val):
         '''The time format for the result output times.
 
@@ -826,7 +793,7 @@ class Calculation:
                 'output_time_system', self.params['output_time_system'],
                 ['SPACECRAFT_CLOCK'])
 
-    @SetterProperty
+    @set_param
     def output_time_custom_format(self, val):
         '''A SPICE ``timout()`` format string.
 
@@ -852,7 +819,7 @@ class Calculation:
                 'output_time_custom_format', val, 'output_time_format',
                 self.params['output_time_format'], ['CUSTOM'])
 
-    @SetterProperty
+    @set_param
     def output_sclk_id(self, val):
         '''The output spacecraft clock kernel id.
 
@@ -878,7 +845,7 @@ class Calculation:
                 'output_sclk_id', val, 'output_time_system',
                 self.params['output_time_system'], ['SPACECRAFT_CLOCK'])
 
-    @SetterProperty
+    @set_param
     def target(self, val):
         '''Target body.
 
@@ -890,7 +857,7 @@ class Calculation:
         '''
         self.__target = val if isinstance(val, int) else val.upper()
 
-    @SetterProperty
+    @set_param
     def target_frame(self, val):
         '''The target body-fixed reference frame name.
 
@@ -902,7 +869,7 @@ class Calculation:
         '''
         self.__targetFrame = val
 
-    @SetterProperty
+    @set_param
     def target_1(self, val):
         '''The target body the first body.
 
@@ -914,7 +881,7 @@ class Calculation:
         '''
         self.__target1 = val if isinstance(val, int) else val.upper()
 
-    @SetterProperty
+    @set_param
     def target_2(self, val):
         '''The target body the second body.
 
@@ -926,8 +893,7 @@ class Calculation:
         '''
         self.__target2 = val if isinstance(val, int) else val.upper()
 
-    @SetterProperty
-    @attribute_list_checker
+    @set_param(valid_params='SHAPE')
     def shape_1(self, val):
         '''The shape to use for the first body.
 
@@ -947,8 +913,7 @@ class Calculation:
         '''
         self.__shape1 = val
 
-    @SetterProperty
-    @attribute_list_checker
+    @set_param(valid_params='SHAPE')
     def shape_2(self, val):
         '''The shape to use for the second body.
 
@@ -968,7 +933,7 @@ class Calculation:
         '''
         self.__shape2 = val
 
-    @SetterProperty
+    @set_param
     def observer(self, val):
         '''The observing body.
 
@@ -980,7 +945,7 @@ class Calculation:
         '''
         self.__observer = val if isinstance(val, int) else val.upper()
 
-    @SetterProperty
+    @set_param
     def reference_frame(self, val):
         '''The reference frame.
 
@@ -992,7 +957,7 @@ class Calculation:
         '''
         self.__referenceFrame = val if isinstance(val, int) else val.upper()
 
-    @SetterProperty
+    @set_param
     def frame_1(self, val):
         '''The first reference frame.
 
@@ -1004,7 +969,7 @@ class Calculation:
         '''
         self.__frame1 = val if isinstance(val, int) else val.upper()
 
-    @SetterProperty
+    @set_param
     def frame_2(self, val):
         '''The second reference frame.
 
@@ -1016,7 +981,7 @@ class Calculation:
         '''
         self.__frame2 = val if isinstance(val, int) else val.upper()
 
-    @SetterProperty
+    @set_param
     def orbiting_body(self, val):
         '''The SPICE orbiting body.
 
@@ -1028,7 +993,7 @@ class Calculation:
         '''
         self.__orbitingBody = val if isinstance(val, int) else val.upper()
 
-    @SetterProperty
+    @set_param
     def center_body(self, val):
         '''
         The SPICE body center of motion.
@@ -1041,8 +1006,7 @@ class Calculation:
         '''
         self.__centerBody = val if isinstance(val, int) else val.upper()
 
-    @SetterProperty
-    @attribute_list_checker
+    @set_param(valid_params='ABERRATION_CORRECTION')
     def aberration_correction(self, val):
         '''SPICE aberration correction.
 
@@ -1069,8 +1033,7 @@ class Calculation:
         '''
         self.__aberrationCorrection = val
 
-    @SetterProperty
-    @attribute_list_checker
+    @set_param(valid_params='STATE_REPRESENTATION')
     def state_representation(self, val):
         '''State representation.
 
@@ -1095,8 +1058,7 @@ class Calculation:
         '''
         self.__stateRepresentation = val
 
-    @SetterProperty
-    @attribute_list_checker
+    @set_param(valid_params='TIME_LOCATION')
     def time_location(self, val):
         '''The frame for the input times.
 
@@ -1124,8 +1086,7 @@ class Calculation:
         '''
         self.__timeLocation = val
 
-    @SetterProperty
-    @attribute_list_checker
+    @set_param(valid_params='ORIENTATION_REPRESENTATION')
     def orientation_representation(self, val):
         '''The representation of the result transformation.
 
@@ -1150,7 +1111,7 @@ class Calculation:
         '''
         self.__orientationRepresentation = val
 
-    @SetterProperty
+    @set_param
     def axis_1(self, val):
         '''The first axis for Euler angle rotation.
 
@@ -1162,7 +1123,7 @@ class Calculation:
         '''
         self.__axis1 = self.axis('axis_1', val)
 
-    @SetterProperty
+    @set_param
     def axis_2(self, val):
         '''The second axis for Euler angle rotation.
 
@@ -1174,7 +1135,7 @@ class Calculation:
         '''
         self.__axis2 = self.axis('axis_2', val)
 
-    @SetterProperty
+    @set_param
     def axis_3(self, val):
         '''The third axis for Euler angle rotation.
 
@@ -1229,8 +1190,7 @@ class Calculation:
 
         raise CalculationInvalidAttr(name, val, AXIS)
 
-    @SetterProperty
-    @attribute_list_checker
+    @set_param(valid_params='ANGULAR_UNITS')
     def angular_units(self, val):
         '''The angular units.
 
@@ -1266,8 +1226,7 @@ class Calculation:
                 self.params['orientation_representation'],
                 ['EULER_ANGLES', 'ANGLE_AND_AXIS'])
 
-    @SetterProperty
-    @attribute_list_checker
+    @set_param(valid_params='ANGULAR_VELOCITY_REPRESENTATION')
     def angular_velocity_representation(self, val):
         '''Angular velocity representation.
 
@@ -1290,8 +1249,7 @@ class Calculation:
         '''
         self.__angularVelocityRepresentation = val
 
-    @SetterProperty
-    @attribute_list_checker
+    @set_param(valid_params='ANGULAR_VELOCITY_UNITS')
     def angular_velocity_units(self, val):
         '''The units for the angular velocity.
 
@@ -1338,8 +1296,7 @@ class Calculation:
                 self.params['angular_velocity_representation'],
                 ['VECTOR_IN_FRAME1', 'VECTOR_IN_FRAME2'])
 
-    @SetterProperty
-    @attribute_list_checker
+    @set_param(valid_params='COORDINATE_REPRESENTATION')
     def coordinate_representation(self, val):
         '''Coordinate Representation.
 
@@ -1360,7 +1317,7 @@ class Calculation:
         '''
         self.__coordinateRepresentation = val
 
-    @SetterProperty
+    @set_param
     def latitude(self, val):
         '''Latitude of the surface point.
 
@@ -1380,7 +1337,7 @@ class Calculation:
         else:
             raise CalculationInvalidValue('latitude', val, -90, 90)
 
-    @SetterProperty
+    @set_param
     def longitude(self, val):
         '''Longitude of the surface point.
 
@@ -1400,8 +1357,7 @@ class Calculation:
         else:
             raise CalculationInvalidValue('longitude', val, -180, 180)
 
-    @SetterProperty
-    @attribute_list_checker
+    @set_param(valid_params='SUB_POINT_TYPE')
     def sub_point_type(self, val):
         '''Sub-observer point.
 
@@ -1424,8 +1380,7 @@ class Calculation:
         '''
         self.__subPointType = val
 
-    @SetterProperty
-    @attribute_list_checker
+    @set_param(valid_params='DIRECTION_VECTOR_TYPE')
     def direction_vector_type(self, val):
         '''Type of ray's direction vector.
 
@@ -1489,7 +1444,7 @@ class Calculation:
                     'direction_vector_type', val,
                     "direction_vector_x/y/z' or 'direction_vector_ra/dec")
 
-    @SetterProperty
+    @set_param
     def direction_instrument(self, val):
         '''Direction imnstrument.
 
@@ -1520,7 +1475,7 @@ class Calculation:
 
         self.__directionInstrument = val if isinstance(val, int) else val.upper()
 
-    @SetterProperty
+    @set_param
     def direction_frame(self, val):
         '''Direction vector reference frame.
 
@@ -1550,8 +1505,7 @@ class Calculation:
 
         self.__directionFrame = val
 
-    @SetterProperty
-    @attribute_list_checker
+    @set_param(valid_params='AXIS')
     def direction_frame_axis(self, val):
         '''The vector's reference frame axis name.
 
@@ -1615,7 +1569,7 @@ class Calculation:
                 self.params['direction_vector_type'], choices)
         return val
 
-    @SetterProperty
+    @set_param
     def direction_vector_x(self, val):
         '''The X ray's direction vector coordinate.
 
@@ -1627,7 +1581,7 @@ class Calculation:
         '''
         self.__directionVectorX = self.direction_vector('x', val)
 
-    @SetterProperty
+    @set_param
     def direction_vector_y(self, val):
         '''The Y ray's direction vector coordinate.
 
@@ -1639,7 +1593,7 @@ class Calculation:
         '''
         self.__directionVectorY = self.direction_vector('y', val)
 
-    @SetterProperty
+    @set_param
     def direction_vector_z(self, val):
         '''The Z ray's direction vector coordinate.
 
@@ -1651,7 +1605,7 @@ class Calculation:
         '''
         self.__directionVectorZ = self.direction_vector('z', val)
 
-    @SetterProperty
+    @set_param
     def direction_vector_ra(self, val):
         '''The right-ascenssion ray's direction vector coordinate.
 
@@ -1663,7 +1617,7 @@ class Calculation:
         '''
         self.__directionVectorRA = self.direction_vector('ra', val)
 
-    @SetterProperty
+    @set_param
     def direction_vector_dec(self, val):
         '''The declination ray's direction vector coordinate.
 
@@ -1675,8 +1629,7 @@ class Calculation:
         '''
         self.__directionVectorDec = self.direction_vector('dec', val)
 
-    @SetterProperty
-    @attribute_list_checker
+    @set_param(valid_params='TIME_UNITS')
     def output_duration_units(self, val):
         '''Output duration time units.
 
@@ -1701,7 +1654,7 @@ class Calculation:
         '''
         self.__outputDurationUnits = val
 
-    @SetterProperty
+    @set_param
     def should_complement_window(self, val):
         '''Specifies whether to complement the intervals in the result window.
 
@@ -1724,8 +1677,7 @@ class Calculation:
         else:
             raise TypeError('Attribute should_complement_window should be a boolean.')
 
-    @SetterProperty
-    @attribute_list_checker
+    @set_param(valid_params='INTERVAL_ADJUSTMENT')
     def interval_adjustment(self, val):
         '''Specifies whether to expand or contract the intervals in the result.
 
@@ -1749,7 +1701,7 @@ class Calculation:
         '''
         self.__intervalAdjustment = val
 
-    @SetterProperty
+    @set_param
     def interval_adjustment_amount(self, val):
         '''The amount by which to expand or contract each interval at the endpoints.
 
@@ -1771,8 +1723,7 @@ class Calculation:
             raise CalculationUndefinedAttr('interval_adjustment_amount', val,
                                            'interval_adjustment_units')
 
-    @SetterProperty
-    @attribute_list_checker
+    @set_param(valid_params='TIME_UNITS')
     def interval_adjustment_units(self, val):
         '''The unit of the interval adjustment amount.
 
@@ -1803,8 +1754,7 @@ class Calculation:
             raise CalculationUndefinedAttr('interval_adjustment_units', val,
                                            'interval_adjustment_amount')
 
-    @SetterProperty
-    @attribute_list_checker
+    @set_param(valid_params='INTERVAL_FILTERING')
     def interval_filtering(self, val):
         '''Specifies whether to omit interval smaller than a minimum threshold size.
 
@@ -1826,7 +1776,7 @@ class Calculation:
         '''
         self.__intervalFiltering = val
 
-    @SetterProperty
+    @set_param
     def interval_filtering_threshold(self, val):
         '''Interval duration filtering threshold value.
 
@@ -1847,8 +1797,7 @@ class Calculation:
             raise CalculationUndefinedAttr('interval_filtering_threshold', val,
                                            'interval_filtering_threshold_units')
 
-    @SetterProperty
-    @attribute_list_checker
+    @set_param(valid_params='TIME_UNITS')
     def interval_filtering_threshold_units(self, val):
         '''Units of the interval duration filtering threshold value.
 
@@ -1879,8 +1828,7 @@ class Calculation:
             raise CalculationUndefinedAttr('interval_filtering_threshold_units', val,
                                            'interval_filtering_threshold')
 
-    @SetterProperty
-    @attribute_list_checker
+    @set_param(valid_params='COORDINATE_SYSTEM')
     def coordinate_system(self, val):
         '''The name of the coordinate system in which to evaluate the coordinate.
 
@@ -1908,8 +1856,7 @@ class Calculation:
         '''
         self.gf_condition(coordinateSystem=val)
 
-    @SetterProperty
-    @attribute_list_checker
+    @set_param(valid_params='COORDINATE')
     def coordinate(self, val):
         '''The name of the SPICE coordinate to search on.
 
@@ -1941,8 +1888,7 @@ class Calculation:
         '''
         self.gf_condition(coordinate=val)
 
-    @SetterProperty
-    @attribute_list_checker
+    @set_param(valid_params='RELATIONAL_CONDITION')
     def relational_condition(self, val):
         '''The relationship for the geometry finder test.
 
@@ -1996,7 +1942,7 @@ class Calculation:
                 missing='reference_value'
             )
 
-    @SetterProperty
+    @set_param
     def reference_value(self, val):
         '''The value to compare against, or the lower value of a range.
 
@@ -2009,7 +1955,7 @@ class Calculation:
         '''
         self.gf_condition(referenceValue=val)
 
-    @SetterProperty
+    @set_param
     def upper_limit(self, val):
         '''The upper limit of a range. Only needed if relationalCondition is RANGE.
 
@@ -2020,7 +1966,7 @@ class Calculation:
         '''
         self.gf_condition(upperLimit=val)
 
-    @SetterProperty
+    @set_param
     def adjustment_value(self, val):
         '''The adjustment value to apply for ABSMIN and ABSMAX searches.
 
