@@ -1235,7 +1235,7 @@ class Calculation:
         '''
         self.__angularUnits = val
 
-        if 'orientation_representation' not in self.params.keys():
+        if 'orientation_representation' not in self.params:
             raise CalculationUndefinedAttr(
                 'angular_units', val, 'orientation_representation')
 
@@ -1482,7 +1482,7 @@ class Calculation:
             ``INSTRUMENT_FOV_BOUNDARY_VECTORS`` or ``VECTOR_IN_INSTRUMENT_FOV``.
 
         '''
-        if 'direction_vector_type' not in self.params.keys():
+        if 'direction_vector_type' not in self.params:
             raise CalculationUndefinedAttr(
                 'direction_instrument', val, 'direction_vector_type')
 
