@@ -4,7 +4,9 @@
 import pytest
 
 from webgeocalc import FrameTransformation
-from webgeocalc.errors import CalculationIncompatibleAttr, CalculationInvalidAttr
+from webgeocalc.errors import (CalculationIncompatibleAttr,
+                               CalculationInvalidAttr)
+
 
 @pytest.fixture
 def kernels():

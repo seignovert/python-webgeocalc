@@ -5,6 +5,7 @@ import pytest
 
 from webgeocalc import AngularSeparation
 
+
 @pytest.fixture
 def kernel_paths():
     '''Input kernel paths.'''

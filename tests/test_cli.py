@@ -1,11 +1,14 @@
 # -*- coding: utf-8 -*-
 '''Test WGC command line inputs.'''
 
-from webgeocalc.cli import (_params, cli_angular_separation, cli_angular_size, cli_bodies,
-                            cli_frame_transformation, cli_frames, cli_illumination_angles,
-                            cli_instruments, cli_kernel_sets, cli_osculating_elements,
-                            cli_state_vector, cli_subobserver_point, cli_subsolar_point,
+from webgeocalc.cli import (_params, cli_angular_separation, cli_angular_size,
+                            cli_bodies, cli_frame_transformation, cli_frames,
+                            cli_gf_coordinate_search, cli_illumination_angles,
+                            cli_instruments, cli_kernel_sets,
+                            cli_osculating_elements, cli_state_vector,
+                            cli_subobserver_point, cli_subsolar_point,
                             cli_surface_intercept_point, cli_time_conversion)
+
 
 def test_cli_kernel_sets(capsys):
     '''Test GET kernels with CLI.'''
@@ -295,6 +298,60 @@ def test_cli_time_conversion_dry_run(capsys):
     assert 'Payload:' in captured.out
     assert "calculationType: TIME_CONVERSION," in captured.out
 
+def test_cli_gf_coordinate_search_dry_run(capsys):
+    '''Test dry-run geometry finder coordinate search parameter with the CLI.'''
+    argv = ('--dry-run '
+            '--kernels 5 '
+            '--intervals 2012-10-19T07:00:00 2012-10-19T09:00:00 '
+            '--observer CASSINI '
+            '--target ENCELADUS '
+            '--reference_frame CASSINI_ISS_NAC '
+            '--time_step 1 '
+            '--time_step_units MINUTES '
+            '--aberration_correction NONE '
+            '--interval_adjustment EXPAND_INTERVALS '
+            '--interval_adjustment_amount 1.0 '
+            '--interval_adjustment_units SECONDS '
+            '--interval_filtering FILTER_INTERVALS '
+            '--interval_filtering_threshold 1.0 '
+            '--interval_filtering_threshold_units MINUTES '
+            '--coordinate_system SPHERICAL '
+            '--coordinate COLATITUDE '
+            '--relational_condition "<" '
+            '--reference_value 0.25 '
+            ).split()
+
+    cli_gf_coordinate_search(argv)
+    captured = capsys.readouterr()
+    assert 'Payload:' in captured.out
+    assert "calculationType: GF_COORDINATE_SEARCH," in captured.out
+    assert "kernels: [{'type': 'KERNEL_SET', 'id': 5}]" in captured.out
+    assert 'timeSystem: UTC' in captured.out
+    assert 'timeFormat: CALENDAR' in captured.out
+    assert ("intervals: [{"
+            "'startTime': '2012-10-19T07:00:00', "
+            "'endTime': '2012-10-19T09:00:00'"
+            "}]") in captured.out
+    assert 'target: ENCELADUS,' in captured.out
+    assert 'observer: CASSINI,' in captured.out
+    assert 'referenceFrame: CASSINI_ISS_NAC,' in captured.out
+    assert 'timeStep: 1,' in captured.out
+    assert 'timeStepUnits: MINUTES,' in captured.out
+    assert 'aberrationCorrection: NONE' in captured.out
+    assert 'outputDurationUnits: SECONDS' in captured.out
+    assert 'shouldComplementWindow: False' in captured.out
+    assert 'intervalAdjustment: EXPAND_INTERVALS' in captured.out
+    assert 'intervalAdjustmentAmount: 1.0' in captured.out
+    assert 'intervalAdjustmentUnits: SECONDS' in captured.out
+    assert 'intervalFiltering: FILTER_INTERVALS' in captured.out
+    assert 'intervalFilteringThreshold: 1.0' in captured.out
+    assert 'intervalFilteringThresholdUnits: MINUTES' in captured.out
+    assert ("condition: {"
+            "'coordinateSystem': 'SPHERICAL', "
+            "'coordinate': 'COLATITUDE', "
+            "'relationalCondition': '<', "
+            "'referenceValue': 0.25"
+            "}") in captured.out
 
 def test_cli_state_vector_esa(capsys):
     '''Test dry-run state vector calculation on ESA API with the CLI.'''

@@ -6,6 +6,7 @@ import pytest
 from webgeocalc import SurfaceInterceptPoint
 from webgeocalc.errors import CalculationInvalidAttr, CalculationUndefinedAttr
 
+
 @pytest.fixture
 def kernels():
     '''Cassini kernel set.'''

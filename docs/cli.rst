@@ -205,7 +205,7 @@ Example:
     LIGHT_TIME:
     > 2.51438831
 
-The *key* parameter can be in ``underscore_case`` or ``camelCase``.
+The *key* parameter can be in ``snakecase`` or ``camelCase``.
 Multiple *values* can be inserted after the *key* (with ``<space>`` or ``,`` separator),
 as well as duplicated *keys*. Use single (``'``) or double (``"``) quotes if the
 value contains spaces. Assignation with ``=`` sign can also be used:
@@ -237,17 +237,18 @@ value contains spaces. Assignation with ``=`` sign can also be used:
 
 Here is the list of all the calculation entry points available on the CLI:
 
-    - ``wgc-calculation``
-    - ``wgc-state-vector``
-    - ``wgc-angular-separation``
-    - ``wgc-angular-size``
-    - ``wgc-frame-transformation``
-    - ``wgc-illumination-angles``
-    - ``wgc-subsolar-point``
-    - ``wgc-subobserver-point``
-    - ``wgc-surface-intercept-point``
-    - ``wgc-osculating-elements``
-    - ``wgc-time-conversion``
+- ``wgc-calculation``
+- ``wgc-state-vector``
+- ``wgc-angular-separation``
+- ``wgc-angular-size``
+- ``wgc-frame-transformation``
+- ``wgc-illumination-angles``
+- ``wgc-subsolar-point``
+- ``wgc-subobserver-point``
+- ``wgc-surface-intercept-point``
+- ``wgc-osculating-elements``
+- ``wgc-time-conversion``
+- ``wgc-gf-coordinate-search``
 
 All the calculation entry point accept an optional ``api`` attribute
 to submit the query to a custom endpoint.

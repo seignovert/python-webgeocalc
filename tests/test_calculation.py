@@ -6,10 +6,12 @@ import pytest
 from webgeocalc import Calculation
 from webgeocalc.api import API
 from webgeocalc.calculation import APIs
-from webgeocalc.errors import (CalculationConflictAttr, CalculationIncompatibleAttr,
+from webgeocalc.errors import (CalculationConflictAttr,
+                               CalculationIncompatibleAttr,
                                CalculationInvalidAttr, CalculationRequiredAttr,
                                CalculationUndefinedAttr)
 from webgeocalc.vars import ESA_URL, JPL_URL
+
 
 @pytest.fixture
 def kernels():

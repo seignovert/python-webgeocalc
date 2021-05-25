@@ -5,6 +5,7 @@ import pytest
 
 from webgeocalc import TimeConversion
 
+
 @pytest.fixture
 def kernels():
     '''Cassini kernel set.'''
