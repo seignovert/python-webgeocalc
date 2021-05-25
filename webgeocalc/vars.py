@@ -43,7 +43,7 @@ def set_param(func=None, *, valid_params=None):
 
 
 VALID_PARAMETERS = {
-    'CALCULATION_FAILED_PHASES':[
+    'CALCULATION_FAILED_PHASES': [
         'FAILED',
         'CANCELLED',
         'DISPATCHED',
