@@ -719,9 +719,9 @@ class GFCoordinateSearch(Calculation):
         See: :py:attr:`.interval_filtering`
     aberration_correction: str, optional
         See: :py:attr:`.aberration_correction`
-    coordinate_system: str, optional
+    coordinate_system: str
         See: :py:attr:`.coordinate_system`
-    coordinate: str, optional
+    coordinate: str
         See: :py:attr:`.coordinate`
     relational_condition: str
         See: :py:attr:`.relational_condition`
@@ -757,11 +757,24 @@ class GFCoordinateSearch(Calculation):
     reference_frame: str or int
         See: :py:attr:`.reference_frame`
 
+        Warnings
+        --------
+        Attributes :py:attr:`.upper_limit` is needed only if
+        :py:attr:`.relational_condition` is ``RANGE``.
+
+        Attributes :py:attr:`.adjustment_value` is needed only if
+        :py:attr:`.relational_condition` is ``ABSMIN`` or ``ABSMAX``.
+
+        Attribute :py:attr:`.reference_value` is needed only if
+        :py:attr:`.relational_condition` is ``=``, ``<``, ``>`` or
+        ``RANGE``.
+
     Raises
     ------
     CalculationRequiredAttr
         If :py:attr:`.target`, :py:attr:`.observer`,
-        :py:attr:`.reference_frame` and :py:attr:`.relational_condition` are not
+        :py:attr:`.reference_frame`, :py:attr:`.coordinate_system`,
+        :py:attr:`.coordinate`, or :py:attr:`.relational_condition` are not
         provided.
 
     '''
