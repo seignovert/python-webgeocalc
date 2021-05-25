@@ -259,13 +259,10 @@ class FrameTransformation(Calculation):
                  angular_velocity_units='deg/s',
                  **kwargs):
 
-        aberration_correction_allowed = list(filter(
-            lambda x: '+S' not in x, VALID_PARAMETERS['ABERRATION_CORRECTION']))
-
-        if aberration_correction not in aberration_correction_allowed:
+        if aberration_correction not in VALID_PARAMETERS['ABERRATION_CORRECTION_NO_S']:
             raise CalculationInvalidAttr(
                 'aberration_correction', aberration_correction,
-                aberration_correction_allowed)
+                VALID_PARAMETERS['ABERRATION_CORRECTION_NO_S'])
 
         kwargs['calculation_type'] = 'FRAME_TRANSFORMATION'
         kwargs['aberration_correction'] = aberration_correction
@@ -419,13 +416,10 @@ class SubSolarPoint(Calculation):
     def __init__(self, sub_point_type='Near point: ellipsoid', aberration_correction='CN',
                  state_representation='RECTANGULAR', **kwargs):
 
-        aberration_correction_allowed = list(filter(
-            lambda x: 'X' not in x, VALID_PARAMETERS['ABERRATION_CORRECTION']))
-
-        if aberration_correction not in aberration_correction_allowed:
+        if aberration_correction not in VALID_PARAMETERS['ABERRATION_CORRECTION_NO_X']:
             raise CalculationInvalidAttr(
                 'aberration_correction', aberration_correction,
-                aberration_correction_allowed)
+                VALID_PARAMETERS['ABERRATION_CORRECTION_NO_X'])
 
         kwargs['calculation_type'] = 'SUB_SOLAR_POINT'
         kwargs['sub_point_type'] = sub_point_type

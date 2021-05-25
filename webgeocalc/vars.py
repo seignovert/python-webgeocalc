@@ -83,6 +83,20 @@ VALID_PARAMETERS = {
         'XCN',
         'XCN+S',
     ],
+    'ABERRATION_CORRECTION_NO_S': [
+        'NONE',
+        'LT',
+        'CN',
+        'XLT',
+        'XCN',
+    ],
+    'ABERRATION_CORRECTION_NO_X': [
+        'NONE',
+        'LT',
+        'LT+S',
+        'CN',
+        'CN+S',
+    ],
     'STATE_REPRESENTATION': [
         'RECTANGULAR',
         'RA_DEC',
