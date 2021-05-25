@@ -1,45 +1,7 @@
-# -*- coding: utf-8 -*-
-'''WebGeoCalc varibales.'''
-
-from .errors import CalculationInvalidAttr
+"""WebGeoCalc variables."""
 
 JPL_URL = 'https://wgc2.jpl.nasa.gov:8443/webgeocalc/api'
 ESA_URL = 'http://spice.esac.esa.int/webgeocalc/api'
-
-def set_param(func=None, *, valid_params=None):
-    '''Parameter setter decorator with a parameter checks.
-
-    Can be used in the following forms:
-
-        - ``@set_param``
-        - ``@set_param()``
-        - ``@set_param(valid_params='VALID_PARAMETERS_KEY')``
-
-    Parameters
-    ----------
-    func: callable, optional
-        Setter function.
-    valid_params: str
-        Validator parameter key.
-
-    '''
-
-    def decorator(func):
-        '''Decorator setter with valid checker.'''
-
-        def fset(_self, value):
-            '''Parameter setter.'''
-            if valid_params and value not in VALID_PARAMETERS[valid_params]:
-                raise CalculationInvalidAttr(
-                    name=valid_params,
-                    attr=value,
-                    valids=VALID_PARAMETERS[valid_params],
-                )
-            return func(_self, value)
-
-        return property(fset=fset, doc=func.__doc__)
-
-    return decorator(func) if callable(func) else decorator
 
 
 VALID_PARAMETERS = {
@@ -196,6 +158,7 @@ VALID_PARAMETERS = {
     ],
     'INTERVAL_FILTERING': [
         'NO_FILTERING',
+        'FILTER_INTERVALS',
         'OMIT_INTERVALS_SMALLER_THAN_A_THRESHOLD',
     ],
     'COORDINATE_SYSTEM': [
