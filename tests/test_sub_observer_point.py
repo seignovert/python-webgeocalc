@@ -5,6 +5,7 @@ import pytest
 
 from webgeocalc import SubObserverPoint
 
+
 @pytest.fixture
 def kernels():
     '''Cassini kernel set.'''

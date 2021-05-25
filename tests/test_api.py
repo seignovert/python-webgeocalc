@@ -12,6 +12,7 @@ from webgeocalc.errors import (APIError, APIReponseError, KernelSetNotFound,
                                ResultAttributeError, TooManyKernelSets)
 from webgeocalc.vars import ESA_URL, JPL_URL
 
+
 @pytest.fixture
 def solar_system_kernel_set():
     '''Solar kernels API output.'''

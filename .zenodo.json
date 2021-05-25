@@ -6,13 +6,13 @@
     "access_right": "open",
     "creators": [
         {
-            "affiliation": "Jet Propulsion Laboratory",
             "name": "Seignovert, Benoît",
+            "affiliation": "LPG - Université de Nantes",
             "orcid": "0000-0001-6533-275X"
         },
         {
-            "affiliation": "Observatoire de Paris",
             "name": "Cecconi, Baptiste",
+            "affiliation": "Observatoire de Paris-PSL",
             "orcid": "0000-0001-7915-5571"
         }
     ],
@@ -31,7 +31,22 @@
             "identifier": "https://webgeocalc.readthedocs.io/",
             "relation": "isDocumentedBy",
             "scheme": "url"
+        },
+        {
+            "identifier": "10.1016/j.pss.2017.02.013",
+            "relation": "references"
+        },
+        {
+            "identifier": "10.1016/0032-0633(95)00107-7",
+            "relation": "references"
+        },
+        {
+            "identifier": "2019ascl.soft03015N",
+            "relation": "isDerivedFrom"
         }
+    ],
+    "grants": [
+        {"id": "10.13039/501100000780::871149"}
     ],
     "keywords": [
         "naif",

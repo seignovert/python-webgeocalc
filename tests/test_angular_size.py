@@ -5,6 +5,7 @@ import pytest
 
 from webgeocalc import AngularSize
 
+
 @pytest.fixture
 def kernels():
     '''Input kernel.'''

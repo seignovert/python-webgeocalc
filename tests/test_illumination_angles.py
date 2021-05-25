@@ -6,6 +6,7 @@ import pytest
 from webgeocalc import IlluminationAngles
 from webgeocalc.errors import CalculationInvalidAttr, CalculationInvalidValue
 
+
 @pytest.fixture
 def kernels():
     '''Cassini kernel set.'''
