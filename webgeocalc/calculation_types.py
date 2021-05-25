@@ -1,5 +1,4 @@
-# -*- coding: utf-8 -*-
-'''Webgeocalc calculations types.'''
+"""Webgeocalc calculations types."""
 
 from .calculation import Calculation
 from .errors import CalculationInvalidAttr
@@ -52,16 +51,17 @@ class StateVector(Calculation):
 
     '''
 
+    REQUIRED = ('target', 'observer', 'reference_frame')
+
     def __init__(self, aberration_correction='CN',
                  state_representation='RECTANGULAR', **kwargs):
-
-        self._required(['target', 'observer', 'reference_frame'], kwargs)
 
         kwargs['calculation_type'] = 'STATE_VECTOR'
         kwargs['aberration_correction'] = aberration_correction
         kwargs['state_representation'] = state_representation
 
         super().__init__(**kwargs)
+
 
 class AngularSeparation(Calculation):
     '''Angular separation calculation.
@@ -110,10 +110,10 @@ class AngularSeparation(Calculation):
 
     '''
 
+    REQUIRED = ('target_1', 'target_2', 'observer')
+
     def __init__(self, shape_1='POINT', shape_2='POINT',
                  aberration_correction='CN', **kwargs):
-
-        self._required(['target_1', 'target_2', 'observer'], kwargs)
 
         kwargs['calculation_type'] = 'ANGULAR_SEPARATION'
         kwargs['shape_1'] = shape_1
@@ -121,6 +121,7 @@ class AngularSeparation(Calculation):
         kwargs['aberration_correction'] = aberration_correction
 
         super().__init__(**kwargs)
+
 
 class AngularSize(Calculation):
     '''Angular size calculation.
@@ -162,9 +163,9 @@ class AngularSize(Calculation):
 
     '''
 
-    def __init__(self, aberration_correction='CN', **kwargs):
+    REQUIRED = ('target', 'observer')
 
-        self._required(['target', 'observer'], kwargs)
+    def __init__(self, aberration_correction='CN', **kwargs):
 
         kwargs['calculation_type'] = 'ANGULAR_SIZE'
         kwargs['aberration_correction'] = aberration_correction
@@ -248,6 +249,8 @@ class FrameTransformation(Calculation):
 
     '''
 
+    REQUIRED = ('frame_1', 'frame_2')
+
     def __init__(self, aberration_correction='CN', time_location='FRAME1',
                  orientation_representation='EULER_ANGLES',
                  axis_1='X', axis_2='Y', axis_3='Z',
@@ -255,8 +258,6 @@ class FrameTransformation(Calculation):
                  angular_velocity_representation='VECTOR_IN_FRAME1',
                  angular_velocity_units='deg/s',
                  **kwargs):
-
-        self._required(['frame_1', 'frame_2'], kwargs)
 
         aberration_correction_allowed = list(filter(
             lambda x: '+S' not in x, VALID_PARAMETERS['ABERRATION_CORRECTION']))
@@ -341,11 +342,10 @@ class IlluminationAngles(Calculation):
 
     '''
 
+    REQUIRED = ('target', 'target_frame', 'observer', 'latitude', 'longitude')
+
     def __init__(self, shape_1='ELLIPSOID', coordinate_representation='LATITUDINAL',
                  aberration_correction='CN', **kwargs):
-
-        self._required(['target', 'target_frame', 'observer',
-                        'latitude', 'longitude'], kwargs)
 
         kwargs['calculation_type'] = 'ILLUMINATION_ANGLES'
         kwargs['coordinate_representation'] = coordinate_representation
@@ -414,10 +414,10 @@ class SubSolarPoint(Calculation):
 
     '''
 
+    REQUIRED = ('target', 'target_frame', 'observer')
+
     def __init__(self, sub_point_type='Near point: ellipsoid', aberration_correction='CN',
                  state_representation='RECTANGULAR', **kwargs):
-
-        self._required(['target', 'target_frame', 'observer'], kwargs)
 
         aberration_correction_allowed = list(filter(
             lambda x: 'X' not in x, VALID_PARAMETERS['ABERRATION_CORRECTION']))
@@ -433,6 +433,7 @@ class SubSolarPoint(Calculation):
         kwargs['state_representation'] = state_representation
 
         super().__init__(**kwargs)
+
 
 class SubObserverPoint(Calculation):
     '''Sub-observer point calculation.
@@ -481,10 +482,10 @@ class SubObserverPoint(Calculation):
 
     '''
 
+    REQUIRED = ('target', 'target_frame', 'observer')
+
     def __init__(self, sub_point_type='Near point: ellipsoid', aberration_correction='CN',
                  state_representation='RECTANGULAR', **kwargs):
-
-        self._required(['target', 'target_frame', 'observer'], kwargs)
 
         kwargs['calculation_type'] = 'SUB_OBSERVER_POINT'
         kwargs['sub_point_type'] = sub_point_type
@@ -578,11 +579,11 @@ class SurfaceInterceptPoint(Calculation):
 
     '''
 
+    REQUIRED = ('target', 'target_frame', 'observer')
+
     def __init__(self, shape_1='ELLIPSOID', direction_vector_type='INSTRUMENT_BORESIGHT',
                  aberration_correction='CN', state_representation='RECTANGULAR',
                  **kwargs):
-
-        self._required(['target', 'target_frame', 'observer'], kwargs)
 
         kwargs['calculation_type'] = 'SURFACE_INTERCEPT_POINT'
         kwargs['direction_vector_type'] = direction_vector_type
@@ -595,6 +596,7 @@ class SurfaceInterceptPoint(Calculation):
             raise CalculationInvalidAttr('shape_1', shape_1, ['ELLIPSOID', 'DSK'])
 
         super().__init__(**kwargs)
+
 
 class OsculatingElements(Calculation):
     '''Osculating elements calculation.
@@ -638,14 +640,15 @@ class OsculatingElements(Calculation):
 
     '''
 
-    def __init__(self, reference_frame='J2000', **kwargs):
+    REQUIRED = ('orbiting_body', 'center_body')
 
-        self._required(['orbiting_body', 'center_body'], kwargs)
+    def __init__(self, reference_frame='J2000', **kwargs):
 
         kwargs['calculation_type'] = 'OSCULATING_ELEMENTS'
         kwargs['reference_frame'] = reference_frame
 
         super().__init__(**kwargs)
+
 
 class TimeConversion(Calculation):
     '''Time conversion calculation.
@@ -779,14 +782,13 @@ class GFCoordinateSearch(Calculation):
 
     '''
 
+    REQUIRED = ('target', 'observer', 'reference_frame', 'relational_condition')
+
     def __init__(self, output_duration_units='SECONDS',
                  should_complement_window=False,
                  interval_adjustment='NO_ADJUSTMENT',
                  interval_filtering='NO_FILTERING',
                  aberration_correction='CN', **kwargs):
-
-        self._required(['target', 'observer', 'reference_frame', 'relational_condition'],
-                       kwargs)
 
         kwargs['calculation_type'] = 'GF_COORDINATE_SEARCH'
         kwargs['aberration_correction'] = aberration_correction

@@ -150,6 +150,8 @@ class Calculation:
 
     '''
 
+    REQUIRED = ()
+
     def __init__(self, api='', time_system='UTC',
                  time_format='CALENDAR', verbose=True, **kwargs):
         # Add default parameters to kwargs
@@ -172,16 +174,17 @@ class Calculation:
 
         self.api = APIs[api_key]
 
-        # Required parameters
-        self._required(['calculation_type', 'time_system', 'time_format'], kwargs)
+        # Check required parameters
+        if 'kernels' not in kwargs and 'kernel_paths' not in kwargs:
+            raise CalculationRequiredAttr("kernels' or 'kernel_paths")
 
-        if 'kernels' not in kwargs.keys() and 'kernel_paths' not in kwargs.keys():
-            raise CalculationRequiredAttr('kernels\' or \'kernel_paths')
+        if 'times' not in kwargs and 'intervals' not in kwargs:
+            raise CalculationRequiredAttr("times' or 'intervals")
 
-        if 'times' not in kwargs.keys() and 'intervals' not in kwargs.keys():
-            raise CalculationRequiredAttr('times\' or \'intervals')
+        self._required('calculation_type', 'time_system', 'time_format',
+                       *self.REQUIRED)
 
-        # Check and set parameters
+        # Set parameters
         for key, value in kwargs.items():
             setattr(self, key, value)
 
@@ -192,12 +195,11 @@ class Calculation:
             f' - {k}: {v}' for k, v in self.payload.items()
         ])
 
-    @staticmethod
-    def _required(attrs, kwargs):
-        # Check required arguments
-        for required in attrs:
-            if required not in kwargs.keys():
-                raise CalculationRequiredAttr(required)
+    def _required(self, *attrs):
+        """Check if the required arguments are in the params."""
+        for attr in attrs:
+            if attr not in self.params:
+                raise CalculationRequiredAttr(attr)
 
     @property
     def payload(self):
@@ -688,7 +690,7 @@ class Calculation:
         '''
         self.__timeFormat = val
 
-        self._required(['time_system'], self.params)
+        self._required('time_system')
 
         if val in ['CALENDAR', 'JULIAN', 'SECONDS_PAST_J2000'] and \
                 self.params['time_system'] not in ['UTC', 'TDB', 'TDT']:
@@ -721,7 +723,7 @@ class Calculation:
         '''
         self.__sclkId = int(val)
 
-        self._required(['time_system'], self.params)
+        self._required('time_system')
 
         if self.params['time_system'] != 'SPACECRAFT_CLOCK':
             raise CalculationIncompatibleAttr(
@@ -796,7 +798,7 @@ class Calculation:
         '''
         self.__outputTimeFormat = val
 
-        self._required(['output_time_system'], self.params)
+        self._required('output_time_system')
 
         if val in ['CALENDAR', 'CALENDAR_YMD', 'CALENDAR_DOY',
                    'JULIAN', 'SECONDS_PAST_J2000', 'CUSTOM'] and \
@@ -832,7 +834,7 @@ class Calculation:
         '''
         self.__outputTimeCustomFormat = val
 
-        self._required(['output_time_format'], self.params)
+        self._required('output_time_format')
 
         if self.params['output_time_format'] != 'CUSTOM':
             raise CalculationIncompatibleAttr(
@@ -858,7 +860,7 @@ class Calculation:
         '''
         self.__outputSclkId = int(val)
 
-        self._required(['output_time_system'], self.params)
+        self._required('output_time_system')
 
         if self.params['output_time_system'] != 'SPACECRAFT_CLOCK':
             raise CalculationIncompatibleAttr(
@@ -1443,12 +1445,12 @@ class Calculation:
 
         if val in ['INSTRUMENT_BORESIGHT', 'INSTRUMENT_FOV_BOUNDARY_VECTORS',
                    'VECTOR_IN_INSTRUMENT_FOV']:
-            self._required(['direction_instrument'], self.params)
+            self._required('direction_instrument')
 
         elif val in ['REFERENCE_FRAME_AXIS', 'VECTOR_IN_REFERENCE_FRAME']:
-            self._required(['direction_frame'], self.params)
+            self._required('direction_frame')
             if val == 'REFERENCE_FRAME_AXIS':
-                self._required(['direction_frame_axis'], self.params)
+                self._required('direction_frame_axis')
 
         keys = self.params.keys()
         if val in ['VECTOR_IN_INSTRUMENT_FOV', 'VECTOR_IN_REFERENCE_FRAME']:
@@ -1466,7 +1468,7 @@ class Calculation:
 
     @parameter
     def direction_instrument(self, val):
-        '''Direction imnstrument.
+        '''Direction instrument.
 
         Parameters
         ----------
