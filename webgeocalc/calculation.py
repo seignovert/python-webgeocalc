@@ -515,7 +515,7 @@ class Calculation:
         '''
         self.__times = [times] if isinstance(times, str) else times
 
-        if 'intervals' in self.params.keys():
+        if 'intervals' in self.params:
             raise CalculationConflictAttr('times', 'intervals')
 
     @SetterProperty
@@ -563,7 +563,7 @@ class Calculation:
         else:
             raise CalculationInvalidAttr('intervals', intervals, INTERVALS)
 
-        if 'time_step' not in self.params.keys():
+        if 'time_step' not in self.params:
             raise CalculationUndefinedAttr('intervals', intervals, 'time_step')
 
     @staticmethod
@@ -600,10 +600,10 @@ class Calculation:
         '''
         self.__timeStep = int(val)
 
-        if 'times' in self.params.keys():
+        if 'times' in self.params:
             raise CalculationConflictAttr('time_step', 'times')
 
-        if 'time_step_units' not in self.params.keys():
+        if 'time_step_units' not in self.params:
             raise CalculationUndefinedAttr('time_step', val, 'time_step_units')
 
     @SetterProperty
@@ -634,9 +634,9 @@ class Calculation:
         '''
         self.__timeStepUnits = val
 
-        if 'times' in self.params.keys():
+        if 'times' in self.params:
             raise CalculationConflictAttr('time_step', 'times')
-        if 'time_step' not in self.params.keys():
+        if 'time_step' not in self.params:
             raise CalculationUndefinedAttr('time_step_units', val, 'time_step')
 
     @SetterProperty
@@ -665,7 +665,7 @@ class Calculation:
         '''
         self.__timeSystem = val
 
-        if val == 'SPACECRAFT_CLOCK' and 'sclk_id' not in self.params.keys():
+        if val == 'SPACECRAFT_CLOCK' and 'sclk_id' not in self.params:
             raise CalculationUndefinedAttr('time_system', 'SPACECRAFT_CLOCK', 'sclk_id')
 
     @SetterProperty
@@ -765,7 +765,7 @@ class Calculation:
         '''
         self.__outputTimeSystem = val
 
-        if val == 'SPACECRAFT_CLOCK' and 'output_sclk_id' not in self.params.keys():
+        if val == 'SPACECRAFT_CLOCK' and 'output_sclk_id' not in self.params:
             raise CalculationUndefinedAttr(
                 'output_time_system', 'SPACECRAFT_CLOCK', 'output_sclk_id')
 
@@ -1216,7 +1216,7 @@ class Calculation:
             If :py:attr:`orientation_representation` is not ``EULER_ANGLES``.
 
         '''
-        if 'orientation_representation' not in self.params.keys():
+        if 'orientation_representation' not in self.params:
             raise CalculationUndefinedAttr(name, val, 'orientation_representation')
 
         if self.params['orientation_representation'] != 'EULER_ANGLES':
@@ -1321,7 +1321,7 @@ class Calculation:
         '''
         self.__angularVelocityUnits = val
 
-        if 'angular_velocity_representation' not in self.params.keys():
+        if 'angular_velocity_representation' not in self.params:
             raise CalculationUndefinedAttr(
                 'angular_velocity_units', val, 'angular_velocity_representation')
 
@@ -1538,7 +1538,7 @@ class Calculation:
             or ``VECTOR_IN_REFERENCE_FRAME``.
 
         '''
-        if 'direction_vector_type' not in self.params.keys():
+        if 'direction_vector_type' not in self.params:
             raise CalculationUndefinedAttr(
                 'direction_frame', val, 'direction_vector_type')
 
@@ -1574,7 +1574,7 @@ class Calculation:
             If the value provided is invalid.
 
         '''
-        if 'direction_vector_type' not in self.params.keys():
+        if 'direction_vector_type' not in self.params:
             raise CalculationUndefinedAttr(
                 'direction_frame_axis', val, 'direction_vector_type')
 
@@ -1604,7 +1604,7 @@ class Calculation:
             or ``VECTOR_IN_REFERENCE_FRAME``.
 
         '''
-        if 'direction_vector_type' not in self.params.keys():
+        if 'direction_vector_type' not in self.params:
             raise CalculationUndefinedAttr(
                 'direction_vector_' + axis, val, 'direction_vector_type')
 
@@ -1767,7 +1767,7 @@ class Calculation:
         '''
         self.__intervalAdjustmentAmount = val
 
-        if 'interval_adjustment_units' not in self.params.keys():
+        if 'interval_adjustment_units' not in self.params:
             raise CalculationUndefinedAttr('interval_adjustment_amount', val,
                                            'interval_adjustment_units')
 
@@ -1799,7 +1799,7 @@ class Calculation:
         '''
         self.__intervalAdjustmentUnits = val
 
-        if 'interval_adjustment_amount' not in self.params.keys():
+        if 'interval_adjustment_amount' not in self.params:
             raise CalculationUndefinedAttr('interval_adjustment_units', val,
                                            'interval_adjustment_amount')
 
@@ -1843,7 +1843,7 @@ class Calculation:
         '''
         self.__intervalFilteringThreshold = val
 
-        if 'interval_filtering_threshold_units' not in self.params.keys():
+        if 'interval_filtering_threshold_units' not in self.params:
             raise CalculationUndefinedAttr('interval_filtering_threshold', val,
                                            'interval_filtering_threshold_units')
 
@@ -1875,7 +1875,7 @@ class Calculation:
         '''
         self.__intervalFilteringThresholdUnits = val
 
-        if 'interval_filtering_threshold' not in self.params.keys():
+        if 'interval_filtering_threshold' not in self.params:
             raise CalculationUndefinedAttr('interval_filtering_threshold_units', val,
                                            'interval_filtering_threshold')
 
@@ -1973,23 +1973,23 @@ class Calculation:
         '''
         self.gf_condition(relationalCondition=val)
 
-        if (val == 'RANGE') and ('upper_limit' not in self.params.keys()):
+        if val == 'RANGE' and 'upper_limit' not in self.params:
             raise CalculationUndefinedAttr(
                 attr='relational_condition',
                 value=val,
                 missing='upper_limit'
             )
 
-        if (val in ('ABSMIN', 'ABSMAX')) and \
-                ('adjustment_value' not in self.params.keys()):
+        if val in ('ABSMIN', 'ABSMAX') and \
+                'adjustment_value' not in self.params:
             raise CalculationUndefinedAttr(
                 attr='relational_condition',
                 value=val,
                 missing='adjustment_value'
             )
 
-        if (val in ('=', '<', '>', 'RANGE')) and \
-                ('reference_value' not in self.params.keys()):
+        if val in ('=', '<', '>', 'RANGE') and \
+                'reference_value' not in self.params:
             raise CalculationUndefinedAttr(
                 attr='relational_condition',
                 value=val,
@@ -2055,13 +2055,13 @@ class Calculation:
                 'GF_SUB_POINT_SEARCH',
                 'GF_SURFACE_INTERCEPT_POINT_SEARCH'
             ):
-                if 'coordinate_system' not in self.params.keys():
+                if 'coordinate_system' not in self.params:
                     raise CalculationUndefinedAttr(
                         attr='calculation_type',
                         value=self.params['calculation_type'],
                         missing='coordinate_system'
                     ) from None
-                if 'coordinate' not in self.params.keys():
+                if 'coordinate' not in self.params:
                     raise CalculationUndefinedAttr(
                         attr='calculation_type',
                         value=self.params['calculation_type'],
