@@ -2,9 +2,11 @@
 '''Test WGC type results.'''
 import pytest
 
-from webgeocalc.vars import get_var
+from webgeocalc.vars import set_param
 
-def test_var_err():
+def test_set_param():
     '''Test error unknown type results.'''
     with pytest.raises(KeyError):
-        get_var('WRONG_TYPE')
+        @set_param(valid_params='WRONG_TYPE')
+        def dummy(_self, val):
+            pass
