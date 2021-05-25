@@ -3,7 +3,7 @@
 
 from .calculation import Calculation
 from .errors import CalculationInvalidAttr
-from .vars import ABERRATION_CORRECTION
+from .vars import VALID_PARAMETERS
 
 
 class StateVector(Calculation):
@@ -259,7 +259,7 @@ class FrameTransformation(Calculation):
         self._required(['frame_1', 'frame_2'], kwargs)
 
         aberration_correction_allowed = list(filter(
-            lambda x: '+S' not in x, ABERRATION_CORRECTION))
+            lambda x: '+S' not in x, VALID_PARAMETERS['ABERRATION_CORRECTION']))
 
         if aberration_correction not in aberration_correction_allowed:
             raise CalculationInvalidAttr(
@@ -420,7 +420,7 @@ class SubSolarPoint(Calculation):
         self._required(['target', 'target_frame', 'observer'], kwargs)
 
         aberration_correction_allowed = list(filter(
-            lambda x: 'X' not in x, ABERRATION_CORRECTION))
+            lambda x: 'X' not in x, VALID_PARAMETERS['ABERRATION_CORRECTION']))
 
         if aberration_correction not in aberration_correction_allowed:
             raise CalculationInvalidAttr(

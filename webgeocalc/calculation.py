@@ -378,7 +378,7 @@ class Calculation:
             if self.phase == 'COMPLETE':
                 return self.results
 
-            if self.phase in CALCULATION_FAILED_PHASES:
+            if self.phase in VALID_PARAMETERS['CALCULATION_FAILED_PHASES']:
                 raise CalculationFailed(self.phase)
 
             time.sleep(sleep)
@@ -526,14 +526,26 @@ class Calculation:
                 self.__intervals = [
                     self._interval(intervals[0]), self._interval(intervals[1])]
             else:
-                raise CalculationInvalidAttr('intervals', intervals, INTERVALS)
+                raise CalculationInvalidAttr(
+                    name='intervals',
+                    attr=intervals,
+                    valids=VALID_PARAMETERS['INTERVALS']
+                )
         elif isinstance(intervals, list) and len(intervals) == 1:
             if isinstance(intervals[0], (dict, list)):
                 self.__intervals = [self._interval(intervals[0])]
             else:
-                raise CalculationInvalidAttr('intervals', intervals, INTERVALS)
+                raise CalculationInvalidAttr(
+                    name='intervals',
+                    attr=intervals,
+                    valids=VALID_PARAMETERS['INTERVALS']
+                )
         else:
-            raise CalculationInvalidAttr('intervals', intervals, INTERVALS)
+            raise CalculationInvalidAttr(
+                name='intervals',
+                attr=intervals,
+                valids=VALID_PARAMETERS['INTERVALS']
+            )
 
         if 'time_step' not in self.params:
             raise CalculationUndefinedAttr('intervals', intervals, 'time_step')
@@ -542,13 +554,21 @@ class Calculation:
     def _interval(interval):
         # Parse interval object
         if not len(interval) == 2:
-            raise CalculationInvalidAttr('interval', interval, INTERVALS[:2])
+            raise CalculationInvalidAttr(
+                name='intervals',
+                attr=interval,
+                valids=VALID_PARAMETERS['INTERVALS'][:2]
+            )
 
         if isinstance(interval, dict):
             if 'startTime' in interval.keys() and 'endTime' in interval.keys():
                 return interval
 
-            raise CalculationInvalidAttr('interval', interval, INTERVALS[:2])
+            raise CalculationInvalidAttr(
+                name='intervals',
+                attr=interval,
+                valids=VALID_PARAMETERS['INTERVALS'][:2]
+            )
 
         return {'startTime': str(interval[0]), 'endTime': str(interval[1])}
 
@@ -1185,10 +1205,10 @@ class Calculation:
                 name, val, 'orientation_representation',
                 self.params['orientation_representation'], ['EULER_ANGLES'])
 
-        if val in AXIS:
+        if val in VALID_PARAMETERS['AXIS']:
             return val
 
-        raise CalculationInvalidAttr(name, val, AXIS)
+        raise CalculationInvalidAttr(name, val, VALID_PARAMETERS['AXIS'])
 
     @set_param(valid_params='ANGULAR_UNITS')
     def angular_units(self, val):
