@@ -3,14 +3,14 @@
 JPL_URL = 'https://wgc2.jpl.nasa.gov:8443/webgeocalc/api'
 ESA_URL = 'http://spice.esac.esa.int/webgeocalc/api'
 
+CALCULATION_FAILED_PHASES = [
+    'FAILED',
+    'CANCELLED',
+    'DISPATCHED',
+    'EXPIRED',
+]
 
 VALID_PARAMETERS = {
-    'CALCULATION_FAILED_PHASES': [
-        'FAILED',
-        'CANCELLED',
-        'DISPATCHED',
-        'EXPIRED',
-    ],
     'CALCULATION_TYPE': [
         'STATE_VECTOR',
         'ANGULAR_SEPARATION',

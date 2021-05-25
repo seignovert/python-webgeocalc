@@ -1,5 +1,4 @@
-# -*- coding: utf-8 -*-
-'''Webgeocalc Calculations.'''
+"""Webgeocalc Calculations."""
 
 import time
 
@@ -11,7 +10,7 @@ from .errors import (CalculationAlreadySubmitted, CalculationConflictAttr,
                      CalculationNotCompleted, CalculationRequiredAttr,
                      CalculationTimeOut, CalculationUndefinedAttr)
 from .types import KernelSetDetails
-from .vars import VALID_PARAMETERS
+from .vars import CALCULATION_FAILED_PHASES, VALID_PARAMETERS
 
 
 APIs = {
@@ -379,7 +378,7 @@ class Calculation:
             if self.phase == 'COMPLETE':
                 return self.results
 
-            if self.phase in VALID_PARAMETERS['CALCULATION_FAILED_PHASES']:
+            if self.phase in CALCULATION_FAILED_PHASES:
                 raise CalculationFailed(self.phase)
 
             time.sleep(sleep)
