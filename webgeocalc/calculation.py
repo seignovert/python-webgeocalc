@@ -1,25 +1,16 @@
-# -*- coding: utf-8 -*-
-'''Webgeocalc Calculations.'''
+"""Webgeocalc Calculations."""
 
 import time
 
 from .api import API, Api, ESA_API, JPL_API
+from .decorator import parameter
 from .errors import (CalculationAlreadySubmitted, CalculationConflictAttr,
                      CalculationFailed, CalculationIncompatibleAttr,
                      CalculationInvalidAttr, CalculationInvalidValue,
                      CalculationNotCompleted, CalculationRequiredAttr,
                      CalculationTimeOut, CalculationUndefinedAttr)
 from .types import KernelSetDetails
-from .vars import (ABERRATION_CORRECTION, ANGULAR_UNITS,
-                   ANGULAR_VELOCITY_REPRESENTATION, ANGULAR_VELOCITY_UNITS,
-                   AXIS, CALCULATION_FAILED_PHASES, CALCULATION_TYPE, COORDINATE,
-                   COORDINATE_REPRESENTATION, COORDINATE_SYSTEM, DIRECTION_VECTOR_TYPE,
-                   INTERVALS, INTERVAL_ADJUSTMENT, INTERVAL_ADJUSTMENT_UNITS,
-                   INTERVAL_FILTERING, INTERVAL_FILTERING_THRESHOLD_UNITS,
-                   ORIENTATION_REPRESENTATION, OUTPUT_DURATION_UNITS,
-                   OUTPUT_TIME_FORMAT, RELATIONAL_CONDITION, SHAPE,
-                   STATE_REPRESENTATION, SUB_POINT_TYPE, TIME_FORMAT, TIME_LOCATION,
-                   TIME_STEP_UNITS, TIME_SYSTEM)
+from .vars import CALCULATION_FAILED_PHASES, VALID_PARAMETERS
 
 
 APIs = {
@@ -27,18 +18,6 @@ APIs = {
     'JPL': JPL_API,
     'ESA': ESA_API,
 }
-
-
-class SetterProperty:
-    '''Setter property decorator.'''
-
-    def __init__(self, func, doc=None):
-        self.func = func
-        self.__doc__ = doc if doc is not None else func.__doc__
-
-    def __set__(self, obj, value):
-        return self.func(obj, value)
-
 
 class Calculation:
     '''Webgeocalc calculation object.
@@ -171,6 +150,8 @@ class Calculation:
 
     '''
 
+    REQUIRED = ()
+
     def __init__(self, api='', time_system='UTC',
                  time_format='CALENDAR', verbose=True, **kwargs):
         # Add default parameters to kwargs
@@ -193,16 +174,17 @@ class Calculation:
 
         self.api = APIs[api_key]
 
-        # Required parameters
-        self._required(['calculation_type', 'time_system', 'time_format'], kwargs)
+        # Check required parameters
+        if 'kernels' not in kwargs and 'kernel_paths' not in kwargs:
+            raise CalculationRequiredAttr("kernels' or 'kernel_paths")
 
-        if 'kernels' not in kwargs.keys() and 'kernel_paths' not in kwargs.keys():
-            raise CalculationRequiredAttr('kernels\' or \'kernel_paths')
+        if 'times' not in kwargs and 'intervals' not in kwargs:
+            raise CalculationRequiredAttr("times' or 'intervals")
 
-        if 'times' not in kwargs.keys() and 'intervals' not in kwargs.keys():
-            raise CalculationRequiredAttr('times\' or \'intervals')
+        self._required('calculation_type', 'time_system', 'time_format',
+                       *self.REQUIRED)
 
-        # Check and set parameters
+        # Set parameters
         for key, value in kwargs.items():
             setattr(self, key, value)
 
@@ -213,12 +195,11 @@ class Calculation:
             f' - {k}: {v}' for k, v in self.payload.items()
         ])
 
-    @staticmethod
-    def _required(attrs, kwargs):
-        # Check required arguments
-        for required in attrs:
-            if required not in kwargs.keys():
-                raise CalculationRequiredAttr(required)
+    def _required(self, *attrs):
+        """Check if the required arguments are in the params."""
+        for attr in attrs:
+            if attr not in self.params:
+                raise CalculationRequiredAttr(attr)
 
     @property
     def payload(self):
@@ -406,7 +387,7 @@ class Calculation:
 
         raise CalculationTimeOut(timeout, sleep)
 
-    @SetterProperty
+    @parameter(only='CALCULATION_TYPE')
     def calculation_type(self, val):
         '''The type of calculation to perform.
 
@@ -444,12 +425,9 @@ class Calculation:
             If the value provided is invalid.
 
         '''
-        if val in CALCULATION_TYPE:
-            self.__calculationType = val
-        else:
-            raise CalculationInvalidAttr('calculation_type', val, CALCULATION_TYPE)
+        self.__calculationType = val
 
-    @SetterProperty
+    @parameter
     def kernels(self, kernel_sets):
         '''Add kernel sets.
 
@@ -472,7 +450,7 @@ class Calculation:
         # Payload kernel set object
         return {"type": "KERNEL_SET", "id": self.api.kernel_set_id(kernel_set)}
 
-    @SetterProperty
+    @parameter
     def kernel_paths(self, paths):
         '''Add path for individual kernel paths.
 
@@ -493,7 +471,7 @@ class Calculation:
         # Payloaf individual kernel path object
         return {"type": "KERNEL", "path": server_path}
 
-    @SetterProperty
+    @parameter
     def times(self, times):
         '''Calculation input times.
 
@@ -511,10 +489,10 @@ class Calculation:
         '''
         self.__times = [times] if isinstance(times, str) else times
 
-        if 'intervals' in self.params.keys():
+        if 'intervals' in self.params:
             raise CalculationConflictAttr('times', 'intervals')
 
-    @SetterProperty
+    @parameter
     def intervals(self, intervals):
         '''Calculation input intervals.
 
@@ -550,33 +528,53 @@ class Calculation:
                 self.__intervals = [
                     self._interval(intervals[0]), self._interval(intervals[1])]
             else:
-                raise CalculationInvalidAttr('intervals', intervals, INTERVALS)
+                raise CalculationInvalidAttr(
+                    name='intervals',
+                    attr=intervals,
+                    valids=VALID_PARAMETERS['INTERVALS']
+                )
         elif isinstance(intervals, list) and len(intervals) == 1:
             if isinstance(intervals[0], (dict, list)):
                 self.__intervals = [self._interval(intervals[0])]
             else:
-                raise CalculationInvalidAttr('intervals', intervals, INTERVALS)
+                raise CalculationInvalidAttr(
+                    name='intervals',
+                    attr=intervals,
+                    valids=VALID_PARAMETERS['INTERVALS']
+                )
         else:
-            raise CalculationInvalidAttr('intervals', intervals, INTERVALS)
+            raise CalculationInvalidAttr(
+                name='intervals',
+                attr=intervals,
+                valids=VALID_PARAMETERS['INTERVALS']
+            )
 
-        if 'time_step' not in self.params.keys():
+        if 'time_step' not in self.params:
             raise CalculationUndefinedAttr('intervals', intervals, 'time_step')
 
     @staticmethod
     def _interval(interval):
         # Parse interval object
         if not len(interval) == 2:
-            raise CalculationInvalidAttr('interval', interval, INTERVALS[:2])
+            raise CalculationInvalidAttr(
+                name='intervals',
+                attr=interval,
+                valids=VALID_PARAMETERS['INTERVALS'][:2]
+            )
 
         if isinstance(interval, dict):
             if 'startTime' in interval.keys() and 'endTime' in interval.keys():
                 return interval
 
-            raise CalculationInvalidAttr('interval', interval, INTERVALS[:2])
+            raise CalculationInvalidAttr(
+                name='intervals',
+                attr=interval,
+                valids=VALID_PARAMETERS['INTERVALS'][:2]
+            )
 
         return {'startTime': str(interval[0]), 'endTime': str(interval[1])}
 
-    @SetterProperty
+    @parameter
     def time_step(self, val):
         '''Time step for intervals.
 
@@ -596,13 +594,13 @@ class Calculation:
         '''
         self.__timeStep = int(val)
 
-        if 'times' in self.params.keys():
+        if 'times' in self.params:
             raise CalculationConflictAttr('time_step', 'times')
 
-        if 'time_step_units' not in self.params.keys():
+        if 'time_step_units' not in self.params:
             raise CalculationUndefinedAttr('time_step', val, 'time_step_units')
 
-    @SetterProperty
+    @parameter(only='TIME_STEP_UNITS')
     def time_step_units(self, val):
         '''Time step units.
 
@@ -627,17 +625,14 @@ class Calculation:
             If :py:attr:`time_step` is not supplied.
 
         '''
-        if val in TIME_STEP_UNITS:
-            self.__timeStepUnits = val
-        else:
-            raise CalculationInvalidAttr('time_step_units', val, TIME_STEP_UNITS)
+        self.__timeStepUnits = val
 
-        if 'times' in self.params.keys():
+        if 'times' in self.params:
             raise CalculationConflictAttr('time_step', 'times')
-        if 'time_step' not in self.params.keys():
+        if 'time_step' not in self.params:
             raise CalculationUndefinedAttr('time_step_units', val, 'time_step')
 
-    @SetterProperty
+    @parameter(only='TIME_SYSTEM')
     def time_system(self, val):
         '''Time System.
 
@@ -660,15 +655,12 @@ class Calculation:
             :py:attr:`sclk_id` attribute is not provided.
 
         '''
-        if val in TIME_SYSTEM:
-            self.__timeSystem = val
-        else:
-            raise CalculationInvalidAttr('time_system', val, TIME_SYSTEM)
+        self.__timeSystem = val
 
-        if val == 'SPACECRAFT_CLOCK' and 'sclk_id' not in self.params.keys():
+        if val == 'SPACECRAFT_CLOCK' and 'sclk_id' not in self.params:
             raise CalculationUndefinedAttr('time_system', 'SPACECRAFT_CLOCK', 'sclk_id')
 
-    @SetterProperty
+    @parameter(only='TIME_FORMAT')
     def time_format(self, val):
         '''Time format input.
 
@@ -696,12 +688,9 @@ class Calculation:
             :py:attr:`time_system` attribute is not ``SPACECRAFT_CLOCK``.
 
         '''
-        if val in TIME_FORMAT:
-            self.__timeFormat = val
-        else:
-            raise CalculationInvalidAttr('time_format', val, TIME_FORMAT)
+        self.__timeFormat = val
 
-        self._required(['time_system'], self.params)
+        self._required('time_system')
 
         if val in ['CALENDAR', 'JULIAN', 'SECONDS_PAST_J2000'] and \
                 self.params['time_system'] not in ['UTC', 'TDB', 'TDT']:
@@ -715,7 +704,7 @@ class Calculation:
                 'time_format', val, 'time_system',
                 self.params['time_system'], ['SPACECRAFT_CLOCK'])
 
-    @SetterProperty
+    @parameter
     def sclk_id(self, val):
         '''Spacecraft clock kernel id.
 
@@ -734,14 +723,14 @@ class Calculation:
         '''
         self.__sclkId = int(val)
 
-        self._required(['time_system'], self.params)
+        self._required('time_system')
 
         if self.params['time_system'] != 'SPACECRAFT_CLOCK':
             raise CalculationIncompatibleAttr(
                 'sclk_id', val, 'time_system',
                 self.params['time_system'], ['SPACECRAFT_CLOCK'])
 
-    @SetterProperty
+    @parameter(only='TIME_SYSTEM')
     def output_time_system(self, val):
         '''The time system for results output times.
 
@@ -764,16 +753,13 @@ class Calculation:
             :py:attr:`output_sclk_id` attribute is not provided.
 
         '''
-        if val in TIME_SYSTEM:
-            self.__outputTimeSystem = val
-        else:
-            raise CalculationInvalidAttr('output_time_system', val, TIME_SYSTEM)
+        self.__outputTimeSystem = val
 
-        if val == 'SPACECRAFT_CLOCK' and 'output_sclk_id' not in self.params.keys():
+        if val == 'SPACECRAFT_CLOCK' and 'output_sclk_id' not in self.params:
             raise CalculationUndefinedAttr(
                 'output_time_system', 'SPACECRAFT_CLOCK', 'output_sclk_id')
 
-    @SetterProperty
+    @parameter(only='OUTPUT_TIME_FORMAT')
     def output_time_format(self, val):
         '''The time format for the result output times.
 
@@ -810,12 +796,9 @@ class Calculation:
             is not ``SPACECRAFT_CLOCK``.
 
         '''
-        if val in OUTPUT_TIME_FORMAT:
-            self.__outputTimeFormat = val
-        else:
-            raise CalculationInvalidAttr('output_time_format', val, OUTPUT_TIME_FORMAT)
+        self.__outputTimeFormat = val
 
-        self._required(['output_time_system'], self.params)
+        self._required('output_time_system')
 
         if val in ['CALENDAR', 'CALENDAR_YMD', 'CALENDAR_DOY',
                    'JULIAN', 'SECONDS_PAST_J2000', 'CUSTOM'] and \
@@ -832,7 +815,7 @@ class Calculation:
                 'output_time_system', self.params['output_time_system'],
                 ['SPACECRAFT_CLOCK'])
 
-    @SetterProperty
+    @parameter
     def output_time_custom_format(self, val):
         '''A SPICE ``timout()`` format string.
 
@@ -851,14 +834,14 @@ class Calculation:
         '''
         self.__outputTimeCustomFormat = val
 
-        self._required(['output_time_format'], self.params)
+        self._required('output_time_format')
 
         if self.params['output_time_format'] != 'CUSTOM':
             raise CalculationIncompatibleAttr(
                 'output_time_custom_format', val, 'output_time_format',
                 self.params['output_time_format'], ['CUSTOM'])
 
-    @SetterProperty
+    @parameter
     def output_sclk_id(self, val):
         '''The output spacecraft clock kernel id.
 
@@ -877,14 +860,14 @@ class Calculation:
         '''
         self.__outputSclkId = int(val)
 
-        self._required(['output_time_system'], self.params)
+        self._required('output_time_system')
 
         if self.params['output_time_system'] != 'SPACECRAFT_CLOCK':
             raise CalculationIncompatibleAttr(
                 'output_sclk_id', val, 'output_time_system',
                 self.params['output_time_system'], ['SPACECRAFT_CLOCK'])
 
-    @SetterProperty
+    @parameter
     def target(self, val):
         '''Target body.
 
@@ -896,7 +879,7 @@ class Calculation:
         '''
         self.__target = val if isinstance(val, int) else val.upper()
 
-    @SetterProperty
+    @parameter
     def target_frame(self, val):
         '''The target body-fixed reference frame name.
 
@@ -908,7 +891,7 @@ class Calculation:
         '''
         self.__targetFrame = val
 
-    @SetterProperty
+    @parameter
     def target_1(self, val):
         '''The target body the first body.
 
@@ -920,7 +903,7 @@ class Calculation:
         '''
         self.__target1 = val if isinstance(val, int) else val.upper()
 
-    @SetterProperty
+    @parameter
     def target_2(self, val):
         '''The target body the second body.
 
@@ -932,7 +915,7 @@ class Calculation:
         '''
         self.__target2 = val if isinstance(val, int) else val.upper()
 
-    @SetterProperty
+    @parameter(only='SHAPE')
     def shape_1(self, val):
         '''The shape to use for the first body.
 
@@ -950,12 +933,9 @@ class Calculation:
             If the value provided is invalid.
 
         '''
-        if val in SHAPE:
-            self.__shape1 = val
-        else:
-            raise CalculationInvalidAttr('shape_1', val, SHAPE)
+        self.__shape1 = val
 
-    @SetterProperty
+    @parameter(only='SHAPE')
     def shape_2(self, val):
         '''The shape to use for the second body.
 
@@ -973,12 +953,9 @@ class Calculation:
             If the value provided is invalid.
 
         '''
-        if val in SHAPE:
-            self.__shape2 = val
-        else:
-            raise CalculationInvalidAttr('shape_2', val, SHAPE)
+        self.__shape2 = val
 
-    @SetterProperty
+    @parameter
     def observer(self, val):
         '''The observing body.
 
@@ -990,7 +967,7 @@ class Calculation:
         '''
         self.__observer = val if isinstance(val, int) else val.upper()
 
-    @SetterProperty
+    @parameter
     def reference_frame(self, val):
         '''The reference frame.
 
@@ -1002,7 +979,7 @@ class Calculation:
         '''
         self.__referenceFrame = val if isinstance(val, int) else val.upper()
 
-    @SetterProperty
+    @parameter
     def frame_1(self, val):
         '''The first reference frame.
 
@@ -1014,7 +991,7 @@ class Calculation:
         '''
         self.__frame1 = val if isinstance(val, int) else val.upper()
 
-    @SetterProperty
+    @parameter
     def frame_2(self, val):
         '''The second reference frame.
 
@@ -1026,7 +1003,7 @@ class Calculation:
         '''
         self.__frame2 = val if isinstance(val, int) else val.upper()
 
-    @SetterProperty
+    @parameter
     def orbiting_body(self, val):
         '''The SPICE orbiting body.
 
@@ -1038,7 +1015,7 @@ class Calculation:
         '''
         self.__orbitingBody = val if isinstance(val, int) else val.upper()
 
-    @SetterProperty
+    @parameter
     def center_body(self, val):
         '''
         The SPICE body center of motion.
@@ -1051,7 +1028,7 @@ class Calculation:
         '''
         self.__centerBody = val if isinstance(val, int) else val.upper()
 
-    @SetterProperty
+    @parameter(only='ABERRATION_CORRECTION')
     def aberration_correction(self, val):
         '''SPICE aberration correction.
 
@@ -1076,13 +1053,9 @@ class Calculation:
             If the value provided is invalid.
 
         '''
-        if val in ABERRATION_CORRECTION:
-            self.__aberrationCorrection = val
-        else:
-            raise CalculationInvalidAttr(
-                'aberration_correction', val, ABERRATION_CORRECTION)
+        self.__aberrationCorrection = val
 
-    @SetterProperty
+    @parameter(only='STATE_REPRESENTATION')
     def state_representation(self, val):
         '''State representation.
 
@@ -1105,13 +1078,9 @@ class Calculation:
             If the value provided is invalid.
 
         '''
-        if val in STATE_REPRESENTATION:
-            self.__stateRepresentation = val
-        else:
-            raise CalculationInvalidAttr(
-                'state_representation', val, STATE_REPRESENTATION)
+        self.__stateRepresentation = val
 
-    @SetterProperty
+    @parameter(only='TIME_LOCATION')
     def time_location(self, val):
         '''The frame for the input times.
 
@@ -1137,12 +1106,9 @@ class Calculation:
         Required even when :py:attr:`aberration_correction` is ``NONE``.
 
         '''
-        if val in TIME_LOCATION:
-            self.__timeLocation = val
-        else:
-            raise CalculationInvalidAttr('time_location', val, TIME_LOCATION)
+        self.__timeLocation = val
 
-    @SetterProperty
+    @parameter(only='ORIENTATION_REPRESENTATION')
     def orientation_representation(self, val):
         '''The representation of the result transformation.
 
@@ -1165,13 +1131,9 @@ class Calculation:
             If the value provided is invalid.
 
         '''
-        if val in ORIENTATION_REPRESENTATION:
-            self.__orientationRepresentation = val
-        else:
-            raise CalculationInvalidAttr(
-                'orientation_representation', val, ORIENTATION_REPRESENTATION)
+        self.__orientationRepresentation = val
 
-    @SetterProperty
+    @parameter
     def axis_1(self, val):
         '''The first axis for Euler angle rotation.
 
@@ -1183,7 +1145,7 @@ class Calculation:
         '''
         self.__axis1 = self.axis('axis_1', val)
 
-    @SetterProperty
+    @parameter
     def axis_2(self, val):
         '''The second axis for Euler angle rotation.
 
@@ -1195,7 +1157,7 @@ class Calculation:
         '''
         self.__axis2 = self.axis('axis_2', val)
 
-    @SetterProperty
+    @parameter
     def axis_3(self, val):
         '''The third axis for Euler angle rotation.
 
@@ -1237,7 +1199,7 @@ class Calculation:
             If :py:attr:`orientation_representation` is not ``EULER_ANGLES``.
 
         '''
-        if 'orientation_representation' not in self.params.keys():
+        if 'orientation_representation' not in self.params:
             raise CalculationUndefinedAttr(name, val, 'orientation_representation')
 
         if self.params['orientation_representation'] != 'EULER_ANGLES':
@@ -1245,12 +1207,12 @@ class Calculation:
                 name, val, 'orientation_representation',
                 self.params['orientation_representation'], ['EULER_ANGLES'])
 
-        if val in AXIS:
+        if val in VALID_PARAMETERS['AXIS']:
             return val
 
-        raise CalculationInvalidAttr(name, val, AXIS)
+        raise CalculationInvalidAttr(name, val, VALID_PARAMETERS['AXIS'])
 
-    @SetterProperty
+    @parameter(only='ANGULAR_UNITS')
     def angular_units(self, val):
         '''The angular units.
 
@@ -1273,12 +1235,9 @@ class Calculation:
             not `EULER_ANGLES` or `ANGLE_AND_AXIS`.
 
         '''
-        if val in ANGULAR_UNITS:
-            self.__angularUnits = val
-        else:
-            raise CalculationInvalidAttr('angular_units', val, ANGULAR_UNITS)
+        self.__angularUnits = val
 
-        if 'orientation_representation' not in self.params.keys():
+        if 'orientation_representation' not in self.params:
             raise CalculationUndefinedAttr(
                 'angular_units', val, 'orientation_representation')
 
@@ -1289,7 +1248,7 @@ class Calculation:
                 self.params['orientation_representation'],
                 ['EULER_ANGLES', 'ANGLE_AND_AXIS'])
 
-    @SetterProperty
+    @parameter(only='ANGULAR_VELOCITY_REPRESENTATION')
     def angular_velocity_representation(self, val):
         '''Angular velocity representation.
 
@@ -1310,13 +1269,9 @@ class Calculation:
             If the value provided is invalid.
 
         '''
-        if val in ANGULAR_VELOCITY_REPRESENTATION:
-            self.__angularVelocityRepresentation = val
-        else:
-            raise CalculationInvalidAttr(
-                'angular_velocity_representation', val, ANGULAR_VELOCITY_REPRESENTATION)
+        self.__angularVelocityRepresentation = val
 
-    @SetterProperty
+    @parameter(only='ANGULAR_VELOCITY_UNITS')
     def angular_velocity_units(self, val):
         '''The units for the angular velocity.
 
@@ -1344,13 +1299,9 @@ class Calculation:
             ``VECTOR_IN_FRAME1`` or ``VECTOR_IN_FRAME2``.
 
         '''
-        if val in ANGULAR_VELOCITY_UNITS:
-            self.__angularVelocityUnits = val
-        else:
-            raise CalculationInvalidAttr(
-                'angular_velocity_units', val, ANGULAR_VELOCITY_UNITS)
+        self.__angularVelocityUnits = val
 
-        if 'angular_velocity_representation' not in self.params.keys():
+        if 'angular_velocity_representation' not in self.params:
             raise CalculationUndefinedAttr(
                 'angular_velocity_units', val, 'angular_velocity_representation')
 
@@ -1367,7 +1318,7 @@ class Calculation:
                 self.params['angular_velocity_representation'],
                 ['VECTOR_IN_FRAME1', 'VECTOR_IN_FRAME2'])
 
-    @SetterProperty
+    @parameter(only='COORDINATE_REPRESENTATION')
     def coordinate_representation(self, val):
         '''Coordinate Representation.
 
@@ -1386,13 +1337,9 @@ class Calculation:
             If the value provided is invalid.
 
         '''
-        if val in COORDINATE_REPRESENTATION:
-            self.__coordinateRepresentation = val
-        else:
-            raise CalculationInvalidAttr(
-                'coordinate_representation', val, COORDINATE_REPRESENTATION)
+        self.__coordinateRepresentation = val
 
-    @SetterProperty
+    @parameter
     def latitude(self, val):
         '''Latitude of the surface point.
 
@@ -1412,7 +1359,7 @@ class Calculation:
         else:
             raise CalculationInvalidValue('latitude', val, -90, 90)
 
-    @SetterProperty
+    @parameter
     def longitude(self, val):
         '''Longitude of the surface point.
 
@@ -1432,7 +1379,7 @@ class Calculation:
         else:
             raise CalculationInvalidValue('longitude', val, -180, 180)
 
-    @SetterProperty
+    @parameter(only='SUB_POINT_TYPE')
     def sub_point_type(self, val):
         '''Sub-observer point.
 
@@ -1453,12 +1400,9 @@ class Calculation:
             If the value provided is invalid.
 
         '''
-        if val in SUB_POINT_TYPE:
-            self.__subPointType = val
-        else:
-            raise CalculationInvalidAttr('sub_point_type', val, SUB_POINT_TYPE)
+        self.__subPointType = val
 
-    @SetterProperty
+    @parameter(only='DIRECTION_VECTOR_TYPE')
     def direction_vector_type(self, val):
         '''Type of ray's direction vector.
 
@@ -1497,20 +1441,16 @@ class Calculation:
             are provided.
 
         '''
-        if val in DIRECTION_VECTOR_TYPE:
-            self.__directionVectorType = val
-        else:
-            raise CalculationInvalidAttr(
-                'direction_vector_type', val, DIRECTION_VECTOR_TYPE)
+        self.__directionVectorType = val
 
         if val in ['INSTRUMENT_BORESIGHT', 'INSTRUMENT_FOV_BOUNDARY_VECTORS',
                    'VECTOR_IN_INSTRUMENT_FOV']:
-            self._required(['direction_instrument'], self.params)
+            self._required('direction_instrument')
 
         elif val in ['REFERENCE_FRAME_AXIS', 'VECTOR_IN_REFERENCE_FRAME']:
-            self._required(['direction_frame'], self.params)
+            self._required('direction_frame')
             if val == 'REFERENCE_FRAME_AXIS':
-                self._required(['direction_frame_axis'], self.params)
+                self._required('direction_frame_axis')
 
         keys = self.params.keys()
         if val in ['VECTOR_IN_INSTRUMENT_FOV', 'VECTOR_IN_REFERENCE_FRAME']:
@@ -1526,9 +1466,9 @@ class Calculation:
                     'direction_vector_type', val,
                     "direction_vector_x/y/z' or 'direction_vector_ra/dec")
 
-    @SetterProperty
+    @parameter
     def direction_instrument(self, val):
-        '''Direction imnstrument.
+        '''Direction instrument.
 
         Parameters
         ----------
@@ -1544,7 +1484,7 @@ class Calculation:
             ``INSTRUMENT_FOV_BOUNDARY_VECTORS`` or ``VECTOR_IN_INSTRUMENT_FOV``.
 
         '''
-        if 'direction_vector_type' not in self.params.keys():
+        if 'direction_vector_type' not in self.params:
             raise CalculationUndefinedAttr(
                 'direction_instrument', val, 'direction_vector_type')
 
@@ -1557,7 +1497,7 @@ class Calculation:
 
         self.__directionInstrument = val if isinstance(val, int) else val.upper()
 
-    @SetterProperty
+    @parameter
     def direction_frame(self, val):
         '''Direction vector reference frame.
 
@@ -1575,7 +1515,7 @@ class Calculation:
             or ``VECTOR_IN_REFERENCE_FRAME``.
 
         '''
-        if 'direction_vector_type' not in self.params.keys():
+        if 'direction_vector_type' not in self.params:
             raise CalculationUndefinedAttr(
                 'direction_frame', val, 'direction_vector_type')
 
@@ -1587,7 +1527,7 @@ class Calculation:
 
         self.__directionFrame = val
 
-    @SetterProperty
+    @parameter(only='AXIS')
     def direction_frame_axis(self, val):
         '''The vector's reference frame axis name.
 
@@ -1610,7 +1550,7 @@ class Calculation:
             If the value provided is invalid.
 
         '''
-        if 'direction_vector_type' not in self.params.keys():
+        if 'direction_vector_type' not in self.params:
             raise CalculationUndefinedAttr(
                 'direction_frame_axis', val, 'direction_vector_type')
 
@@ -1619,10 +1559,7 @@ class Calculation:
                 'direction_frame_axis', val, 'direction_vector_type',
                 self.params['direction_vector_type'], ['REFERENCE_FRAME_AXIS'])
 
-        if val in AXIS:
-            self.__directionFrameAxis = val
-        else:
-            raise CalculationInvalidAttr('direction_frame_axis', val, AXIS)
+        self.__directionFrameAxis = val
 
     def direction_vector(self, axis, val):
         '''Direction vector coordinate.
@@ -1643,7 +1580,7 @@ class Calculation:
             or ``VECTOR_IN_REFERENCE_FRAME``.
 
         '''
-        if 'direction_vector_type' not in self.params.keys():
+        if 'direction_vector_type' not in self.params:
             raise CalculationUndefinedAttr(
                 'direction_vector_' + axis, val, 'direction_vector_type')
 
@@ -1654,7 +1591,7 @@ class Calculation:
                 self.params['direction_vector_type'], choices)
         return val
 
-    @SetterProperty
+    @parameter
     def direction_vector_x(self, val):
         '''The X ray's direction vector coordinate.
 
@@ -1666,7 +1603,7 @@ class Calculation:
         '''
         self.__directionVectorX = self.direction_vector('x', val)
 
-    @SetterProperty
+    @parameter
     def direction_vector_y(self, val):
         '''The Y ray's direction vector coordinate.
 
@@ -1678,7 +1615,7 @@ class Calculation:
         '''
         self.__directionVectorY = self.direction_vector('y', val)
 
-    @SetterProperty
+    @parameter
     def direction_vector_z(self, val):
         '''The Z ray's direction vector coordinate.
 
@@ -1690,7 +1627,7 @@ class Calculation:
         '''
         self.__directionVectorZ = self.direction_vector('z', val)
 
-    @SetterProperty
+    @parameter
     def direction_vector_ra(self, val):
         '''The right-ascenssion ray's direction vector coordinate.
 
@@ -1702,7 +1639,7 @@ class Calculation:
         '''
         self.__directionVectorRA = self.direction_vector('ra', val)
 
-    @SetterProperty
+    @parameter
     def direction_vector_dec(self, val):
         '''The declination ray's direction vector coordinate.
 
@@ -1714,7 +1651,7 @@ class Calculation:
         '''
         self.__directionVectorDec = self.direction_vector('dec', val)
 
-    @SetterProperty
+    @parameter(only='TIME_UNITS')
     def output_duration_units(self, val):
         '''Output duration time units.
 
@@ -1737,13 +1674,9 @@ class Calculation:
             If the value provided is invalid.
 
         '''
-        if val in OUTPUT_DURATION_UNITS:
-            self.__outputDurationUnits = val
-        else:
-            raise CalculationInvalidAttr('output_duration_units', val,
-                                         OUTPUT_DURATION_UNITS)
+        self.__outputDurationUnits = val
 
-    @SetterProperty
+    @parameter
     def should_complement_window(self, val):
         '''Specifies whether to complement the intervals in the result window.
 
@@ -1766,7 +1699,7 @@ class Calculation:
         else:
             raise TypeError('Attribute should_complement_window should be a boolean.')
 
-    @SetterProperty
+    @parameter(only='INTERVAL_ADJUSTMENT')
     def interval_adjustment(self, val):
         '''Specifies whether to expand or contract the intervals in the result.
 
@@ -1788,13 +1721,9 @@ class Calculation:
             If the value provided is invalid.
 
         '''
-        if val in INTERVAL_ADJUSTMENT:
-            self.__intervalAdjustment = val
-        else:
-            raise CalculationInvalidAttr('interval_adjustment', val,
-                                         INTERVAL_ADJUSTMENT)
+        self.__intervalAdjustment = val
 
-    @SetterProperty
+    @parameter
     def interval_adjustment_amount(self, val):
         '''The amount by which to expand or contract each interval at the endpoints.
 
@@ -1804,10 +1733,19 @@ class Calculation:
         ----------
         interval_adjustment_amount: float
 
+        Raises
+        ------
+        CalculationUndefinedAttr:
+            If :py:attr:`interval_adjustment_units` is not supplied
+
         '''
         self.__intervalAdjustmentAmount = val
 
-    @SetterProperty
+        if 'interval_adjustment_units' not in self.params:
+            raise CalculationUndefinedAttr('interval_adjustment_amount', val,
+                                           'interval_adjustment_units')
+
+    @parameter(only='TIME_UNITS')
     def interval_adjustment_units(self, val):
         '''The unit of the interval adjustment amount.
 
@@ -1826,14 +1764,19 @@ class Calculation:
         CalculationInvalidAttr
             If the value provided is invalid.
 
-        '''
-        if val in INTERVAL_ADJUSTMENT_UNITS:
-            self.__intervalAdjustmentUnits = val
-        else:
-            raise CalculationInvalidAttr('interval_adjustment_units', val,
-                                         INTERVAL_ADJUSTMENT_UNITS)
+        Raises
+        ------
+        CalculationUndefinedAttr:
+            If :py:attr:`interval_adjustment_amount` is not supplied
 
-    @SetterProperty
+        '''
+        self.__intervalAdjustmentUnits = val
+
+        if 'interval_adjustment_amount' not in self.params:
+            raise CalculationUndefinedAttr('interval_adjustment_units', val,
+                                           'interval_adjustment_amount')
+
+    @parameter(only='INTERVAL_FILTERING')
     def interval_filtering(self, val):
         '''Specifies whether to omit interval smaller than a minimum threshold size.
 
@@ -1853,12 +1796,9 @@ class Calculation:
             If the value provided is invalid.
 
         '''
-        if val in INTERVAL_FILTERING:
-            self.__intervalFiltering = val
-        else:
-            raise CalculationInvalidAttr('interval_filtering', val, INTERVAL_FILTERING)
+        self.__intervalFiltering = val
 
-    @SetterProperty
+    @parameter
     def interval_filtering_threshold(self, val):
         '''Interval duration filtering threshold value.
 
@@ -1867,10 +1807,19 @@ class Calculation:
         interval_filtering_threshold: float
             Interval duration filtering threshold value.
 
+        Raises
+        ------
+        CalculationUndefinedAttr:
+            If :py:attr:`interval_filtering_threshold_units` is not supplied
+
         '''
         self.__intervalFilteringThreshold = val
 
-    @SetterProperty
+        if 'interval_filtering_threshold_units' not in self.params:
+            raise CalculationUndefinedAttr('interval_filtering_threshold', val,
+                                           'interval_filtering_threshold_units')
+
+    @parameter(only='TIME_UNITS')
     def interval_filtering_threshold_units(self, val):
         '''Units of the interval duration filtering threshold value.
 
@@ -1889,14 +1838,19 @@ class Calculation:
         CalculationInvalidAttr
             If the value provided is invalid.
 
-        '''
-        if val in INTERVAL_FILTERING_THRESHOLD_UNITS:
-            self.__intervalFilteringThresholdUnits = val
-        else:
-            raise CalculationInvalidAttr('interval_filtering_threshold_units', val,
-                                         INTERVAL_FILTERING_THRESHOLD_UNITS)
+        Raises
+        ------
+        CalculationUndefinedAttr:
+            If :py:attr:`interval_filtering_threshold` is not supplied
 
-    @SetterProperty
+        '''
+        self.__intervalFilteringThresholdUnits = val
+
+        if 'interval_filtering_threshold' not in self.params:
+            raise CalculationUndefinedAttr('interval_filtering_threshold_units', val,
+                                           'interval_filtering_threshold')
+
+    @parameter(only='COORDINATE_SYSTEM')
     def coordinate_system(self, val):
         '''The name of the coordinate system in which to evaluate the coordinate.
 
@@ -1922,12 +1876,9 @@ class Calculation:
             If the value provided is invalid.
 
         '''
-        if val in COORDINATE_SYSTEM:
-            self.gf_condition(coordinateSystem=val)
-        else:
-            raise CalculationInvalidAttr('coordinate_system', val, COORDINATE_SYSTEM)
+        self.gf_condition(coordinateSystem=val)
 
-    @SetterProperty
+    @parameter(only='COORDINATE')
     def coordinate(self, val):
         '''The name of the SPICE coordinate to search on.
 
@@ -1957,12 +1908,9 @@ class Calculation:
             If the value provided is invalid.
 
         '''
-        if val in COORDINATE:
-            self.gf_condition(coordinate=val)
-        else:
-            raise CalculationInvalidAttr('coordinate', val, COORDINATE)
+        self.gf_condition(coordinate=val)
 
-    @SetterProperty
+    @parameter(only='RELATIONAL_CONDITION')
     def relational_condition(self, val):
         '''The relationship for the geometry finder test.
 
@@ -1980,20 +1928,43 @@ class Calculation:
             - LOCMAX
             - LOCMIN
 
-
         Raises
         ------
         CalculationInvalidAttr
             If the value provided is invalid.
-
+        CalculationUndefinedAttr:
+            If the value is ``RANGE`, and :py:attr:`upper_limit` is not supplied.
+            If the value is ``ABSMIN`` or ``ABSMAX``, and :py:attr:`adjustment_value`
+            is not supplied.
+            If the value is ``=``,  ``<``, ``>`` or ``RANGE``, and
+            :py:attr:`reference_value` is not supplied.
         '''
-        if val in RELATIONAL_CONDITION:
-            self.gf_condition(relationalCondition=val)
-        else:
-            raise CalculationInvalidAttr('relational_condition', val,
-                                         RELATIONAL_CONDITION)
+        self.gf_condition(relationalCondition=val)
 
-    @SetterProperty
+        if val == 'RANGE' and 'upper_limit' not in self.params:
+            raise CalculationUndefinedAttr(
+                attr='relational_condition',
+                value=val,
+                missing='upper_limit'
+            )
+
+        if val in ('ABSMIN', 'ABSMAX') and \
+                'adjustment_value' not in self.params:
+            raise CalculationUndefinedAttr(
+                attr='relational_condition',
+                value=val,
+                missing='adjustment_value'
+            )
+
+        if val in ('=', '<', '>', 'RANGE') and \
+                'reference_value' not in self.params:
+            raise CalculationUndefinedAttr(
+                attr='relational_condition',
+                value=val,
+                missing='reference_value'
+            )
+
+    @parameter
     def reference_value(self, val):
         '''The value to compare against, or the lower value of a range.
 
@@ -2006,7 +1977,7 @@ class Calculation:
         '''
         self.gf_condition(referenceValue=val)
 
-    @SetterProperty
+    @parameter
     def upper_limit(self, val):
         '''The upper limit of a range. Only needed if relationalCondition is RANGE.
 
@@ -2017,7 +1988,7 @@ class Calculation:
         '''
         self.gf_condition(upperLimit=val)
 
-    @SetterProperty
+    @parameter
     def adjustment_value(self, val):
         '''The adjustment value to apply for ABSMIN and ABSMAX searches.
 
@@ -2035,8 +2006,33 @@ class Calculation:
 
         See the documentation for gfposc() for more details.
 
+        Raises
+        ------
+        CalculationUndefinedAttr:
+            If :py:attr:`calculation_type` is ``GF_COORDINATE_SEARCH``,
+            ``GF_SUB_POINT_SEARCH`` or ``GF_SURFACE_INTERCEPT_POINT_SEARCH``, and
+            :py:attr:`coordinate_system` or :py:attr:`coordinate` are not present.
         '''
         try:
             self.__condition.update(kwargs)
+
         except AttributeError:
+            # this set of checks is run only once.
+            if self.params['calculation_type'] in (
+                'GF_COORDINATE_SEARCH',
+                'GF_SUB_POINT_SEARCH',
+                'GF_SURFACE_INTERCEPT_POINT_SEARCH'
+            ):
+                if 'coordinate_system' not in self.params:
+                    raise CalculationUndefinedAttr(
+                        attr='calculation_type',
+                        value=self.params['calculation_type'],
+                        missing='coordinate_system'
+                    ) from None
+                if 'coordinate' not in self.params:
+                    raise CalculationUndefinedAttr(
+                        attr='calculation_type',
+                        value=self.params['calculation_type'],
+                        missing='coordinate'
+                    ) from None
             self.__condition = kwargs

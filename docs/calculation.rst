@@ -245,9 +245,12 @@ web portals.
    :widths: 33 33 33
    :header-rows: 1
 
-   * - python-webgeocalc API classes
-     - Webgeocalc API calculation types
-     - Webgeocalc GUI features
+   * - | python-webgeocalc
+       | API classes
+     - | Webgeocalc API
+       | calculation types
+     - | Webgeocalc GUI
+       | features
    * - :py:class:`StateVector`
      - ``STATE_VECTOR``
      - State Vector
@@ -778,19 +781,19 @@ Find time intervals when a coordinate of an observer-target position vector sati
         - :py:attr:`.observer`
         - :py:attr:`.target`
         - :py:attr:`.reference_frame`
-        - :py:attr:`coordinate_system`
-        - :py:attr:`coordinate`
-        - :py:attr:`relational_condition`
-        - :py:attr:`reference_value` only if :py:attr:`relationalCondition` is not ``ABSMAX``, ``ABSMIN``, ``LOCMAX``, or ``LOCMIN``
-        - :py:attr:`upper_limit` only if :py:attr:`relationalCondition` is ``RANGE``
-        - :py:attr:`adjustment_value` only if :py:attr:`relationalCondition` is ``ABSMAX`` or ``ABSMIN``
+        - :py:attr:`.coordinate_system`
+        - :py:attr:`.coordinate`
+        - :py:attr:`.relational_condition`
+        - :py:attr:`.reference_value` only if :py:attr:`.relational_condition` is not ``ABSMAX``, ``ABSMIN``, ``LOCMAX``, or ``LOCMIN``
+        - :py:attr:`.upper_limit` only if :py:attr:`.relational_condition` is ``RANGE``
+        - :py:attr:`.adjustment_value` only if :py:attr:`.relational_condition` is ``ABSMAX`` or ``ABSMIN``
 
     Default parameters:
         - :py:attr:`.time_system`: ``UTC``
         - :py:attr:`.time_format`: ``CALENDAR``
-        - :py:attr:`output_duration_units`: ``SECONDS``
-        - :py:attr:`shouldComplementWindow`: ``False``
-        - :py:attr:`intervalAdjustment`: ``NO_ADJUSTMENT``
-        - :py:attr:`intervalFiltering`: ``NO_FILTERING``
+        - :py:attr:`.output_duration_units`: ``SECONDS``
+        - :py:attr:`.should_complement_window`: ``False``
+        - :py:attr:`.interval_adjustment`: ``NO_ADJUSTMENT``
+        - :py:attr:`.interval_filtering`: ``NO_FILTERING``
 
 .. autoclass:: GFCoordinateSearch

@@ -149,6 +149,7 @@ disable=
     too-few-public-methods,
     attribute-defined-outside-init,
     redefined-outer-name,
+    disallowed-name,
     wrong-import-order # Handle by flake8
 
 # Enable the message, report, category or checker with the given id(s). You can

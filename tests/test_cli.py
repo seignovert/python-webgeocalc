@@ -162,7 +162,7 @@ def test_cli_state_vector_empty(capsys):
 
 def test_cli_angular_separation_wrong_attr(capsys):
     '''Test attribute in angular separation calculation parameter with the CLI.'''
-    argv = '--wrong 123'.split()
+    argv = '--kernels 1 --times 2012-10-19T08:24:00 --wrong 123'.split()
     cli_angular_separation(argv)
     captured = capsys.readouterr()
     assert captured.out == 'Attribute \'target_1\' required.\n'
