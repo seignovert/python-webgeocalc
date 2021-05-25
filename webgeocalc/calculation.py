@@ -10,7 +10,7 @@ from .errors import (CalculationAlreadySubmitted, CalculationConflictAttr,
                      CalculationNotCompleted, CalculationRequiredAttr,
                      CalculationTimeOut, CalculationUndefinedAttr)
 from .types import KernelSetDetails
-from .vars import set_param, VALID_PARAMETERS
+from .vars import VALID_PARAMETERS, set_param
 
 
 APIs = {
