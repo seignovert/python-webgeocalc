@@ -1,16 +1,17 @@
-# -*- coding: utf-8 -*-
-'''WebGeoCalc columns and results types.'''
+"""WebGeoCalc columns and results types."""
 
 from .errors import ResultAttributeError, ResultTypeError
 
+
 def get_type(classname):
-    '''Get type based on classname.'''
-    if classname not in TYPES.keys():
+    """Get type based on classname."""
+    if classname not in TYPES:
         raise ResultTypeError(classname)
     return TYPES[classname]
 
+
 class ColumnResult:
-    '''Column result generic object.'''
+    """Column result generic object."""
 
     def __init__(self, json):
         self._json = json
@@ -27,19 +28,20 @@ class ColumnResult:
         return self._json[attr]
 
     def keys(self):
-        '''JSON keys.'''
+        """JSON keys."""
         return self._json.keys()
 
     def values(self):
-        '''JSON values.'''
+        """JSON values."""
         return self._json.values()
 
     def items(self):
-        '''JSON items.'''
+        """JSON items."""
         return self._json.items()
 
+
 class ResultType(ColumnResult):
-    '''Result Type object for item generic interface.'''
+    """Result Type object for item generic interface."""
 
     def __int__(self):
         return int(self.id)
@@ -48,13 +50,14 @@ class ResultType(ColumnResult):
         return f"<{self.__class__.__name__}> {str(self)} (id: {int(self)})"
 
     def __contains__(self, item):
-        '''Check if items is equal to int or str.'''
+        """Check if items is equal to int or str."""
         if isinstance(item, int):
             return item == int(self)
         return item.lower() in str(self).lower()
 
+
 class KernelSetDetails(ResultType):
-    '''Kernel set details.'''
+    """Kernel set details."""
 
     def __int__(self):
         return int(self.kernelSetId)
@@ -62,14 +65,17 @@ class KernelSetDetails(ResultType):
     def __str__(self):
         return self.caption
 
+
 class BodyData(ResultType):
-    '''Body data.'''
+    """Body data."""
+
 
 class FrameData(ResultType):
-    '''Frame data.'''
+    """Frame data."""
+
 
 class InstrumentData(ResultType):
-    '''Instrument data.'''
+    """Instrument data."""
 
 
 TYPES = globals()

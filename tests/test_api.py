@@ -1,9 +1,8 @@
-# -*- coding: utf-8 -*-
-'''Test WGC API base urls.'''
+"""Test WGC API base urls."""
 
 import os
 
-import pytest
+from pytest import fixture, raises
 
 from requests import HTTPError
 
@@ -13,9 +12,9 @@ from webgeocalc.errors import (APIError, APIResponseError, KernelSetNotFound,
 from webgeocalc.vars import ESA_URL, JPL_URL
 
 
-@pytest.fixture
+@fixture
 def solar_system_kernel_set():
-    '''Solar kernels API output.'''
+    """Solar kernels API output."""
     return {
         'caption': 'Solar System Kernels',
         'sclkId': '0',
@@ -25,9 +24,10 @@ def solar_system_kernel_set():
         'missionId': 'gen',
     }
 
-@pytest.fixture
+
+@fixture
 def cassini_kernel_set():
-    '''Cassini kernel API output.'''
+    """Cassini kernel API output."""
     return {
         'caption': 'Cassini Huygens',
         'sclkId': '-82',
@@ -36,17 +36,19 @@ def cassini_kernel_set():
         'missionId': 'cassini',
     }
 
-@pytest.fixture
+
+@fixture
 def cassini_body():
-    '''Cassini body API output.'''
+    """Cassini body API output."""
     return {
         'id': -82,
         'name': 'CASSINI',
     }
 
-@pytest.fixture
+
+@fixture
 def cassini_frame():
-    '''Cassini frame API output.'''
+    """Cassini frame API output."""
     return {
         'id': -82905,
         'name': 'CASSINI_KSO',
@@ -54,17 +56,19 @@ def cassini_frame():
         'frameClass': 5,
     }
 
-@pytest.fixture
+
+@fixture
 def cassini_instrument():
-    '''CIRS instrument API output.'''
+    """CIRS instrument API output."""
     return {
         'id': -82898,
         'name': 'CASSINI_CIRS_RAD',
     }
 
-@pytest.fixture
+
+@fixture
 def api_queued():
-    '''Queued API response.'''
+    """Queued API response."""
     return {
         "status": "OK",
         "message": "The request was successful.",
@@ -75,9 +79,10 @@ def api_queued():
         }
     }
 
-@pytest.fixture
+
+@fixture
 def api_error():
-    '''Error API response.'''
+    """Error API response."""
     return {
         "status": "ERROR",
         "message": "The request has failed.",
@@ -88,24 +93,26 @@ def api_error():
         }
     }
 
-@pytest.fixture
+
+@fixture
 def api_empty_data_response():
-    '''Empty data API response.'''
+    """Empty data API response."""
     return {
         "status": "OK",
         "message": "The operation was successful.",
         "calculationId": "0788aba2-d4e5-4028-9ef1-4867ad5385e0",
     }
 
+
 def test_api_url():
-    '''Test default API url.'''
+    """Test default API url."""
     assert str(API) == API.url
     assert str(JPL_API) == JPL_URL
     assert str(ESA_API) == ESA_URL
 
 
 def test_api_env_url(monkeypatch):
-    '''Test default API url from environment variable `WGC_URL`.'''
+    """Test default API url from environment variable `WGC_URL`."""
     monkeypatch.setenv('WGC_URL', 'https://wgc.obspm.fr/webgeocalc/api')
 
     assert 'WGC_URL' in os.environ
@@ -124,7 +131,7 @@ def test_api_env_url(monkeypatch):
 
 
 def test_api_metadata():
-    '''Test API metadata.'''
+    """Test API metadata."""
     assert API['title'] == 'WebGeocalc by NAIF'
     assert API['description'] == \
         'WGC2 -- a WebGeocalc Server with enabled API at NAIF, JPL'
@@ -134,20 +141,21 @@ def test_api_metadata():
     assert API['version'] == '2.2.5'
     assert API['build_id'] == '5089 N66 01-FEB-2021'
 
-    with pytest.raises(KeyError):
+    with raises(KeyError):
         _ = API['foo']
 
 
 def test_response_err():
-    '''Test GET and POST on invalid URLs.'''
-    with pytest.raises(HTTPError):
+    """Test GET and POST on invalid URLs."""
+    with raises(HTTPError):
         API.get('/foo')  # 404 error
 
-    with pytest.raises(HTTPError):
+    with raises(HTTPError):
         API.post('/', payload={})  # 404 error
 
+
 def test_kernel_sets(solar_system_kernel_set):
-    '''Test GET kernel sets from API.'''
+    """Test GET kernel sets from API."""
     kernel_set = API.kernel_sets()[0]
 
     assert int(kernel_set) == int(solar_system_kernel_set['kernelSetId'])
@@ -163,38 +171,44 @@ def test_kernel_sets(solar_system_kernel_set):
         assert key in solar_system_kernel_set.keys()
         assert value in solar_system_kernel_set.values()
 
-    with pytest.raises(ResultAttributeError):
+    with raises(ResultAttributeError):
         _ = kernel_set.wrong_attr
 
+
 def test_kernel_set_by_id():
-    '''Test kernel set id.'''
+    """Test kernel set id."""
     assert int(API.kernel_set(1)) == 1
 
+
 def test_kernel_set_by_full_name():
-    '''Test kernel set name.'''
+    """Test kernel set name."""
     assert str(API.kernel_set('Solar System Kernels')) == 'Solar System Kernels'
 
+
 def test_kernel_set_by_name_not_case_sensitive():
-    '''Test case sensitivity of kernel set search.'''
+    """Test case sensitivity of kernel set search."""
     assert str(API.kernel_set('solar system kernels')) == 'Solar System Kernels'
 
+
 def test_kernel_set_by_name_partial():
-    '''Test partial kernel set search.'''
+    """Test partial kernel set search."""
     assert str(API.kernel_set('Solar')) == 'Solar System Kernels'
 
+
 def test_kernel_set_too_many_found():
-    '''Test error if too many kernel sets are found.'''
-    with pytest.raises(TooManyKernelSets):
+    """Test error if too many kernel sets are found."""
+    with raises(TooManyKernelSets):
         assert str(API.kernel_set('Cassini'))
 
+
 def test_kernel_set_not_found():
-    '''Test error if kernel set not found.'''
-    with pytest.raises(KernelSetNotFound):
+    """Test error if kernel set not found."""
+    with raises(KernelSetNotFound):
         assert str(API.kernel_set('Missing kernel'))
 
 
 def test_kernel_set_id_for_str(cassini_kernel_set):
-    '''Test kernel set search for id and error cases.'''
+    """Test kernel set search for id and error cases."""
     kernel_set_id = int(cassini_kernel_set['kernelSetId'])
     kernel_set_caption = cassini_kernel_set['caption']
 
@@ -203,19 +217,21 @@ def test_kernel_set_id_for_str(cassini_kernel_set):
     kernel_set = API.kernel_set(kernel_set_caption)
     assert API.kernel_set_id(kernel_set) == kernel_set_id
 
-    with pytest.raises(TypeError):
+    with raises(TypeError):
         API.kernel_set_id(1.23)
 
+
 def test_bodies(cassini_kernel_set, cassini_body):
-    '''Test GET bodies from API.'''
+    """Test GET bodies from API."""
     kernel_set_id = int(cassini_kernel_set['kernelSetId'])
     body = API.bodies(kernel_set_id)[0]
 
     assert int(body) == cassini_body['id']
     assert str(body) == cassini_body['name']
 
+
 def test_frames(cassini_kernel_set, cassini_frame):
-    '''Test GET frames from API.'''
+    """Test GET frames from API."""
     kernel_set_id = int(cassini_kernel_set['kernelSetId'])
     frame = API.frames(kernel_set_id)[58]
 
@@ -225,8 +241,9 @@ def test_frames(cassini_kernel_set, cassini_frame):
     for value in frame.values():
         assert value in cassini_frame.values()
 
+
 def test_instruments(cassini_kernel_set, cassini_instrument):
-    '''Test GET instruments from API.'''
+    """Test GET instruments from API."""
     kernel_set_id = int(cassini_kernel_set['kernelSetId'])
     instrument = API.instruments(kernel_set_id)[0]
 
@@ -235,16 +252,18 @@ def test_instruments(cassini_kernel_set, cassini_instrument):
 
 
 def test_api_read_queued(api_queued):
-    '''Test queued position output from API.'''
+    """Test queued position output from API."""
     _, phase = API.read(api_queued)
     assert phase == 'QUEUED | POSITION: 6'
 
+
 def test_api_read_error(api_error):
-    '''Test error output from API.'''
-    with pytest.raises(APIError):
+    """Test error output from API."""
+    with raises(APIError):
         API.read(api_error)
 
+
 def test_api_read_invalid(api_empty_data_response):
-    '''Test error if response no valid data.'''
-    with pytest.raises(APIResponseError):
+    """Test error if response no valid data."""
+    with raises(APIResponseError):
         API.read(api_empty_data_response)

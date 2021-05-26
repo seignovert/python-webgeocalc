@@ -1,5 +1,4 @@
-# -*- coding: utf-8 -*-
-'''Test WGC command line inputs.'''
+"""Test WGC command line inputs."""
 
 from webgeocalc.cli import (_params, cli_angular_separation, cli_angular_size,
                             cli_bodies, cli_frame_transformation, cli_frames,
@@ -11,7 +10,7 @@ from webgeocalc.cli import (_params, cli_angular_separation, cli_angular_size,
 
 
 def test_cli_kernel_sets(capsys):
-    '''Test GET kernels with CLI.'''
+    """Test GET kernels with CLI."""
     argv = ''.split()
     cli_kernel_sets(argv)
     captured = capsys.readouterr()
@@ -35,8 +34,9 @@ def test_cli_kernel_sets(capsys):
     assert ' - OPS  --     Rosetta               -- Operational: (id: 6)' in captured.out
     assert '' in captured.out
 
+
 def test_cli_bodies(capsys):
-    '''Test GET bodies with CLI.'''
+    """Test GET bodies with CLI."""
     argv = ''.split()
     cli_bodies(argv)
     captured = capsys.readouterr()
@@ -60,7 +60,7 @@ def test_cli_bodies(capsys):
 
 
 def test_cli_frames(capsys):
-    '''Test GET frames with CLI.'''
+    """Test GET frames with CLI."""
     argv = ''.split()
     cli_frames(argv)
     captured = capsys.readouterr()
@@ -84,8 +84,9 @@ def test_cli_frames(capsys):
     assert '- 67P/C-G_CK: (id: -1000012000)' in captured.out
     assert ' - J2000: (id: 1)' not in captured.out
 
+
 def test_cli_instruments(capsys):
-    '''Test GET instruments with CLI.'''
+    """Test GET instruments with CLI."""
     argv = ''.split()
     cli_instruments(argv)
     captured = capsys.readouterr()
@@ -110,8 +111,9 @@ def test_cli_instruments(capsys):
     assert ' - ROS_NAVCAM-B: (id: -226180)' in captured.out
     assert ' - ROS_CONSERT: (id: -226160)' not in captured.out
 
+
 def test_cli_input_parameters():
-    '''Test CLI input parameters parsing.'''
+    """Test CLI input parameters parsing."""
     def parse(x):
         return _params(x.split())
 
@@ -153,22 +155,25 @@ def test_cli_input_parameters():
 
     assert parse("--times '2012-10-19T08:24:00'") == {'times': '2012-10-19T08:24:00'}
 
+
 def test_cli_state_vector_empty(capsys):
-    '''Test empty state vector calculation parameter with the CLI.'''
+    """Test empty state vector calculation parameter with the CLI."""
     argv = ''.split()
     cli_state_vector(argv)
     captured = capsys.readouterr()
     assert 'usage:' in captured.out
 
+
 def test_cli_angular_separation_wrong_attr(capsys):
-    '''Test attribute in angular separation calculation parameter with the CLI.'''
+    """Test attribute in angular separation calculation parameter with the CLI."""
     argv = '--kernels 1 --times 2012-10-19T08:24:00 --wrong 123'.split()
     cli_angular_separation(argv)
     captured = capsys.readouterr()
     assert captured.out == 'Attribute \'target_1\' required.\n'
 
+
 def test_cli_angular_size_run(capsys):
-    '''Test run angular size calculation parameter with the CLI.'''
+    """Test run angular size calculation parameter with the CLI."""
     argv = ('--payload '
             '--kernels 5 '
             '--times 2012-10-19T08:24:00 '
@@ -188,8 +193,9 @@ def test_cli_angular_size_run(capsys):
     assert 'Results:\nDATE:\n> 2012-10-19 08:24:00.000000 UTC' in captured.out
     assert 'ANGULAR_SIZE:\n> 0.03037939' in captured.out
 
+
 def test_cli_frame_transformation_dry_run(capsys):
-    '''Test dry-run frame transform calculation parameter with the CLI.'''
+    """Test dry-run frame transform calculation parameter with the CLI."""
     argv = ('--dry-run '
             '--kernels 5 '
             '--times 2012-10-19T08:24:00.000 '
@@ -205,8 +211,9 @@ def test_cli_frame_transformation_dry_run(capsys):
     assert 'API status:\n[Calculation submit] Status:' not in captured.out
     assert 'Results:' not in captured.out
 
+
 def test_cli_illumination_angles_dry_run(capsys):
-    '''Test dry-run illumination angles calculation parameter with the CLI.'''
+    """Test dry-run illumination angles calculation parameter with the CLI."""
     argv = ('--dry-run '
             '--kernels 5 '
             '--times 2012-10-19T08:24:00.000 '
@@ -222,8 +229,9 @@ def test_cli_illumination_angles_dry_run(capsys):
     assert 'Payload:' in captured.out
     assert "calculationType: ILLUMINATION_ANGLES," in captured.out
 
+
 def test_cli_subsolar_point_dry_run(capsys):
-    '''Test dry-run sub-solar point calculation parameter with the CLI.'''
+    """Test dry-run sub-solar point calculation parameter with the CLI."""
     argv = ('--dry-run '
             '--kernels 5 '
             '--times 2012-10-19T08:24:00.000 '
@@ -237,8 +245,9 @@ def test_cli_subsolar_point_dry_run(capsys):
     assert 'Payload:' in captured.out
     assert "calculationType: SUB_SOLAR_POINT," in captured.out
 
+
 def test_cli_subobserver_point_dry_run(capsys):
-    '''Test dry-run sub-observer point calculation parameter with the CLI.'''
+    """Test dry-run sub-observer point calculation parameter with the CLI."""
     argv = ('--dry-run '
             '--kernels 5 '
             '--times 2012-10-19T08:24:00.000 '
@@ -252,8 +261,9 @@ def test_cli_subobserver_point_dry_run(capsys):
     assert 'Payload:' in captured.out
     assert "calculationType: SUB_OBSERVER_POINT," in captured.out
 
+
 def test_cli_surface_intercept_point_dry_run(capsys):
-    '''Test dry-run surface intercept point calculation parameter with the CLI.'''
+    """Test dry-run surface intercept point calculation parameter with the CLI."""
     argv = ('--dry-run '
             '--kernels 5 '
             '--times 2012-10-19T08:24:00.000 '
@@ -270,8 +280,9 @@ def test_cli_surface_intercept_point_dry_run(capsys):
     assert 'Payload:' in captured.out
     assert "calculationType: SURFACE_INTERCEPT_POINT," in captured.out
 
+
 def test_cli_osculating_elements_dry_run(capsys):
-    '''Test dry-run osculating elements calculation parameter with the CLI.'''
+    """Test dry-run osculating elements calculation parameter with the CLI."""
     argv = ('--dry-run '
             '--kernels 1 5 '
             '--times 2012-10-19T08:24:00.000 '
@@ -283,8 +294,9 @@ def test_cli_osculating_elements_dry_run(capsys):
     assert 'Payload:' in captured.out
     assert "calculationType: OSCULATING_ELEMENTS," in captured.out
 
+
 def test_cli_time_conversion_dry_run(capsys):
-    '''Test dry-run time conversion calculation parameter with the CLI.'''
+    """Test dry-run time conversion calculation parameter with the CLI."""
     argv = ('--dry-run '
             '--kernels 5 '
             '--times 1/1729329441.04 '
@@ -298,8 +310,9 @@ def test_cli_time_conversion_dry_run(capsys):
     assert 'Payload:' in captured.out
     assert "calculationType: TIME_CONVERSION," in captured.out
 
+
 def test_cli_gf_coordinate_search_dry_run(capsys):
-    '''Test dry-run geometry finder coordinate search parameter with the CLI.'''
+    """Test dry-run geometry finder coordinate search parameter with the CLI."""
     argv = ('--dry-run '
             '--kernels 5 '
             '--intervals 2012-10-19T07:00:00 2012-10-19T09:00:00 '
@@ -353,8 +366,9 @@ def test_cli_gf_coordinate_search_dry_run(capsys):
             "'referenceValue': 0.25"
             "}") in captured.out
 
+
 def test_cli_state_vector_esa(capsys):
-    '''Test dry-run state vector calculation on ESA API with the CLI.'''
+    """Test dry-run state vector calculation on ESA API with the CLI."""
     argv = [
         '--dry-run',
         '--api', 'ESA',

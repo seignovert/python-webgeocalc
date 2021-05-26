@@ -1,49 +1,55 @@
-# -*- coding: utf-8 -*-
-'''Test WGC state vector calculation.'''
+"""Test WGC state vector calculation."""
 
-import pytest
+from pytest import fixture
 
 from webgeocalc import StateVector
 
 
-@pytest.fixture
+@fixture
 def kernels():
-    '''Cassini kernel set.'''
+    """Cassini kernel set."""
     return 5
 
-@pytest.fixture
+
+@fixture
 def target():
-    '''Input target.'''
+    """Input target."""
     return 'CASSINI'
 
-@pytest.fixture
+
+@fixture
 def observer():
-    '''Input observer.'''
+    """Input observer."""
     return 'SATURN'
 
-@pytest.fixture
+
+@fixture
 def frame():
-    '''Input frame.'''
+    """Input frame."""
     return 'IAU_SATURN'
 
-@pytest.fixture
+
+@fixture
 def time():
-    '''Input time.'''
+    """Input time."""
     return '2012-10-19T08:24:00.000'
 
-@pytest.fixture
+
+@fixture
 def corr():
-    '''Input aberration correction.'''
+    """Input aberration correction."""
     return 'NONE'
 
-@pytest.fixture
+
+@fixture
 def state():
-    '''Input state.'''
+    """Input state."""
     return 'PLANETOGRAPHIC'
 
-@pytest.fixture
+
+@fixture
 def params(kernels, target, observer, frame, time, corr, state):
-    '''Input parameters from WGC API example.'''
+    """Input parameters from WGC API example."""
     return {
         'kernels': kernels,
         'target': target,
@@ -54,9 +60,10 @@ def params(kernels, target, observer, frame, time, corr, state):
         'state_representation': state,
     }
 
-@pytest.fixture
+
+@fixture
 def payload(kernels, target, observer, frame, time, corr, state):
-    '''Payload from WGC API example.'''
+    """Payload from WGC API example."""
     return {
         "kernels": [
             {
@@ -77,6 +84,7 @@ def payload(kernels, target, observer, frame, time, corr, state):
         "stateRepresentation": state
     }
 
+
 def test_state_vector_payload(params, payload):
-    '''Test state vector payload.'''
+    """Test state vector payload."""
     assert StateVector(**params).payload == payload

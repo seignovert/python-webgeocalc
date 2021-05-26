@@ -1,87 +1,100 @@
-# -*- coding: utf-8 -*-
-'''Test WGC (geometry finder) coordinate search calculation.'''
+"""Test WGC (geometry finder) coordinate search calculation."""
 
-import pytest
+from pytest import fixture, raises
 
 from webgeocalc import GFCoordinateSearch
 from webgeocalc.errors import CalculationInvalidAttr, CalculationUndefinedAttr
 
 
-@pytest.fixture
+@fixture
 def kernels():
-    '''Generic kernel set.'''
+    """Generic kernel set."""
     return 5
 
-@pytest.fixture
+
+@fixture
 def intervals():
-    '''Input time interval.'''
+    """Input time interval."""
     return ['2012-10-19T07:00:00', '2012-10-19T09:00:00']
 
-@pytest.fixture
+
+@fixture
 def reference_frame():
-    '''Input reference frame.'''
+    """Input reference frame."""
     return 'CASSINI_ISS_NAC'
 
-@pytest.fixture
+
+@fixture
 def observer():
-    '''Input observer.'''
+    """Input observer."""
     return 'CASSINI'
 
-@pytest.fixture
+
+@fixture
 def target():
-    '''Input observer.'''
+    """Input observer."""
     return 'ENCELADUS'
 
-@pytest.fixture
+
+@fixture
 def time_step():
-    '''Input time step.'''
+    """Input time step."""
     return 1
 
-@pytest.fixture
+
+@fixture
 def time_step_units():
-    '''Input time step units.'''
+    """Input time step units."""
     return 'MINUTES'
 
-@pytest.fixture
+
+@fixture
 def corr():
-    '''Input aberration correction.'''
+    """Input aberration correction."""
     return 'NONE'
 
-@pytest.fixture
+
+@fixture
 def coordinate_system():
-    '''Input coordinate system search condition.'''
+    """Input coordinate system search condition."""
     return "SPHERICAL"
 
-@pytest.fixture
+
+@fixture
 def coordinate():
-    '''Input coordinate search condition.'''
+    """Input coordinate search condition."""
     return "COLATITUDE"
 
-@pytest.fixture
+
+@fixture
 def relational_condition():
-    '''Input relational condition search condition.'''
+    """Input relational condition search condition."""
     return "<"
 
-@pytest.fixture
+
+@fixture
 def reference_value():
-    '''Input reference value search condition.'''
+    """Input reference value search condition."""
     return 0.25
 
-@pytest.fixture
+
+@fixture
 def upper_limit():
-    '''Input upper limit search condition.'''
+    """Input upper limit search condition."""
     return 0.3
 
-@pytest.fixture
+
+@fixture
 def adjustment_value():
-    '''Input adjustment value search condition.'''
+    """Input adjustment value search condition."""
     return 0.1
 
-@pytest.fixture
+
+@fixture
 def params_1(kernels, intervals, target, reference_frame, observer, time_step,
              time_step_units, corr, coordinate_system, coordinate, relational_condition,
              reference_value, upper_limit, adjustment_value):
-    '''Input parameters from WGC API example 1.'''
+    """Input parameters from WGC API example 1."""
     return {
         "kernels": kernels,
         "intervals": intervals,
@@ -99,11 +112,12 @@ def params_1(kernels, intervals, target, reference_frame, observer, time_step,
         'adjustment_value': adjustment_value,
     }
 
-@pytest.fixture
+
+@fixture
 def payload_1(kernels, intervals, target, reference_frame, observer, time_step,
               time_step_units, corr, coordinate_system, coordinate,
               relational_condition, reference_value, upper_limit, adjustment_value):
-    '''Payload from WGC API example 1.'''
+    """Payload from WGC API example 1."""
     return {
         "kernels": [{
             "type": "KERNEL_SET",
@@ -136,11 +150,12 @@ def payload_1(kernels, intervals, target, reference_frame, observer, time_step,
         "shouldComplementWindow": False,
     }
 
-@pytest.fixture
+
+@fixture
 def params_2(kernels, intervals, target, reference_frame, observer, time_step,
              time_step_units, corr, coordinate_system, coordinate,
              relational_condition, reference_value, upper_limit, adjustment_value):
-    '''Input parameters from WGC API example 1.'''
+    """Input parameters from WGC API example 1."""
     return {
         "kernels": kernels,
         "intervals": intervals,
@@ -161,11 +176,12 @@ def params_2(kernels, intervals, target, reference_frame, observer, time_step,
         "interval_adjustment_units": "MINUTES",
     }
 
-@pytest.fixture
+
+@fixture
 def payload_2(kernels, intervals, target, reference_frame, observer, time_step,
               time_step_units, corr, coordinate_system, coordinate,
               relational_condition, reference_value, upper_limit, adjustment_value):
-    '''Payload from WGC API example 1.'''
+    """Payload from WGC API example 1."""
     return {
         "kernels": [{
             "type": "KERNEL_SET",
@@ -200,11 +216,12 @@ def payload_2(kernels, intervals, target, reference_frame, observer, time_step,
         'timeFormat': 'CALENDAR'
     }
 
-@pytest.fixture
+
+@fixture
 def params_3(kernels, intervals, target, reference_frame, observer, time_step,
              time_step_units, corr, coordinate_system, coordinate,
              relational_condition, reference_value, upper_limit, adjustment_value):
-    '''Input parameters from WGC API example 1.'''
+    """Input parameters from WGC API example 1."""
     return {
         "kernels": kernels,
         "intervals": intervals,
@@ -225,11 +242,12 @@ def params_3(kernels, intervals, target, reference_frame, observer, time_step,
         "interval_filtering_threshold_units": "MINUTES",
     }
 
-@pytest.fixture
+
+@fixture
 def payload_3(kernels, intervals, target, reference_frame, observer, time_step,
               time_step_units, corr, coordinate_system, coordinate,
               relational_condition, reference_value, upper_limit, adjustment_value):
-    '''Payload from WGC API example 1.'''
+    """Payload from WGC API example 1."""
     return {
         "kernels": [{
             "type": "KERNEL_SET",
@@ -264,136 +282,144 @@ def payload_3(kernels, intervals, target, reference_frame, observer, time_step,
         'timeFormat': 'CALENDAR'
     }
 
+
 def test_coordinate_search_default(params_1, payload_1):
-    '''Test Coordinate Search with single interval and default parameters.'''
+    """Test Coordinate Search with single interval and default parameters."""
     assert GFCoordinateSearch(**params_1).payload == payload_1
 
+
 def test_coordinate_search_adjust_interval(params_2, payload_2):
-    '''Test Coordinate Search with single interval with adjusted interval option.'''
+    """Test Coordinate Search with single interval with adjusted interval option."""
     assert GFCoordinateSearch(**params_2).payload == payload_2
 
+
 def test_coordinate_search_filter_interval(params_3, payload_3):
-    '''Test Coordinate Search with single interval with filtered interval option.'''
+    """Test Coordinate Search with single interval with filtered interval option."""
     assert GFCoordinateSearch(**params_3).payload == payload_3
 
+
 def test_coordinate_search_attr_type_err(params_1):
-    '''Test type errors in Coordinate Search.'''
-    with pytest.raises(TypeError):
+    """Test type errors in Coordinate Search."""
+    with raises(TypeError):
         GFCoordinateSearch(should_complement_window='WRONG', **params_1)
 
+
 def test_coordinate_search_invalid_attr_err(params_1, params_2, params_3):
-    '''Test Invalid attribute errors in Coordinate Search.'''
-    with pytest.raises(CalculationInvalidAttr):
+    """Test Invalid attribute errors in Coordinate Search."""
+    with raises(CalculationInvalidAttr):
         GFCoordinateSearch(interval_adjustment='WRONG', **params_1)
 
-    with pytest.raises(CalculationInvalidAttr):
+    with raises(CalculationInvalidAttr):
         GFCoordinateSearch(interval_filtering='WRONG', **params_1)
 
-    with pytest.raises(CalculationInvalidAttr):
+    with raises(CalculationInvalidAttr):
         GFCoordinateSearch(output_duration_units='WRONG', **params_1)
 
-    with pytest.raises(CalculationInvalidAttr):
+    with raises(CalculationInvalidAttr):
         p = params_1.copy()
         del p['coordinate_system']
         GFCoordinateSearch(coordinate_system='WRONG', **p)
 
-    with pytest.raises(CalculationInvalidAttr):
+    with raises(CalculationInvalidAttr):
         p = params_1.copy()
         del p['coordinate']
         GFCoordinateSearch(coordinate='WRONG', **p)
 
-    with pytest.raises(CalculationInvalidAttr):
+    with raises(CalculationInvalidAttr):
         p = params_1.copy()
         del p['relational_condition']
         GFCoordinateSearch(relational_condition='WRONG', **p)
 
-    with pytest.raises(CalculationInvalidAttr):
+    with raises(CalculationInvalidAttr):
         p = params_2.copy()
         del p['interval_adjustment_units']
         GFCoordinateSearch(interval_adjustment_units='WRONG', **p)
 
-    with pytest.raises(CalculationInvalidAttr):
+    with raises(CalculationInvalidAttr):
         p = params_3.copy()
         del p['interval_filtering_threshold_units']
         GFCoordinateSearch(interval_filtering_threshold_units='WRONG', **p)
 
+
 def test_coordinate_search_undefined_attr_err_relational_condition(params_1):
-    '''Test Undefined attribute errors in Coordinate Search.'''
-    with pytest.raises(CalculationUndefinedAttr):
+    """Test Undefined attribute errors in Coordinate Search."""
+    with raises(CalculationUndefinedAttr):
         p = params_1.copy()
         p['relational_condition'] = 'RANGE'
         del p['upper_limit']
         GFCoordinateSearch(**p)
 
-    with pytest.raises(CalculationUndefinedAttr):
+    with raises(CalculationUndefinedAttr):
         p = params_1.copy()
         p['relational_condition'] = 'RANGE'
         del p['reference_value']
         GFCoordinateSearch(**p)
 
-    with pytest.raises(CalculationUndefinedAttr):
+    with raises(CalculationUndefinedAttr):
         p = params_1.copy()
         p['relational_condition'] = '='
         del p['reference_value']
         GFCoordinateSearch(**p)
 
-    with pytest.raises(CalculationUndefinedAttr):
+    with raises(CalculationUndefinedAttr):
         p = params_1.copy()
         p['relational_condition'] = '>'
         del p['reference_value']
         GFCoordinateSearch(**p)
 
-    with pytest.raises(CalculationUndefinedAttr):
+    with raises(CalculationUndefinedAttr):
         p = params_1.copy()
         p['relational_condition'] = '<'
         del p['reference_value']
         GFCoordinateSearch(**p)
 
-    with pytest.raises(CalculationUndefinedAttr):
+    with raises(CalculationUndefinedAttr):
         p = params_1.copy()
         p['relational_condition'] = 'ABSMIN'
         del p['adjustment_value']
         GFCoordinateSearch(**p)
 
-    with pytest.raises(CalculationUndefinedAttr):
+    with raises(CalculationUndefinedAttr):
         p = params_1.copy()
         p['relational_condition'] = 'ABSMAX'
         del p['adjustment_value']
         GFCoordinateSearch(**p)
 
+
 def test_coordinate_search_undefined_attr_err_calculation_type(params_1):
-    '''Test Undefined attribute errors in Coordinate Search.'''
-    with pytest.raises(CalculationUndefinedAttr):
+    """Test Undefined attribute errors in Coordinate Search."""
+    with raises(CalculationUndefinedAttr):
         p = params_1.copy()
         del p['coordinate_system']
         GFCoordinateSearch(**p)
 
-    with pytest.raises(CalculationUndefinedAttr):
+    with raises(CalculationUndefinedAttr):
         p = params_1.copy()
         del p['coordinate']
         GFCoordinateSearch(**p)
 
 
 def test_coordinate_search_undefined_attr_err_interval_adjustment(params_2):
-    '''Test Undefined attribute errors in Coordinate Search.'''
-    with pytest.raises(CalculationUndefinedAttr):
+    """Test Undefined attribute errors in Coordinate Search."""
+    with raises(CalculationUndefinedAttr):
         p = params_2.copy()
         del p['interval_adjustment_amount']
         GFCoordinateSearch(**p)
 
-    with pytest.raises(CalculationUndefinedAttr):
+    with raises(CalculationUndefinedAttr):
         p = params_2.copy()
         del p['interval_adjustment_units']
         GFCoordinateSearch(**p)
 
+
 def test_coordinate_search_undefined_attr_err_interval_filtering(params_3):
-    '''Test Undefined attribute errors in Coordinate Search.'''
-    with pytest.raises(CalculationUndefinedAttr):
+    """Test Undefined attribute errors in Coordinate Search."""
+    with raises(CalculationUndefinedAttr):
         p = params_3.copy()
         del p['interval_filtering_threshold']
         GFCoordinateSearch(**p)
 
-    with pytest.raises(CalculationUndefinedAttr):
+    with raises(CalculationUndefinedAttr):
         p = params_3.copy()
         del p['interval_filtering_threshold_units']
         GFCoordinateSearch(**p)

@@ -1,35 +1,37 @@
-# -*- coding: utf-8 -*-
-'''Test WGC angular size calculation.'''
+"""Test WGC angular size calculation."""
 
-import pytest
+from pytest import fixture
 
 from webgeocalc import OsculatingElements
 
 
-@pytest.fixture
+@fixture
 def kernels():
-    '''Kernels sets Solar and Cassini.'''
+    """Kernels sets Solar and Cassini."""
     return [1, 5]
 
-@pytest.fixture
+
+@fixture
 def time():
-    '''Input time.'''
+    """Input time."""
     return '2012-10-19T08:24:00.000'
 
-@pytest.fixture
+
+@fixture
 def orbiting():
-    '''Orbiting body.'''
+    """Orbiting body."""
     return 'CASSINI'
 
-@pytest.fixture
+
+@fixture
 def center():
-    '''Center body.'''
+    """Center body."""
     return 'SATURN'
 
 
-@pytest.fixture
+@fixture
 def params(kernels, time, orbiting, center):
-    '''Input parameters from WGC API example.'''
+    """Input parameters from WGC API example."""
     return {
         'kernels': kernels,
         'times': time,
@@ -37,9 +39,10 @@ def params(kernels, time, orbiting, center):
         'center_body': center,
     }
 
-@pytest.fixture
+
+@fixture
 def payload(kernels, time, orbiting, center):
-    '''Payload from WGC API example.'''
+    """Payload from WGC API example."""
     return {
         "kernels": [{
             "type": "KERNEL_SET",
@@ -59,6 +62,7 @@ def payload(kernels, time, orbiting, center):
         "referenceFrame": "J2000",
     }
 
+
 def test_osculating_elements_payload(params, payload):
-    '''Test osculating elements payload.'''
+    """Test osculating elements payload."""
     assert OsculatingElements(**params).payload == payload

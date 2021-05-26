@@ -1,7 +1,6 @@
-# -*- coding: utf-8 -*-
-'''Test WGC calculation runs.'''
+"""Test WGC calculation runs."""
 
-import pytest
+from pytest import fixture, raises
 
 from webgeocalc import Calculation, StateVector
 from webgeocalc.errors import (CalculationAlreadySubmitted, CalculationFailed,
@@ -10,9 +9,9 @@ from webgeocalc.errors import (CalculationAlreadySubmitted, CalculationFailed,
 from webgeocalc.vars import ESA_URL, JPL_URL
 
 
-@pytest.fixture
+@fixture
 def params():
-    '''Input parameters with 2 input time for generic calculation.'''
+    """Input parameters with 2 input time for generic calculation."""
     return {
         "calculation_type": "STATE_VECTOR",
         "kernels": 1,
@@ -28,9 +27,10 @@ def params():
         "state_representation": "RA_DEC"
     }
 
-@pytest.fixture
+
+@fixture
 def response():
-    '''Response status expected from the API.'''
+    """Response status expected from the API."""
     return {
         "status": "OK",
         "message": "The operation was successful.",
@@ -41,9 +41,10 @@ def response():
         }
     }
 
-@pytest.fixture
+
+@fixture
 def results():
-    '''Results expected from the API.'''
+    """Results expected from the API."""
     return {
         "status": "OK",
         "message": "The operation was successful.",
@@ -139,9 +140,9 @@ def results():
     }
 
 
-@pytest.fixture
+@fixture
 def params_sv():
-    '''Input parameters for state vector calculation (1 time only).'''
+    """Input parameters for state vector calculation (1 time only)."""
     return {
         "kernels": 5,
         "times": "2012-10-19T08:24:00.000",
@@ -150,9 +151,10 @@ def params_sv():
         "reference_frame": "CASSINI_ISS_NAC",
     }
 
-@pytest.fixture
+
+@fixture
 def response_sv():
-    '''State vector response status expected from the API.'''
+    """State vector response status expected from the API."""
     return {
         "status": "OK",
         "message": "The operation was successful.",
@@ -163,9 +165,10 @@ def response_sv():
         }
     }
 
-@pytest.fixture
+
+@fixture
 def results_sv():
-    '''State vector results expected from the API.'''
+    """State vector results expected from the API."""
     return {
         "status": "OK",
         "message": "The operation was successful.",
@@ -256,9 +259,9 @@ def results_sv():
     }
 
 
-@pytest.fixture
+@fixture
 def params_sv_esa():
-    '''Input parameters for state vector calculation (1 time only).'''
+    """Input parameters for state vector calculation (1 time only)."""
     return {
         "api": 'ESA',
         "kernels": 6,
@@ -270,9 +273,10 @@ def params_sv_esa():
         "state_representation": "LATITUDINAL",
     }
 
-@pytest.fixture
+
+@fixture
 def response_sv_esa():
-    '''State vector response status expected from the ESA API.'''
+    """State vector response status expected from the ESA API."""
     return {
         "status": "OK",
         "message": "The request was successful.",
@@ -283,9 +287,10 @@ def response_sv_esa():
         }
     }
 
-@pytest.fixture
+
+@fixture
 def results_sv_esa():
-    '''State vector results expected from the ESA API.'''
+    """State vector results expected from the ESA API."""
     return {
         "status": "OK",
         "message": "The request was successful.",
@@ -368,9 +373,10 @@ def results_sv_esa():
         ]
     }
 
-@pytest.fixture
+
+@fixture
 def loading_kernels():
-    '''Incomplete response status expected from the API.'''
+    """Incomplete response status expected from the API."""
     return {
         "status": "OK",
         "message": "Loading kernels…",
@@ -381,8 +387,9 @@ def loading_kernels():
         }
     }
 
+
 def test_calculation_run(requests_mock, params, response, results):
-    '''Run generic calculation.'''
+    """Run generic calculation."""
     calc = Calculation(**params)
 
     requests_mock.post(JPL_URL + '/calculation/new', json=response)
@@ -391,7 +398,7 @@ def test_calculation_run(requests_mock, params, response, results):
     requests_mock.get(
         JPL_URL + '/calculation/' + response['calculationId'] + '/results', json=results)
 
-    with pytest.raises(CalculationNotCompleted):
+    with raises(CalculationNotCompleted):
         _ = calc.results
 
     calc.run()
@@ -400,7 +407,7 @@ def test_calculation_run(requests_mock, params, response, results):
     calc.update()
     assert calc.phase == response['result']['phase']
 
-    with pytest.raises(CalculationAlreadySubmitted):
+    with raises(CalculationAlreadySubmitted):
         calc.submit()
 
     calc.resubmit()
@@ -409,8 +416,9 @@ def test_calculation_run(requests_mock, params, response, results):
     out = calc.run()  # Re-run results without API request
     assert len(out['DATE']) == len(results['rows'])
 
+
 def test_state_vector_single_time(requests_mock, params_sv, response_sv, results_sv):
-    '''Run state vector calculation on JPL API.'''
+    """Run state vector calculation on JPL API."""
     sv = StateVector(**params_sv)
 
     requests_mock.post(JPL_URL + '/calculation/new', json=response_sv)
@@ -438,13 +446,13 @@ def test_state_vector_single_time(requests_mock, params_sv, response_sv, results
         assert key in column_sv.keys()
         assert value in column_sv.values()
 
-    with pytest.raises(ResultAttributeError):
+    with raises(ResultAttributeError):
         _ = column.wrong_attr
 
 
 def test_state_vector_single_time_esa(requests_mock,
                                       params_sv_esa, response_sv_esa, results_sv_esa):
-    '''Run state vector calculation on ESA API.'''
+    """Run state vector calculation on ESA API."""
     sv = StateVector(**params_sv_esa)
 
     requests_mock.post(ESA_URL + '/calculation/new', json=response_sv_esa)
@@ -473,24 +481,25 @@ def test_state_vector_single_time_esa(requests_mock,
         assert key in column_sv_esa.keys()
         assert value in column_sv_esa.values()
 
-    with pytest.raises(ResultAttributeError):
+    with raises(ResultAttributeError):
         _ = column.wrong_attr
 
 
 def test_calculation_cancel(params):
-    '''Test error if calculation is cancelled.'''
+    """Test error if calculation is cancelled."""
     calc = Calculation(**params)
     calc.submit()
     calc.cancel()
 
     assert calc.phase == 'CANCELLED'
 
-    with pytest.raises(CalculationFailed):
+    with raises(CalculationFailed):
         calc.run()
 
+
 def test_calculation_timeout(requests_mock, params, loading_kernels):
-    '''Test error if response exceed timeout.'''
+    """Test error if response exceed timeout."""
     requests_mock.post(JPL_URL + '/calculation/new', json=loading_kernels)
 
-    with pytest.raises(CalculationTimeOut):
+    with raises(CalculationTimeOut):
         Calculation(**params).run(timeout=0.001, sleep=0.001)

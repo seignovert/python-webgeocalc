@@ -19,8 +19,9 @@ APIs = {
     'ESA': ESA_API,
 }
 
+
 class Calculation:
-    '''Webgeocalc calculation object.
+    """Webgeocalc calculation object.
 
     Parameters
     ----------
@@ -148,7 +149,7 @@ class Calculation:
     CalculationRequiredAttr
         If neither :py:attr:`times` nor :py:attr:`intervals` is not provided.
 
-    '''
+    """
 
     REQUIRED = ()
 
@@ -203,7 +204,7 @@ class Calculation:
 
     @property
     def payload(self):
-        '''Calculation payload parameters *dict* for JSON input in WebGeoCalc format.
+        """Calculation payload parameters *dict* for JSON input in WebGeoCalc format.
 
         Return
         ------
@@ -224,11 +225,11 @@ class Calculation:
         ... ).payload  # noqa: E501
         {'kernels': [{'type': 'KERNEL_SET', 'id': 5}], 'times': ['2012-10-19T08:24:00.000'], ...}
 
-        '''
+        """
         return {k.split('__')[-1]: v for k, v in vars(self).items() if k.startswith('_')}
 
     def submit(self):
-        '''Submit calculation parameters and get calculation ``id`` and ``phase``.
+        """Submit calculation parameters and get calculation ``id`` and ``phase``.
 
         Raises
         ------
@@ -244,7 +245,7 @@ class Calculation:
         >>> calc.phase     # doctest: +SKIP
         'QUEUED | POSITION: 6'
 
-        '''
+        """
         if self.id is not None:
             raise CalculationAlreadySubmitted(self.id)
 
@@ -254,15 +255,15 @@ class Calculation:
             print(f'[Calculation submit] Phase: {self.phase} (id: {self.id})')
 
     def resubmit(self):
-        '''Reset calculation ``id`` and re-submit the calculation.
+        """Reset calculation ``id`` and re-submit the calculation.
 
         See: :py:func:`submit`.
-        '''
+        """
         self.id = None
         self.submit()
 
     def cancel(self):
-        '''Cancels calculation if already submitted.'''
+        """Cancels calculation if already submitted."""
         if self.id is not None:
             _, self.phase = self.api.cancel_calculation(self.id)
 
@@ -270,7 +271,7 @@ class Calculation:
                 print(f'[Calculation cancellation] Phase: {self.phase} (id: {self.id})')
 
     def update(self):
-        '''Update calculation phase ``phase``.
+        """Update calculation phase ``phase``.
 
         Example
         -------
@@ -285,7 +286,7 @@ class Calculation:
         >>> calc.update()  # doctest: +SKIP
         [Calculation update] Phase: COMPLETE (id: 8750344d-645d-4e43-b159-c8d88d28aac6)
 
-        '''
+        """
         if self.id is None:
             self.submit()
         else:
@@ -296,7 +297,7 @@ class Calculation:
 
     @property
     def results(self):
-        '''Gets the results of a calculation, if its phase is `COMPLETE`.
+        """Gets the results of a calculation, if its phase is `COMPLETE`.
 
         Return
         ------
@@ -338,7 +339,7 @@ class Calculation:
         {'DATE': ['2012-10-19 08:24:00.000000 UTC', '2012-10-19 09:00:00.000000 UTC'],
          'ANGULAR_SEPARATION': [175.17072258, 175.18555938]}
 
-        '''
+        """
         if self.phase != 'COMPLETE':
             raise CalculationNotCompleted(self.phase)
 
@@ -354,7 +355,7 @@ class Calculation:
         return {column.outputID: value for column, value in zip(self.columns, data)}
 
     def run(self, timeout=30, sleep=1):
-        '''Submit, update and retrive calculation results at once.
+        """Submit, update and retrive calculation results at once.
 
         See: :py:func:`submit`, :py:func:`update` and :py:attr:`results`.
 
@@ -370,7 +371,7 @@ class Calculation:
         CalculationTimeOut
             If calculation reach the timeout duration.
 
-        '''
+        """
         if self.columns is not None and self.values is not None:
             return self.results
 
@@ -389,7 +390,7 @@ class Calculation:
 
     @parameter(only='CALCULATION_TYPE')
     def calculation_type(self, val):
-        '''The type of calculation to perform.
+        """The type of calculation to perform.
 
         Parameters
         ----------
@@ -424,12 +425,12 @@ class Calculation:
         CalculationInvalidAttr
             If the value provided is invalid.
 
-        '''
+        """
         self.__calculationType = val
 
     @parameter
     def kernels(self, kernel_sets):
-        '''Add kernel sets.
+        """Add kernel sets.
 
         Parameters
         ----------
@@ -438,7 +439,7 @@ class Calculation:
 
                [{'type': 'KERNEL_SET', 'id': 5}, ...]
 
-        '''
+        """
         self.__kernels += [
             self._kernel_id_obj(kernel_sets)
         ] if isinstance(
@@ -452,7 +453,7 @@ class Calculation:
 
     @parameter
     def kernel_paths(self, paths):
-        '''Add path for individual kernel paths.
+        """Add path for individual kernel paths.
 
         Parameters
         ----------
@@ -461,7 +462,7 @@ class Calculation:
 
                [{'type': 'KERNEL', 'path': 'pds/wgc/kernels/lsk/naif0012.tls'}, ...]
 
-        '''
+        """
         self.__kernels += [
             self._kernel_path_obj(paths)
         ] if isinstance(paths, str) else list(map(self._kernel_path_obj, paths))
@@ -473,7 +474,7 @@ class Calculation:
 
     @parameter
     def times(self, times):
-        '''Calculation input times.
+        """Calculation input times.
 
         Parameters
         ----------
@@ -486,7 +487,7 @@ class Calculation:
         CalculationConflictAttr
             Either this parameter or the py:attr:`intervals` parameter must be supplied.
 
-        '''
+        """
         self.__times = [times] if isinstance(times, str) else times
 
         if 'intervals' in self.params:
@@ -494,7 +495,7 @@ class Calculation:
 
     @parameter
     def intervals(self, intervals):
-        '''Calculation input intervals.
+        """Calculation input intervals.
 
         Parameters
         ----------
@@ -515,7 +516,7 @@ class Calculation:
         CalculationUndefinedAttr
             If this parameter is used, :py:attr:`time_step` must also be supplied.
 
-        '''
+        """
         if isinstance(intervals, dict):
             self.__intervals = [self._interval(intervals)]
         elif isinstance(intervals, list) and len(intervals) > 2:
@@ -576,7 +577,7 @@ class Calculation:
 
     @parameter
     def time_step(self, val):
-        '''Time step for intervals.
+        """Time step for intervals.
 
         Parameters
         ----------
@@ -591,7 +592,7 @@ class Calculation:
         CalculationUndefinedAttr
             If :py:attr:`time_step_units` is not supplied.
 
-        '''
+        """
         self.__timeStep = int(val)
 
         if 'times' in self.params:
@@ -602,7 +603,7 @@ class Calculation:
 
     @parameter(only='TIME_STEP_UNITS')
     def time_step_units(self, val):
-        '''Time step units.
+        """Time step units.
 
         Parameters
         ----------
@@ -624,7 +625,7 @@ class Calculation:
         CalculationUndefinedAttr
             If :py:attr:`time_step` is not supplied.
 
-        '''
+        """
         self.__timeStepUnits = val
 
         if 'times' in self.params:
@@ -634,7 +635,7 @@ class Calculation:
 
     @parameter(only='TIME_SYSTEM')
     def time_system(self, val):
-        '''Time System.
+        """Time System.
 
         Parameters
         ----------
@@ -654,7 +655,7 @@ class Calculation:
             If ``SPACECRAFT_CLOCK`` is selected, but
             :py:attr:`sclk_id` attribute is not provided.
 
-        '''
+        """
         self.__timeSystem = val
 
         if val == 'SPACECRAFT_CLOCK' and 'sclk_id' not in self.params:
@@ -662,7 +663,7 @@ class Calculation:
 
     @parameter(only='TIME_FORMAT')
     def time_format(self, val):
-        '''Time format input.
+        """Time format input.
 
         Parameters
         ----------
@@ -687,7 +688,7 @@ class Calculation:
             or ``SPACECRAFT_CLOCK_STRING`` or ``SPACECRAFT_CLOCK_TICKS`` is selected but
             :py:attr:`time_system` attribute is not ``SPACECRAFT_CLOCK``.
 
-        '''
+        """
         self.__timeFormat = val
 
         self._required('time_system')
@@ -706,7 +707,7 @@ class Calculation:
 
     @parameter
     def sclk_id(self, val):
-        '''Spacecraft clock kernel id.
+        """Spacecraft clock kernel id.
 
         Parameters
         ----------
@@ -720,7 +721,7 @@ class Calculation:
         CalculationIncompatibleAttr
             If :py:attr:`time_system` is not ``SPACECRAFT_CLOCK``.
 
-        '''
+        """
         self.__sclkId = int(val)
 
         self._required('time_system')
@@ -732,7 +733,7 @@ class Calculation:
 
     @parameter(only='TIME_SYSTEM')
     def output_time_system(self, val):
-        '''The time system for results output times.
+        """The time system for results output times.
 
         Parameters
         ----------
@@ -752,7 +753,7 @@ class Calculation:
             If ``SPACECRAFT_CLOCK`` is selected, but
             :py:attr:`output_sclk_id` attribute is not provided.
 
-        '''
+        """
         self.__outputTimeSystem = val
 
         if val == 'SPACECRAFT_CLOCK' and 'output_sclk_id' not in self.params:
@@ -761,7 +762,7 @@ class Calculation:
 
     @parameter(only='OUTPUT_TIME_FORMAT')
     def output_time_format(self, val):
-        '''The time format for the result output times.
+        """The time format for the result output times.
 
         Parameters
         ----------
@@ -795,7 +796,7 @@ class Calculation:
             ``SPACECRAFT_CLOCK_TICKS`` is selected but :py:attr:`output_time_system`
             is not ``SPACECRAFT_CLOCK``.
 
-        '''
+        """
         self.__outputTimeFormat = val
 
         self._required('output_time_system')
@@ -817,7 +818,7 @@ class Calculation:
 
     @parameter
     def output_time_custom_format(self, val):
-        '''A SPICE ``timout()`` format string.
+        """A SPICE ``timout()`` format string.
 
         Parameters
         ----------
@@ -831,7 +832,7 @@ class Calculation:
         CalculationIncompatibleAttr
             If :py:attr:`output_time_format` is not ``CUSTOM``.
 
-        '''
+        """
         self.__outputTimeCustomFormat = val
 
         self._required('output_time_format')
@@ -843,7 +844,7 @@ class Calculation:
 
     @parameter
     def output_sclk_id(self, val):
-        '''The output spacecraft clock kernel id.
+        """The output spacecraft clock kernel id.
 
         Parameters
         ----------
@@ -857,7 +858,7 @@ class Calculation:
         CalculationIncompatibleAttr
             If :py:attr:`output_time_system` is not ``SPACECRAFT_CLOCK``.
 
-        '''
+        """
         self.__outputSclkId = int(val)
 
         self._required('output_time_system')
@@ -869,55 +870,55 @@ class Calculation:
 
     @parameter
     def target(self, val):
-        '''Target body.
+        """Target body.
 
         Parameters
         ----------
         target: str or int
             The target body ``name`` or ``id`` from :py:func:`API.bodies`.
 
-        '''
+        """
         self.__target = val if isinstance(val, int) else val.upper()
 
     @parameter
     def target_frame(self, val):
-        '''The target body-fixed reference frame name.
+        """The target body-fixed reference frame name.
 
         Parameters
         ----------
         target_frame: str
             Reference frame ``name``.
 
-        '''
+        """
         self.__targetFrame = val
 
     @parameter
     def target_1(self, val):
-        '''The target body the first body.
+        """The target body the first body.
 
         Parameters
         ----------
         target_1: str
             Target body ``name`` or ``id``.
 
-        '''
+        """
         self.__target1 = val if isinstance(val, int) else val.upper()
 
     @parameter
     def target_2(self, val):
-        '''The target body the second body.
+        """The target body the second body.
 
         Parameters
         ----------
         target_2: str
             Target body ``name`` or ``id``.
 
-        '''
+        """
         self.__target2 = val if isinstance(val, int) else val.upper()
 
     @parameter(only='SHAPE')
     def shape_1(self, val):
-        '''The shape to use for the first body.
+        """The shape to use for the first body.
 
         Parameters
         ----------
@@ -932,12 +933,12 @@ class Calculation:
         CalculationInvalidAttr
             If the value provided is invalid.
 
-        '''
+        """
         self.__shape1 = val
 
     @parameter(only='SHAPE')
     def shape_2(self, val):
-        '''The shape to use for the second body.
+        """The shape to use for the second body.
 
         Parameters
         ----------
@@ -952,72 +953,72 @@ class Calculation:
         CalculationInvalidAttr
             If the value provided is invalid.
 
-        '''
+        """
         self.__shape2 = val
 
     @parameter
     def observer(self, val):
-        '''The observing body.
+        """The observing body.
 
         Parameters
         ----------
         observer: str or int
             The observing body ``name`` or ``id`` from :py:func:`API.bodies`.
 
-        '''
+        """
         self.__observer = val if isinstance(val, int) else val.upper()
 
     @parameter
     def reference_frame(self, val):
-        '''The reference frame.
+        """The reference frame.
 
         Parameters
         ----------
         reference_frame: str or int
             The reference frame ``name`` or ``id`` from :py:func:`API.frames`.
 
-        '''
+        """
         self.__referenceFrame = val if isinstance(val, int) else val.upper()
 
     @parameter
     def frame_1(self, val):
-        '''The first reference frame.
+        """The first reference frame.
 
         Parameters
         ----------
         frame_1: str or int
             The reference frame ``name`` or ``id`` from :py:func:`API.frames`.
 
-        '''
+        """
         self.__frame1 = val if isinstance(val, int) else val.upper()
 
     @parameter
     def frame_2(self, val):
-        '''The second reference frame.
+        """The second reference frame.
 
         Parameters
         ----------
         frame_2: str or int
             The reference frame ``name`` or ``id`` from :py:func:`API.frames`.
 
-        '''
+        """
         self.__frame2 = val if isinstance(val, int) else val.upper()
 
     @parameter
     def orbiting_body(self, val):
-        '''The SPICE orbiting body.
+        """The SPICE orbiting body.
 
         Parameters
         ----------
         orbiting_body: str or int
             SPICE body ``name`` or ``id`` for the orbiting body.
 
-        '''
+        """
         self.__orbitingBody = val if isinstance(val, int) else val.upper()
 
     @parameter
     def center_body(self, val):
-        '''
+        """
         The SPICE body center of motion.
 
         Parameters
@@ -1025,12 +1026,12 @@ class Calculation:
         center_body: str or int
             SPICE body ``name`` or ``id`` for the body that is the center of motion.
 
-        '''
+        """
         self.__centerBody = val if isinstance(val, int) else val.upper()
 
     @parameter(only='ABERRATION_CORRECTION')
     def aberration_correction(self, val):
-        '''SPICE aberration correction.
+        """SPICE aberration correction.
 
         Parameters
         ----------
@@ -1052,12 +1053,12 @@ class Calculation:
         CalculationInvalidAttr
             If the value provided is invalid.
 
-        '''
+        """
         self.__aberrationCorrection = val
 
     @parameter(only='STATE_REPRESENTATION')
     def state_representation(self, val):
-        '''State representation.
+        """State representation.
 
         Parameters
         ----------
@@ -1077,12 +1078,12 @@ class Calculation:
         CalculationInvalidAttr
             If the value provided is invalid.
 
-        '''
+        """
         self.__stateRepresentation = val
 
     @parameter(only='TIME_LOCATION')
     def time_location(self, val):
-        '''The frame for the input times.
+        """The frame for the input times.
 
         Parameters
         ----------
@@ -1105,12 +1106,12 @@ class Calculation:
 
         Required even when :py:attr:`aberration_correction` is ``NONE``.
 
-        '''
+        """
         self.__timeLocation = val
 
     @parameter(only='ORIENTATION_REPRESENTATION')
     def orientation_representation(self, val):
-        '''The representation of the result transformation.
+        """The representation of the result transformation.
 
         Parameters
         ----------
@@ -1130,47 +1131,47 @@ class Calculation:
         CalculationInvalidAttr
             If the value provided is invalid.
 
-        '''
+        """
         self.__orientationRepresentation = val
 
     @parameter
     def axis_1(self, val):
-        '''The first axis for Euler angle rotation.
+        """The first axis for Euler angle rotation.
 
         Parameters
         ----------
         axis_1: str
             Axis name. See: :py:func:`axis`.
 
-        '''
+        """
         self.__axis1 = self.axis('axis_1', val)
 
     @parameter
     def axis_2(self, val):
-        '''The second axis for Euler angle rotation.
+        """The second axis for Euler angle rotation.
 
         Parameters
         ----------
         axis_3: str
             Axis name. See: :py:func:`axis`.
 
-        '''
+        """
         self.__axis2 = self.axis('axis_2', val)
 
     @parameter
     def axis_3(self, val):
-        '''The third axis for Euler angle rotation.
+        """The third axis for Euler angle rotation.
 
         Parameters
         ----------
         axis_3: str
             Axis name. See: :py:func:`axis`.
 
-        '''
+        """
         self.__axis3 = self.axis('axis_3', val)
 
     def axis(self, name, val):
-        '''Axis for Euler angle rotation.
+        """Axis for Euler angle rotation.
 
         Parameters
         ----------
@@ -1198,7 +1199,7 @@ class Calculation:
         CalculationIncompatibleAttr
             If :py:attr:`orientation_representation` is not ``EULER_ANGLES``.
 
-        '''
+        """
         if 'orientation_representation' not in self.params:
             raise CalculationUndefinedAttr(name, val, 'orientation_representation')
 
@@ -1214,7 +1215,7 @@ class Calculation:
 
     @parameter(only='ANGULAR_UNITS')
     def angular_units(self, val):
-        '''The angular units.
+        """The angular units.
 
         Parameters
         ----------
@@ -1234,7 +1235,7 @@ class Calculation:
             If :py:attr:`orientation_representation` is
             not `EULER_ANGLES` or `ANGLE_AND_AXIS`.
 
-        '''
+        """
         self.__angularUnits = val
 
         if 'orientation_representation' not in self.params:
@@ -1250,7 +1251,7 @@ class Calculation:
 
     @parameter(only='ANGULAR_VELOCITY_REPRESENTATION')
     def angular_velocity_representation(self, val):
-        '''Angular velocity representation.
+        """Angular velocity representation.
 
         Parameters
         ----------
@@ -1268,12 +1269,12 @@ class Calculation:
         CalculationInvalidAttr
             If the value provided is invalid.
 
-        '''
+        """
         self.__angularVelocityRepresentation = val
 
     @parameter(only='ANGULAR_VELOCITY_UNITS')
     def angular_velocity_units(self, val):
-        '''The units for the angular velocity.
+        """The units for the angular velocity.
 
         Parameters
         ----------
@@ -1298,7 +1299,7 @@ class Calculation:
             If ``Unitary`` selected but :py:attr:`angular_velocity_representation` is not
             ``VECTOR_IN_FRAME1`` or ``VECTOR_IN_FRAME2``.
 
-        '''
+        """
         self.__angularVelocityUnits = val
 
         if 'angular_velocity_representation' not in self.params:
@@ -1320,7 +1321,7 @@ class Calculation:
 
     @parameter(only='COORDINATE_REPRESENTATION')
     def coordinate_representation(self, val):
-        '''Coordinate Representation.
+        """Coordinate Representation.
 
         Parameters
         ----------
@@ -1336,12 +1337,12 @@ class Calculation:
         CalculationInvalidAttr
             If the value provided is invalid.
 
-        '''
+        """
         self.__coordinateRepresentation = val
 
     @parameter
     def latitude(self, val):
-        '''Latitude of the surface point.
+        """Latitude of the surface point.
 
         Parameters
         ----------
@@ -1353,7 +1354,7 @@ class Calculation:
         CalculationInvalidValue
             If ``latitude`` not in [-90, +90] range.
 
-        '''
+        """
         if -90 <= val <= 90:
             self.__latitude = val
         else:
@@ -1361,7 +1362,7 @@ class Calculation:
 
     @parameter
     def longitude(self, val):
-        '''Longitude of the surface point.
+        """Longitude of the surface point.
 
         Parameters
         ----------
@@ -1373,7 +1374,7 @@ class Calculation:
         CalculationInvalidValue
             If ``longitude`` not in [-180, +180] range.
 
-        '''
+        """
         if -180 <= val <= 180:
             self.__longitude = val
         else:
@@ -1381,7 +1382,7 @@ class Calculation:
 
     @parameter(only='SUB_POINT_TYPE')
     def sub_point_type(self, val):
-        '''Sub-observer point.
+        """Sub-observer point.
 
         Parameters
         ----------
@@ -1399,12 +1400,12 @@ class Calculation:
         CalculationInvalidAttr
             If the value provided is invalid.
 
-        '''
+        """
         self.__subPointType = val
 
     @parameter(only='DIRECTION_VECTOR_TYPE')
     def direction_vector_type(self, val):
-        '''Type of ray's direction vector.
+        """Type of ray's direction vector.
 
         Parameters
         ----------
@@ -1440,7 +1441,7 @@ class Calculation:
             nor :py:attr:`direction_vector_ra` and :py:attr:`direction_vector_dec`
             are provided.
 
-        '''
+        """
         self.__directionVectorType = val
 
         if val in ['INSTRUMENT_BORESIGHT', 'INSTRUMENT_FOV_BOUNDARY_VECTORS',
@@ -1468,7 +1469,7 @@ class Calculation:
 
     @parameter
     def direction_instrument(self, val):
-        '''Direction instrument.
+        """Direction instrument.
 
         Parameters
         ----------
@@ -1483,7 +1484,7 @@ class Calculation:
             If :py:attr:`direction_vector_type` not in ``INSTRUMENT_BORESIGHT``,
             ``INSTRUMENT_FOV_BOUNDARY_VECTORS`` or ``VECTOR_IN_INSTRUMENT_FOV``.
 
-        '''
+        """
         if 'direction_vector_type' not in self.params:
             raise CalculationUndefinedAttr(
                 'direction_instrument', val, 'direction_vector_type')
@@ -1499,7 +1500,7 @@ class Calculation:
 
     @parameter
     def direction_frame(self, val):
-        '''Direction vector reference frame.
+        """Direction vector reference frame.
 
         Parameters
         ----------
@@ -1514,7 +1515,7 @@ class Calculation:
             If :py:attr:`direction_vector_type` is not in ``REFERENCE_FRAME_AXIS``
             or ``VECTOR_IN_REFERENCE_FRAME``.
 
-        '''
+        """
         if 'direction_vector_type' not in self.params:
             raise CalculationUndefinedAttr(
                 'direction_frame', val, 'direction_vector_type')
@@ -1529,7 +1530,7 @@ class Calculation:
 
     @parameter(only='AXIS')
     def direction_frame_axis(self, val):
-        '''The vector's reference frame axis name.
+        """The vector's reference frame axis name.
 
         Parameters
         ----------
@@ -1549,7 +1550,7 @@ class Calculation:
         CalculationInvalidAttr
             If the value provided is invalid.
 
-        '''
+        """
         if 'direction_vector_type' not in self.params:
             raise CalculationUndefinedAttr(
                 'direction_frame_axis', val, 'direction_vector_type')
@@ -1562,7 +1563,7 @@ class Calculation:
         self.__directionFrameAxis = val
 
     def direction_vector(self, axis, val):
-        '''Direction vector coordinate.
+        """Direction vector coordinate.
 
         Parameters
         ----------
@@ -1579,7 +1580,7 @@ class Calculation:
             If :py:attr:`direction_vector_type` is not in ``VECTOR_IN_INSTRUMENT_FOV``
             or ``VECTOR_IN_REFERENCE_FRAME``.
 
-        '''
+        """
         if 'direction_vector_type' not in self.params:
             raise CalculationUndefinedAttr(
                 'direction_vector_' + axis, val, 'direction_vector_type')
@@ -1593,67 +1594,67 @@ class Calculation:
 
     @parameter
     def direction_vector_x(self, val):
-        '''The X ray's direction vector coordinate.
+        """The X ray's direction vector coordinate.
 
         Parameters
         ----------
         direction_vector_x: float
             Direction x-coordinate. See :py:func:`direction_vector`.
 
-        '''
+        """
         self.__directionVectorX = self.direction_vector('x', val)
 
     @parameter
     def direction_vector_y(self, val):
-        '''The Y ray's direction vector coordinate.
+        """The Y ray's direction vector coordinate.
 
         Parameters
         ----------
         direction_vector_y: float
             Direction y-coordinate. See :py:func:`direction_vector`.
 
-        '''
+        """
         self.__directionVectorY = self.direction_vector('y', val)
 
     @parameter
     def direction_vector_z(self, val):
-        '''The Z ray's direction vector coordinate.
+        """The Z ray's direction vector coordinate.
 
         Parameters
         ----------
         direction_vector_z: float
             Direction z-coordinate. See :py:func:`direction_vector`.
 
-        '''
+        """
         self.__directionVectorZ = self.direction_vector('z', val)
 
     @parameter
     def direction_vector_ra(self, val):
-        '''The right-ascension ray's direction vector coordinate.
+        """The right-ascension ray's direction vector coordinate.
 
         Parameters
         ----------
         direction_vector_ra: float
             Direction RA-coordinate. See :py:func:`direction_vector`.
 
-        '''
+        """
         self.__directionVectorRA = self.direction_vector('ra', val)
 
     @parameter
     def direction_vector_dec(self, val):
-        '''The declination ray's direction vector coordinate.
+        """The declination ray's direction vector coordinate.
 
         Parameters
         ----------
         direction_vector_dec: float
             Direction DEC-coordinate. See :py:func:`direction_vector`.
 
-        '''
+        """
         self.__directionVectorDec = self.direction_vector('dec', val)
 
     @parameter(only='TIME_UNITS')
     def output_duration_units(self, val):
-        '''Output duration time units.
+        """Output duration time units.
 
         Time units to use for displaying the duration of each interval found by the
         event search.
@@ -1673,12 +1674,12 @@ class Calculation:
         CalculationInvalidAttr
             If the value provided is invalid.
 
-        '''
+        """
         self.__outputDurationUnits = val
 
     @parameter
     def should_complement_window(self, val):
-        '''Specifies whether to complement the intervals in the result window.
+        """Specifies whether to complement the intervals in the result window.
 
         That is, instead of finding the intervals where the condition is satisfied,
         find the intervals where the condition is not satisfied.
@@ -1693,7 +1694,7 @@ class Calculation:
         TypeError
             If the value provided is not bool type.
 
-        '''
+        """
         if isinstance(val, bool):
             self.__shouldComplementWindow = val
         else:
@@ -1701,7 +1702,7 @@ class Calculation:
 
     @parameter(only='INTERVAL_ADJUSTMENT')
     def interval_adjustment(self, val):
-        '''Specifies whether to expand or contract the intervals in the result.
+        """Specifies whether to expand or contract the intervals in the result.
 
         Expanding the intervals will cause intervals that overlap, after expansion,
         to be combined into one interval.
@@ -1720,12 +1721,12 @@ class Calculation:
         CalculationInvalidAttr
             If the value provided is invalid.
 
-        '''
+        """
         self.__intervalAdjustment = val
 
     @parameter
     def interval_adjustment_amount(self, val):
-        '''The amount by which to expand or contract each interval at the endpoints.
+        """The amount by which to expand or contract each interval at the endpoints.
 
         Each endpoint will be moved by this amount.
 
@@ -1738,7 +1739,7 @@ class Calculation:
         CalculationUndefinedAttr:
             If :py:attr:`interval_adjustment_units` is not supplied
 
-        '''
+        """
         self.__intervalAdjustmentAmount = val
 
         if 'interval_adjustment_units' not in self.params:
@@ -1747,7 +1748,7 @@ class Calculation:
 
     @parameter(only='TIME_UNITS')
     def interval_adjustment_units(self, val):
-        '''The unit of the interval adjustment amount.
+        """The unit of the interval adjustment amount.
 
         Parameters
         ----------
@@ -1769,7 +1770,7 @@ class Calculation:
         CalculationUndefinedAttr:
             If :py:attr:`interval_adjustment_amount` is not supplied
 
-        '''
+        """
         self.__intervalAdjustmentUnits = val
 
         if 'interval_adjustment_amount' not in self.params:
@@ -1778,7 +1779,7 @@ class Calculation:
 
     @parameter(only='INTERVAL_FILTERING')
     def interval_filtering(self, val):
-        '''Specifies whether to omit interval smaller than a minimum threshold size.
+        """Specifies whether to omit interval smaller than a minimum threshold size.
 
         This threshold is applied after expansion or contraction of the intervals.
 
@@ -1795,12 +1796,12 @@ class Calculation:
         CalculationInvalidAttr
             If the value provided is invalid.
 
-        '''
+        """
         self.__intervalFiltering = val
 
     @parameter
     def interval_filtering_threshold(self, val):
-        '''Interval duration filtering threshold value.
+        """Interval duration filtering threshold value.
 
         Parameters
         ----------
@@ -1812,7 +1813,7 @@ class Calculation:
         CalculationUndefinedAttr:
             If :py:attr:`interval_filtering_threshold_units` is not supplied
 
-        '''
+        """
         self.__intervalFilteringThreshold = val
 
         if 'interval_filtering_threshold_units' not in self.params:
@@ -1821,7 +1822,7 @@ class Calculation:
 
     @parameter(only='TIME_UNITS')
     def interval_filtering_threshold_units(self, val):
-        '''Units of the interval duration filtering threshold value.
+        """Units of the interval duration filtering threshold value.
 
         Parameters
         ----------
@@ -1843,7 +1844,7 @@ class Calculation:
         CalculationUndefinedAttr:
             If :py:attr:`interval_filtering_threshold` is not supplied
 
-        '''
+        """
         self.__intervalFilteringThresholdUnits = val
 
         if 'interval_filtering_threshold' not in self.params:
@@ -1852,7 +1853,7 @@ class Calculation:
 
     @parameter(only='COORDINATE_SYSTEM')
     def coordinate_system(self, val):
-        '''The name of the coordinate system in which to evaluate the coordinate.
+        """The name of the coordinate system in which to evaluate the coordinate.
 
         Only required for GF_COORDINATE_SEARCH, GF_SUB_POINT_SEARCH, and
         GF_SURFACE_INTERCEPT_POINT_SEARCH.
@@ -1875,12 +1876,12 @@ class Calculation:
         CalculationInvalidAttr
             If the value provided is invalid.
 
-        '''
+        """
         self.gf_condition(coordinateSystem=val)
 
     @parameter(only='COORDINATE')
     def coordinate(self, val):
-        '''The name of the SPICE coordinate to search on.
+        """The name of the SPICE coordinate to search on.
 
         Only needed for GF_COORDINATE_SEARCH, GF_SUB_POINT_SEARCH, and
         GF_SURFACE_INTERCEPT_POINT_SEARCH.
@@ -1907,12 +1908,12 @@ class Calculation:
         CalculationInvalidAttr
             If the value provided is invalid.
 
-        '''
+        """
         self.gf_condition(coordinate=val)
 
     @parameter(only='RELATIONAL_CONDITION')
     def relational_condition(self, val):
-        '''The relationship for the geometry finder test.
+        """The relationship for the geometry finder test.
 
         Parameters
         ----------
@@ -1938,7 +1939,7 @@ class Calculation:
             is not supplied.
             If the value is ``=``,  ``<``, ``>`` or ``RANGE``, and
             :py:attr:`reference_value` is not supplied.
-        '''
+        """
         self.gf_condition(relationalCondition=val)
 
         if val == 'RANGE' and 'upper_limit' not in self.params:
@@ -1966,7 +1967,7 @@ class Calculation:
 
     @parameter
     def reference_value(self, val):
-        '''The value to compare against, or the lower value of a range.
+        """The value to compare against, or the lower value of a range.
 
         Only needed if relationalCondition is not ABSMAX, ABSMIN, LOCMAX, or LOCMIN.
 
@@ -1974,23 +1975,23 @@ class Calculation:
         ----------
         reference_value: float
 
-        '''
+        """
         self.gf_condition(referenceValue=val)
 
     @parameter
     def upper_limit(self, val):
-        '''The upper limit of a range. Only needed if relationalCondition is RANGE.
+        """The upper limit of a range. Only needed if relationalCondition is RANGE.
 
         Parameters
         ----------
         upper_limit: float
 
-        '''
+        """
         self.gf_condition(upperLimit=val)
 
     @parameter
     def adjustment_value(self, val):
-        '''The adjustment value to apply for ABSMIN and ABSMAX searches.
+        """The adjustment value to apply for ABSMIN and ABSMAX searches.
 
         Required if relationalCondition is ABSMIN or ABSMAX.
 
@@ -1998,11 +1999,11 @@ class Calculation:
         ----------
         adjustment_value: float
 
-        '''
+        """
         self.gf_condition(adjustmentValue=val)
 
     def gf_condition(self, **kwargs):
-        '''Geometry Finder condition object.
+        """Geometry Finder condition object.
 
         See the documentation for gfposc() for more details.
 
@@ -2012,12 +2013,12 @@ class Calculation:
             If :py:attr:`calculation_type` is ``GF_COORDINATE_SEARCH``,
             ``GF_SUB_POINT_SEARCH`` or ``GF_SURFACE_INTERCEPT_POINT_SEARCH``, and
             :py:attr:`coordinate_system` or :py:attr:`coordinate` are not present.
-        '''
+        """
         try:
             self.__condition.update(kwargs)
 
         except AttributeError:
-            # this set of checks is run only once.
+            # This set of checks is run only once.
             if self.params['calculation_type'] in (
                 'GF_COORDINATE_SEARCH',
                 'GF_SUB_POINT_SEARCH',
@@ -2029,10 +2030,12 @@ class Calculation:
                         value=self.params['calculation_type'],
                         missing='coordinate_system'
                     ) from None
+
                 if 'coordinate' not in self.params:
                     raise CalculationUndefinedAttr(
                         attr='calculation_type',
                         value=self.params['calculation_type'],
                         missing='coordinate'
                     ) from None
+
             self.__condition = kwargs

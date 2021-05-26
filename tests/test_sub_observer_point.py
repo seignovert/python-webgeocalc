@@ -1,44 +1,49 @@
-# -*- coding: utf-8 -*-
-'''Test WGC sub observer point calculation.'''
+"""Test WGC sub observer point calculation."""
 
-import pytest
+from pytest import fixture
 
 from webgeocalc import SubObserverPoint
 
 
-@pytest.fixture
+@fixture
 def kernels():
-    '''Cassini kernel set.'''
+    """Cassini kernel set."""
     return 5
 
-@pytest.fixture
+
+@fixture
 def time():
-    '''Input time.'''
+    """Input time."""
     return '2012-10-19T08:24:00.000'
 
-@pytest.fixture
+
+@fixture
 def target():
-    '''Input target.'''
+    """Input target."""
     return 'ENCELADUS'
 
-@pytest.fixture
+
+@fixture
 def target_frame():
-    '''Input target frame.'''
+    """Input target frame."""
     return 'IAU_ENCELADUS'
 
-@pytest.fixture
+
+@fixture
 def observer():
-    '''Input observer.'''
+    """Input observer."""
     return 'CASSINI'
 
-@pytest.fixture
+
+@fixture
 def corr():
-    '''Input aberration correction.'''
+    """Input aberration correction."""
     return 'CN+S'
 
-@pytest.fixture
+
+@fixture
 def params(kernels, time, target, target_frame, observer, corr):
-    '''Input parameters from WGC API example.'''
+    """Input parameters from WGC API example."""
     return {
         'kernels': kernels,
         'times': time,
@@ -48,9 +53,10 @@ def params(kernels, time, target, target_frame, observer, corr):
         'aberration_correction': corr,
     }
 
-@pytest.fixture
+
+@fixture
 def payload(kernels, time, target, target_frame, observer, corr):
-    '''Payload from WGC API example.'''
+    """Payload from WGC API example."""
     return {
         "kernels": [{
             "type": "KERNEL_SET",
@@ -70,6 +76,7 @@ def payload(kernels, time, target, target_frame, observer, corr):
         "stateRepresentation": "RECTANGULAR",
     }
 
+
 def test_sub_observer_point_payload(params, payload):
-    '''Test sub observer point payload.'''
+    """Test sub observer point payload."""
     assert SubObserverPoint(**params).payload == payload

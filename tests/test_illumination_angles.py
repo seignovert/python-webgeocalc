@@ -1,55 +1,62 @@
-# -*- coding: utf-8 -*-
-'''Test WGC illumination angles calculation.'''
+"""Test WGC illumination angles calculation."""
 
-import pytest
+from pytest import fixture, raises
 
 from webgeocalc import IlluminationAngles
 from webgeocalc.errors import CalculationInvalidAttr, CalculationInvalidValue
 
 
-@pytest.fixture
+@fixture
 def kernels():
-    '''Cassini kernel set.'''
+    """Cassini kernel set."""
     return 5
 
-@pytest.fixture
+
+@fixture
 def time():
-    '''Input time.'''
+    """Input time."""
     return '2012-10-19T08:24:00.000'
 
-@pytest.fixture
+
+@fixture
 def target():
-    '''Input target.'''
+    """Input target."""
     return 'ENCELADUS'
 
-@pytest.fixture
+
+@fixture
 def target_frame():
-    '''Input frame.'''
+    """Input frame."""
     return 'IAU_ENCELADUS'
 
-@pytest.fixture
+
+@fixture
 def observer():
-    '''Input observer.'''
+    """Input observer."""
     return 'CASSINI'
 
-@pytest.fixture
+
+@fixture
 def lat():
-    '''Input latitude.'''
+    """Input latitude."""
     return 0.0
 
-@pytest.fixture
+
+@fixture
 def lon():
-    '''Input longitude.'''
+    """Input longitude."""
     return 0.0
 
-@pytest.fixture
+
+@fixture
 def corr():
-    '''Input aberration correction.'''
+    """Input aberration correction."""
     return 'CN+S'
 
-@pytest.fixture
+
+@fixture
 def params(kernels, time, target, target_frame, observer, lat, lon, corr):
-    '''Input parameters from WGC API example.'''
+    """Input parameters from WGC API example."""
     return {
         'kernels': kernels,
         'times': time,
@@ -61,9 +68,10 @@ def params(kernels, time, target, target_frame, observer, lat, lon, corr):
         'aberration_correction': corr,
     }
 
-@pytest.fixture
+
+@fixture
 def payload(kernels, time, target, target_frame, observer, lat, lon, corr):
-    '''Payload from WGC API example.'''
+    """Payload from WGC API example."""
     return {
         "kernels": [{
             "type": "KERNEL_SET",
@@ -85,25 +93,28 @@ def payload(kernels, time, target, target_frame, observer, lat, lon, corr):
         "aberrationCorrection": corr,
     }
 
+
 def test_illumination_angles_payload(params, payload):
-    '''Test illumination angles payload.'''
+    """Test illumination angles payload."""
     assert IlluminationAngles(**params).payload == payload
 
+
 def test_illumination_angles_attr_error(params):
-    '''Test errors when illumination angles attributes are invalid.'''
-    with pytest.raises(CalculationInvalidAttr):
+    """Test errors when illumination angles attributes are invalid."""
+    with raises(CalculationInvalidAttr):
         IlluminationAngles(shape_1='POINT', **params)
 
-    with pytest.raises(CalculationInvalidAttr):
+    with raises(CalculationInvalidAttr):
         IlluminationAngles(coordinate_representation='WRONG', **params)
 
+
 def test_illumination_angles_value_error(params):
-    '''Test latitude and longitude invalid inputs.'''
+    """Test latitude and longitude invalid inputs."""
     params['latitude'] = 100
-    with pytest.raises(CalculationInvalidValue):
+    with raises(CalculationInvalidValue):
         IlluminationAngles(**params)
 
     params['latitude'] = 90
     params['longitude'] = 190
-    with pytest.raises(CalculationInvalidValue):
+    with raises(CalculationInvalidValue):
         IlluminationAngles(**params)

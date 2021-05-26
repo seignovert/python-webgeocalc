@@ -1,41 +1,45 @@
-# -*- coding: utf-8 -*-
-'''Test WGC angular frame transformation calculation.'''
+"""Test WGC angular frame transformation calculation."""
 
-import pytest
+from pytest import fixture, raises
 
 from webgeocalc import FrameTransformation
 from webgeocalc.errors import (CalculationIncompatibleAttr,
                                CalculationInvalidAttr)
 
 
-@pytest.fixture
+@fixture
 def kernels():
-    '''Cassini kernel set.'''
+    """Cassini kernel set."""
     return 5
 
-@pytest.fixture
+
+@fixture
 def time():
-    '''Input time.'''
+    """Input time."""
     return '2012-10-19T08:24:00.000'
 
-@pytest.fixture
+
+@fixture
 def frame_1():
-    '''Input frame 1.'''
+    """Input frame 1."""
     return 'IAU_SATURN'
 
-@pytest.fixture
+
+@fixture
 def frame_2():
-    '''Input frame 2.'''
+    """Input frame 2."""
     return 'IAU_ENCELADUS'
 
-@pytest.fixture
+
+@fixture
 def corr():
-    '''Input aberration correction.'''
+    """Input aberration correction."""
     return 'NONE'
 
-@pytest.fixture
+
+@fixture
 def params(kernels, time, frame_1, frame_2, corr):
-    '''Input parameters from WGC API example.'''
+    """Input parameters from WGC API example."""
     return {
         'kernels': kernels,
         'times': time,
@@ -44,9 +48,10 @@ def params(kernels, time, frame_1, frame_2, corr):
         'aberration_correction': corr,
     }
 
-@pytest.fixture
+
+@fixture
 def payload(kernels, time, frame_1, frame_2, corr):
-    '''Payload from WGC API example.'''
+    """Payload from WGC API example."""
     return {
         "kernels": [{
             "type": "KERNEL_SET",
@@ -71,35 +76,37 @@ def payload(kernels, time, frame_1, frame_2, corr):
         "angularVelocityUnits": "deg/s"
     }
 
+
 def test_frame_transformation_payload(params, payload):
-    '''Test angular frame transformation payload.'''
+    """Test angular frame transformation payload."""
     assert FrameTransformation(**params).payload == payload
 
+
 def test_frame_transformation_attr_err(params):
-    '''Test errors when frame transformation is invalid.'''
+    """Test errors when frame transformation is invalid."""
     del params['aberration_correction']
-    with pytest.raises(CalculationInvalidAttr):
+    with raises(CalculationInvalidAttr):
         # aberration_correctin can not be '+S'
         FrameTransformation(aberration_correction='CN+S', **params)
 
-    with pytest.raises(CalculationInvalidAttr):
+    with raises(CalculationInvalidAttr):
         FrameTransformation(time_location='WRONG', **params)
 
-    with pytest.raises(CalculationInvalidAttr):
+    with raises(CalculationInvalidAttr):
         FrameTransformation(orientation_representation='WRONG', **params)
 
-    with pytest.raises(CalculationInvalidAttr):
+    with raises(CalculationInvalidAttr):
         FrameTransformation(axis_1='WRONG', **params)
 
-    with pytest.raises(CalculationInvalidAttr):
+    with raises(CalculationInvalidAttr):
         FrameTransformation(angular_units='WRONG', **params)
 
-    with pytest.raises(CalculationInvalidAttr):
+    with raises(CalculationInvalidAttr):
         FrameTransformation(angular_velocity_representation='WRONG', **params)
 
-    with pytest.raises(CalculationInvalidAttr):
+    with raises(CalculationInvalidAttr):
         FrameTransformation(angular_velocity_units='WRONG', **params)
 
-    with pytest.raises(CalculationIncompatibleAttr):
+    with raises(CalculationIncompatibleAttr):
         FrameTransformation(angular_velocity_representation='EULER_ANGLE_DERIVATIVES',
                             angular_velocity_units='Unitary', **params)

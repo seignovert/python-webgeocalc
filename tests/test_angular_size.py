@@ -1,39 +1,43 @@
-# -*- coding: utf-8 -*-
-'''Test WGC angular size calculation.'''
+"""Test WGC angular size calculation."""
 
-import pytest
+from pytest import fixture
 
 from webgeocalc import AngularSize
 
 
-@pytest.fixture
+@fixture
 def kernels():
-    '''Input kernel.'''
+    """Input kernel."""
     return 5  # Cassini-Huygens
 
-@pytest.fixture
+
+@fixture
 def time():
-    '''Input time.'''
+    """Input time."""
     return '2012-10-19T08:24:00.000'
 
-@pytest.fixture
+
+@fixture
 def target():
-    '''Input target name.'''
+    """Input target name."""
     return 'ENCELADUS'
 
-@pytest.fixture
+
+@fixture
 def observer():
-    '''Input observer name.'''
+    """Input observer name."""
     return 'CASSINI'
 
-@pytest.fixture
+
+@fixture
 def corr():
-    '''Input aberration correction.'''
+    """Input aberration correction."""
     return 'CN+S'
 
-@pytest.fixture
+
+@fixture
 def params(kernels, time, target, observer, corr):
-    '''Input parameters from WGC API example.'''
+    """Input parameters from WGC API example."""
     return {
         'kernels': kernels,
         'times': time,
@@ -42,9 +46,10 @@ def params(kernels, time, target, observer, corr):
         'aberration_correction': corr,
     }
 
-@pytest.fixture
+
+@fixture
 def payload(kernels, time, target, observer, corr):
-    '''Payload from WGC API example.'''
+    """Payload from WGC API example."""
     return {
         "kernels": [{
             "type": "KERNEL_SET",
@@ -61,6 +66,7 @@ def payload(kernels, time, target, observer, corr):
         "aberrationCorrection": corr
     }
 
+
 def test_angular_size_payload(params, payload):
-    '''Test angular size payload.'''
+    """Test angular size payload."""
     assert AngularSize(**params).payload == payload

@@ -6,7 +6,7 @@ from .vars import VALID_PARAMETERS
 
 
 class StateVector(Calculation):
-    '''State vector calculation.
+    """State vector calculation.
 
     Calculates the position of one body relative to another,
     calculated in a desired reference frame.
@@ -49,7 +49,7 @@ class StateVector(Calculation):
         If :py:attr:`target`, :py:attr:`observer` and
         :py:attr:`reference_frame` are not provided.
 
-    '''
+    """
 
     REQUIRED = ('target', 'observer', 'reference_frame')
 
@@ -64,7 +64,7 @@ class StateVector(Calculation):
 
 
 class AngularSeparation(Calculation):
-    '''Angular separation calculation.
+    """Angular separation calculation.
 
     Calculates the angular separation of two bodies as seen by an observer body.
 
@@ -108,7 +108,7 @@ class AngularSeparation(Calculation):
         If :py:attr:`target_1`, :py:attr:`target_2` and
         :py:attr:`observer` are not provided.
 
-    '''
+    """
 
     REQUIRED = ('target_1', 'target_2', 'observer')
 
@@ -124,7 +124,7 @@ class AngularSeparation(Calculation):
 
 
 class AngularSize(Calculation):
-    '''Angular size calculation.
+    """Angular size calculation.
 
     Calculates the angular size of a target as seen by an observer.
 
@@ -161,7 +161,7 @@ class AngularSize(Calculation):
     CalculationRequiredAttr
         If :py:attr:`target` and :py:attr:`observer` are not provided.
 
-    '''
+    """
 
     REQUIRED = ('target', 'observer')
 
@@ -174,7 +174,7 @@ class AngularSize(Calculation):
 
 
 class FrameTransformation(Calculation):
-    '''Frame transforme calculation.
+    """Frame transforme calculation.
 
     Calculate the transformation from one reference frame (Frame 1)
     to another reference frame (Frame 2).
@@ -247,7 +247,7 @@ class FrameTransformation(Calculation):
         If :py:attr:`aberration_correction` is in ``LT+S``, ``CN+S``,
         ``XLT+S`` or ``XCN+S``.
 
-    '''
+    """
 
     REQUIRED = ('frame_1', 'frame_2')
 
@@ -286,7 +286,7 @@ class FrameTransformation(Calculation):
 
 
 class IlluminationAngles(Calculation):
-    '''Illumination angles calculation.
+    """Illumination angles calculation.
 
     Calculate the emission, phase and solar incidence angles
     at a point on a target as seen from an observer.
@@ -337,7 +337,7 @@ class IlluminationAngles(Calculation):
     CalculationInvalidAttr
         If :py:attr:`shape_1` is not ``ELLIPSOID`` or ``DSK``.
 
-    '''
+    """
 
     REQUIRED = ('target', 'target_frame', 'observer', 'latitude', 'longitude')
 
@@ -357,7 +357,7 @@ class IlluminationAngles(Calculation):
 
 
 class SubSolarPoint(Calculation):
-    '''Sub-solar point calculation.
+    """Sub-solar point calculation.
 
     Calculates the sub-solar point on a target as seen from an observer.
 
@@ -409,7 +409,7 @@ class SubSolarPoint(Calculation):
         If :py:attr:`aberration_correction` is in ``XLT``, ``XLT+S``,
         ``XCN+S`` or ``XCN+S``.
 
-    '''
+    """
 
     REQUIRED = ('target', 'target_frame', 'observer')
 
@@ -430,7 +430,7 @@ class SubSolarPoint(Calculation):
 
 
 class SubObserverPoint(Calculation):
-    '''Sub-observer point calculation.
+    """Sub-observer point calculation.
 
     Calculate the sub-observer point on a target as seen from an observer.
 
@@ -474,7 +474,7 @@ class SubObserverPoint(Calculation):
         If :py:attr:`target`, :py:attr:`target_frame`
         and :py:attr:`observer` are not provided.
 
-    '''
+    """
 
     REQUIRED = ('target', 'target_frame', 'observer')
 
@@ -490,7 +490,7 @@ class SubObserverPoint(Calculation):
 
 
 class SurfaceInterceptPoint(Calculation):
-    '''Surface intercept point calculation.
+    """Surface intercept point calculation.
 
     Calculate the intercept point of a vector or vectors
     on a target as seen from an observer.
@@ -571,7 +571,7 @@ class SurfaceInterceptPoint(Calculation):
     CalculationInvalidAttr
         If :py:attr:`shape_1` is not ``ELLIPSOID`` or ``DSK``.
 
-    '''
+    """
 
     REQUIRED = ('target', 'target_frame', 'observer')
 
@@ -593,7 +593,7 @@ class SurfaceInterceptPoint(Calculation):
 
 
 class OsculatingElements(Calculation):
-    '''Osculating elements calculation.
+    """Osculating elements calculation.
 
     Calculate the osculating elements of the orbit of a target body around a central body.
 
@@ -632,7 +632,7 @@ class OsculatingElements(Calculation):
     CalculationRequiredAttr
         If :py:attr:`orbiting_body` and :py:attr:`center_body` are not provided.
 
-    '''
+    """
 
     REQUIRED = ('orbiting_body', 'center_body')
 
@@ -645,7 +645,7 @@ class OsculatingElements(Calculation):
 
 
 class TimeConversion(Calculation):
-    '''Time conversion calculation.
+    """Time conversion calculation.
 
     Convert times from one time system or format to another.
 
@@ -687,7 +687,7 @@ class TimeConversion(Calculation):
         Attributes :py:attr:`output_time_custom_format` is needed only if
         :py:attr:`output_time_format` is ``CUSTOM``.
 
-    '''
+    """
 
     def __init__(self, output_time_system='UTC', output_time_format='CALENDAR', **kwargs):
 
@@ -699,7 +699,7 @@ class TimeConversion(Calculation):
 
 
 class GFCoordinateSearch(Calculation):
-    '''Coordinate Search (Geometry Finder) calculation.
+    """Coordinate Search (Geometry Finder) calculation.
 
     Find time intervals when a coordinate of an observer-target position vector
     satisfies a condition.
@@ -774,7 +774,7 @@ class GFCoordinateSearch(Calculation):
         :py:attr:`coordinate`, or :py:attr:`relational_condition` are not
         provided.
 
-    '''
+    """
 
     REQUIRED = ('target', 'observer', 'reference_frame', 'relational_condition')
 

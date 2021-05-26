@@ -1,47 +1,52 @@
-# -*- coding: utf-8 -*-
-'''Test WGC angular separation calculation.'''
+"""Test WGC angular separation calculation."""
 
-import pytest
+from pytest import fixture
 
 from webgeocalc import AngularSeparation
 
 
-@pytest.fixture
+@fixture
 def kernel_paths():
-    '''Input kernel paths.'''
+    """Input kernel paths."""
     return [
         'pds/wgc/kernels/lsk/naif0012.tls',
         'pds/wgc/kernels/spk/de430.bsp',
     ]
 
-@pytest.fixture
+
+@fixture
 def time():
-    '''Input time.'''
+    """Input time."""
     return '2012-10-19T08:24:00.000'
 
-@pytest.fixture
+
+@fixture
 def target_1():
-    '''Input name for the first target.'''
+    """Input name for the first target."""
     return 'VENUS'
 
-@pytest.fixture
+
+@fixture
 def target_2():
-    '''Input name for the second target.'''
+    """Input name for the second target."""
     return 'MERCURY'
 
-@pytest.fixture
+
+@fixture
 def observer():
-    '''Input name of the observer.'''
+    """Input name of the observer."""
     return 'SUN'
 
-@pytest.fixture
+
+@fixture
 def corr():
-    '''Input aberration correction.'''
+    """Input aberration correction."""
     return 'NONE'
 
-@pytest.fixture
+
+@fixture
 def params(kernel_paths, time, target_1, target_2, observer, corr):
-    '''Input parameters from WGC API example.'''
+    """Input parameters from WGC API example."""
     return {
         'kernel_paths': kernel_paths,
         'times': time,
@@ -51,9 +56,10 @@ def params(kernel_paths, time, target_1, target_2, observer, corr):
         'aberration_correction': corr,
     }
 
-@pytest.fixture
+
+@fixture
 def payload(kernel_paths, time, target_1, target_2, observer, corr):
-    '''Payload from WGC API example.'''
+    """Payload from WGC API example."""
     return {
         "kernels": [{
             "type": "KERNEL",
@@ -76,6 +82,7 @@ def payload(kernel_paths, time, target_1, target_2, observer, corr):
         "aberrationCorrection": corr
     }
 
+
 def test_angular_separation_payload(params, payload):
-    '''Test angular separation payload.'''
+    """Test angular separation payload."""
     assert AngularSeparation(**params).payload == payload

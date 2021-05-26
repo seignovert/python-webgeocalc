@@ -1,4 +1,4 @@
-'''WebGeoCalc module.'''
+"""WebGeoCalc module."""
 
 import pbr.version
 
@@ -11,6 +11,7 @@ from .calculation_types import (AngularSeparation, AngularSize,
                                 IlluminationAngles, OsculatingElements,
                                 StateVector, SubObserverPoint, SubSolarPoint,
                                 SurfaceInterceptPoint, TimeConversion)
+
 
 __all__ = [
     'Api',
