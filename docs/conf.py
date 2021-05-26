@@ -16,7 +16,6 @@ author = 'Benoit Seignovert'
 # -- General configuration ---------------------------------------------------
 
 extensions = [
-    'pbr.sphinxext',
     'sphinx.ext.autodoc',
     'sphinx.ext.napoleon',
     'sphinx.ext.doctest',
