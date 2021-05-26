@@ -223,6 +223,34 @@ More examples can be found in here_.
 .. _here: https://webgeocalc.readthedocs.io/en/stable/cli.html
 
 
+Local development and testing
+-----------------------------
+
+Setup:
+```bash
+pip install -e .
+pip install -r tests/requirements.txt -r docs/requirements.txt
+```
+
+Linter:
+```bash
+flake8 setup.py docs/conf.py tests/ webgeocalc/
+pylint webgeocalc/ tests/*.py
+```
+
+Pytest:
+```bash
+pytest --cov=webgeocalc/ tests/
+pytest --nbval-lax examples/
+```
+
+Docs:
+```bash
+sphinx-build docs docs/_build --color -W -bhtml
+sphinx-build docs docs/_build --color -W -bdoctest
+```
+
+
 Disclaimer
 ----------
 This project is not supported or endorsed by either JPL, NAIF or NASA.
