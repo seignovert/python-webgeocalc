@@ -8,7 +8,7 @@ import pytest
 from requests import HTTPError
 
 from webgeocalc import API, Api, ESA_API, JPL_API
-from webgeocalc.errors import (APIError, APIReponseError, KernelSetNotFound,
+from webgeocalc.errors import (APIError, APIResponseError, KernelSetNotFound,
                                ResultAttributeError, TooManyKernelSets)
 from webgeocalc.vars import ESA_URL, JPL_URL
 
@@ -77,7 +77,7 @@ def api_queued():
 
 @pytest.fixture
 def api_error():
-    '''Error API reponse.'''
+    '''Error API response.'''
     return {
         "status": "ERROR",
         "message": "The request has failed.",
@@ -246,5 +246,5 @@ def test_api_read_error(api_error):
 
 def test_api_read_invalid(api_empty_data_response):
     '''Test error if response no valid data.'''
-    with pytest.raises(APIReponseError):
+    with pytest.raises(APIResponseError):
         API.read(api_empty_data_response)

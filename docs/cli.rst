@@ -47,7 +47,7 @@ Search multiple kernels at once (``name`` and ``id`` can be mixed):
      - Cassini Huygens: (id: 5)
      - Solar System Kernels: (id: 1)
 
-The query can also be performed on the ESA WGC instance wiht the ``api`` keyword:
+The query can also be performed on the ESA WGC instance with the ``api`` keyword:
 
 .. code:: bash
 

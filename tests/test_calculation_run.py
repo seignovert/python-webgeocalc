@@ -141,7 +141,7 @@ def results():
 
 @pytest.fixture
 def params_sv():
-    '''Input parameters for state vector caclulation (1 time only).'''
+    '''Input parameters for state vector calculation (1 time only).'''
     return {
         "kernels": 5,
         "times": "2012-10-19T08:24:00.000",
@@ -165,7 +165,7 @@ def response_sv():
 
 @pytest.fixture
 def results_sv():
-    '''State vector esults expected from the API.'''
+    '''State vector results expected from the API.'''
     return {
         "status": "OK",
         "message": "The operation was successful.",
@@ -258,7 +258,7 @@ def results_sv():
 
 @pytest.fixture
 def params_sv_esa():
-    '''Input parameters for state vector caclulation (1 time only).'''
+    '''Input parameters for state vector calculation (1 time only).'''
     return {
         "api": 'ESA',
         "kernels": 6,
@@ -285,7 +285,7 @@ def response_sv_esa():
 
 @pytest.fixture
 def results_sv_esa():
-    '''State vector esults expected from the ESA API.'''
+    '''State vector results expected from the ESA API.'''
     return {
         "status": "OK",
         "message": "The request was successful.",
@@ -370,7 +370,7 @@ def results_sv_esa():
 
 @pytest.fixture
 def loading_kernels():
-    '''Uncomplete response status expected from the API.'''
+    '''Incomplete response status expected from the API.'''
     return {
         "status": "OK",
         "message": "Loading kernels…",

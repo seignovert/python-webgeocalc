@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
-'''WebGeoCalc erros.'''
+'''WebGeoCalc errors.'''
 
 class APIError(IOError):
     '''This exception is raised when the status of the API response is not OK.'''
 
-class APIReponseError(NotImplementedError):
+class APIResponseError(NotImplementedError):
     '''This exception is raised when the format of the API response is not implemented.'''
 
     def __init__(self, json):
@@ -92,7 +92,7 @@ class CalculationInvalidValue(ValueError):
         super().__init__(msg)
 
 class CalculationAlreadySubmitted(IOError):
-    '''This exception is raised when calculation was already submited.'''
+    '''This exception is raised when calculation was already submitted.'''
 
     def __init__(self, calculation_id):
         msg = f"Calculation already submitted with the id: '{calculation_id}'"

@@ -29,7 +29,7 @@ API_ARGS = {
     'action': GetApi,
     'help': 'Webgeocalc endpoint choice '
             '(default on `WGC_URL` if set '
-            'in global environmnent variables '
+            'in global environment variables '
             'or `JPL_URL` if not)',
 }
 

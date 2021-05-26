@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-'''Test WGC surface intercpt point calculation.'''
+'''Test WGC surface intercept point calculation.'''
 
 import pytest
 

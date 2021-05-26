@@ -29,7 +29,7 @@ def target_frame():
 
 @pytest.fixture
 def observer():
-    '''Input oberserver.'''
+    '''Input observer.'''
     return 'CASSINI'
 
 @pytest.fixture

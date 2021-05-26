@@ -5,7 +5,7 @@ import os
 
 import requests
 
-from .errors import APIError, APIReponseError, KernelSetNotFound, TooManyKernelSets
+from .errors import APIError, APIResponseError, KernelSetNotFound, TooManyKernelSets
 from .types import ColumnResult, KernelSetDetails, get_type
 from .vars import ESA_URL, JPL_URL
 
@@ -54,7 +54,7 @@ class Api:
 
         Raises
         ------
-        requests.reponse.HTMLError
+        requests.response.HTMLError
             If HTML error is thrown by the API (HTML code not equal 200)
 
         Example
@@ -87,7 +87,7 @@ class Api:
 
         Raises
         ------
-        requests.reponse.HTMLError
+        requests.response.HTMLError
             If HTML error is thrown by the API (HTML code not equal 200)
 
         Example
@@ -104,7 +104,7 @@ class Api:
 
     @staticmethod
     def read(json):
-        '''Read content from API JSON reponse.
+        '''Read content from API JSON response.
 
         Parameters
         ----------
@@ -137,7 +137,7 @@ class Api:
         ------
         APIError
             If the API status is not ``OK``.
-        APIReponseError
+        APIResponseError
             If the format of the API response is unexpected.
 
         '''
@@ -164,7 +164,7 @@ class Api:
             cols = [ColumnResult(col) for col in json['columns']]
             return cols, json['rows']
 
-        raise APIReponseError(json)
+        raise APIResponseError(json)
 
     def kernel_sets(self):
         '''Get list of all kernel sets available on the webgeocalc server.

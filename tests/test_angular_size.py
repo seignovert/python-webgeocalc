@@ -23,7 +23,7 @@ def target():
 
 @pytest.fixture
 def observer():
-    '''Input obserber name.'''
+    '''Input observer name.'''
     return 'CASSINI'
 
 @pytest.fixture

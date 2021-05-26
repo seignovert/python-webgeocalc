@@ -90,7 +90,7 @@ def test_calculation_apis_cache(params):
     assert api.url == 'https://wgc.obspm.fr/webgeocalc/api'
     assert len(APIs) == 4
 
-    # Input directly a `Api` obejct
+    # Input directly a `Api` object
     api = Calculation(api=api, **params).api
     assert api.url == 'https://wgc.obspm.fr/webgeocalc/api'
     assert len(APIs) == 4
@@ -286,7 +286,7 @@ def test_calculation_direction_vector_type_error(params):
         Calculation(direction_vector_type='WRONG', **params)
 
 def test_calculation_direction_instrument_error(params):
-    '''Test erros when intercept instrument is invalid.'''
+    '''Test errors when intercept instrument is invalid.'''
     with pytest.raises(CalculationUndefinedAttr):
         # Missing `direction_vector_type`
         Calculation(direction_instrument='CASSINI_ISS_NAC', **params)
@@ -359,7 +359,7 @@ def test_calculation_output_time_format_error(params):
                     output_time_system='UTC', **params)
 
 def test_calculation_output_sclk_id_error(params):
-    '''Test errors when output sckl id is invalid.'''
+    '''Test errors when output sclk id is invalid.'''
     with pytest.raises(CalculationIncompatibleAttr):
         Calculation(output_sclk_id=-82, output_time_system='WRONG', **params)
 

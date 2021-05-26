@@ -962,7 +962,7 @@ class Calculation:
         Parameters
         ----------
         observer: str or int
-            The oberving body ``name`` or ``id`` from :py:func:`API.bodies`.
+            The observing body ``name`` or ``id`` from :py:func:`API.bodies`.
 
         '''
         self.__observer = val if isinstance(val, int) else val.upper()
@@ -1629,7 +1629,7 @@ class Calculation:
 
     @parameter
     def direction_vector_ra(self, val):
-        '''The right-ascenssion ray's direction vector coordinate.
+        '''The right-ascension ray's direction vector coordinate.
 
         Parameters
         ----------

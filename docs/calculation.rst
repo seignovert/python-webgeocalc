@@ -281,7 +281,7 @@ web portals.
    * - :py:class:`TimeConversion`
      - ``TIME_CONVERSION``
      - Time Conversion
-   * - :py:class:`GFCooordinateSearch`
+   * - :py:class:`GFCoordinateSearch`
      - ``GF_COORDINATE_SEARCH``
      - Position Event Finder
 
