@@ -1,5 +1,12 @@
-coverage
-mock
+pylint
+flake8
+flake8-colors
+flake8-docstrings
+flake8-import-order
+pep8-naming
+mccabe
+bandit
 pytest
 pytest-cov
 requests_mock
+nbval

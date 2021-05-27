@@ -150,6 +150,7 @@ disable=
     attribute-defined-outside-init,
     redefined-outer-name,
     disallowed-name,
+    duplicate-code,
     wrong-import-order # Handle by flake8
 
 # Enable the message, report, category or checker with the given id(s). You can

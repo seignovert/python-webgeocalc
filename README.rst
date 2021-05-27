@@ -3,9 +3,7 @@ Python package for NAIF WebGeoCalc API
 
 |Docs| |Build| |Coverage| |CodeFactor|
 
-|PyPI| |Conda|
-
-|Python| |Version| |Status| |Conda Platform|
+|PyPI|  |Python| |Version| |Status|
 
 |DOI| |License|
 
@@ -17,16 +15,12 @@ Python package for NAIF WebGeoCalc API
         :target: https://travis-ci.org/seignovert/python-webgeocalc
 .. |Coverage| image:: https://img.shields.io/codecov/c/github/seignovert/python-webgeocalc.svg?label=Codecov&logo=codecov&logoColor=white
               :target: https://codecov.io/gh/seignovert/python-webgeocalc
-.. |CodeFactor| image:: https://www.codefactor.io/repository/github/seignovert/python-webgeocalc/badge/master
-                :target: https://www.codefactor.io/repository/github/seignovert/python-webgeocalc/overview/master
+.. |CodeFactor| image:: https://www.codefactor.io/repository/github/seignovert/python-webgeocalc/badge/main
+                :target: https://www.codefactor.io/repository/github/seignovert/python-webgeocalc/overview/main
 .. |PyPI| image:: https://img.shields.io/badge/PyPI-webgeocalc-blue.svg?logo=python&logoColor=white
         :target: https://pypi.org/project/webgeocalc
-.. |Conda| image:: https://img.shields.io/badge/conda|seignovert-webgeocalc-blue.svg?logo=python&logoColor=white
-        :target: https://anaconda.org/seignovert/webgeocalc
 .. |Python| image:: https://img.shields.io/pypi/pyversions/webgeocalc.svg?label=Python
         :target: https://pypi.org/project/webgeocalc
-.. |Conda Platform| image:: https://img.shields.io/conda/pn/seignovert/webgeocalc.svg
-          :target: https://anaconda.org/seignovert/webgeocalc
 .. |Version| image:: https://img.shields.io/pypi/v/webgeocalc.svg?label=Version
         :target: https://pypi.org/project/webgeocalc
 .. |Status| image:: https://img.shields.io/pypi/status/webgeocalc.svg?label=Status
@@ -36,7 +30,7 @@ Python package for NAIF WebGeoCalc API
 .. |License| image:: https://img.shields.io/github/license/seignovert/python-webgeocalc.svg?label=License
              :target: https://github.com/seignovert/python-webgeocalc/
 .. |Examples| image:: https://img.shields.io/badge/Jupyter%20Notebook-examples-blue.svg?logo=jupyter&logoColor=orange
-        :target: https://nbviewer.jupyter.org/github/seignovert/python-webgeocalc/blob/master/examples/api.ipynb
+        :target: https://nbviewer.jupyter.org/github/seignovert/python-webgeocalc/blob/main/examples/api.ipynb
 
 
 In december 2018, `JPL/NAIF`_ announced an **experimental**
@@ -73,11 +67,6 @@ With ``pip``:
 
     $ pip install webgeocalc
 
-With ``conda``:
-
-.. code:: bash
-
-    $ conda install -c seignovert webgeocalc
 
 Usage
 -----
@@ -164,7 +153,7 @@ Run calculation:
 More details can be found in the `docs`_ and in the `Jupyter Notebooks`_.
 
 .. _`docs`: https://webgeocalc.readthedocs.io/en/stable/calculation.html
-.. _`Jupyter Notebooks`: https://nbviewer.jupyter.org/github/seignovert/python-webgeocalc/blob/master/examples/calculation.ipynb
+.. _`Jupyter Notebooks`: https://nbviewer.jupyter.org/github/seignovert/python-webgeocalc/blob/main/examples/calculation.ipynb
 
 Command Line Interface (cli)
 ----------------------------
@@ -221,6 +210,34 @@ The webgeocalc API can be call directly from the command line interface:
 More examples can be found in here_.
 
 .. _here: https://webgeocalc.readthedocs.io/en/stable/cli.html
+
+
+Local development and testing
+-----------------------------
+
+Setup:
+```bash
+pip install -e .
+pip install -r tests/requirements.txt -r docs/requirements.txt
+```
+
+Linter:
+```bash
+flake8 setup.py docs/conf.py tests/ webgeocalc/
+pylint webgeocalc/ tests/*.py
+```
+
+Pytest:
+```bash
+pytest --cov=webgeocalc/ tests/
+pytest --nbval-lax examples/
+```
+
+Docs:
+```bash
+sphinx-build docs docs/_build --color -W -bhtml
+sphinx-build docs docs/_build --color -W -bdoctest
+```
 
 
 Disclaimer
