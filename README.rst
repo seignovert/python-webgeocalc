@@ -11,8 +11,8 @@ Python package for NAIF WebGeoCalc API
 
 .. |Docs| image:: https://img.shields.io/readthedocs/webgeocalc.svg?label=Docs&logo=read-the-docs&logoColor=white
         :target: https://webgeocalc.readthedocs.io/
-.. |Build| image:: https://img.shields.io/travis/seignovert/python-webgeocalc.svg?label=Build&logo=travis-ci&logoColor=white
-        :target: https://travis-ci.org/seignovert/python-webgeocalc
+.. |Build| image:: https://github.com/seignovert/python-webgeocalc/workflows/Continuous%20Integration/badge.svg
+        :target: https://github.com/seignovert/python-webgeocalc/actions/workflows/actions.yml
 .. |Coverage| image:: https://img.shields.io/codecov/c/github/seignovert/python-webgeocalc.svg?label=Codecov&logo=codecov&logoColor=white
               :target: https://codecov.io/gh/seignovert/python-webgeocalc
 .. |CodeFactor| image:: https://www.codefactor.io/repository/github/seignovert/python-webgeocalc/badge/main
