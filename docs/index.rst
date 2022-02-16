@@ -13,12 +13,12 @@ Python package for NAIF WebGeoCalc API
 
 .. |Docs| image:: https://img.shields.io/readthedocs/webgeocalc.svg?label=Docs&logo=read-the-docs&logoColor=white
         :target: https://webgeocalc.readthedocs.io/
-.. |Build| image:: https://img.shields.io/travis/seignovert/python-webgeocalc.svg?label=Build&logo=travis-ci&logoColor=white
-        :target: https://travis-ci.org/seignovert/python-webgeocalc
+.. |Build| image:: https://github.com/seignovert/python-webgeocalc/workflows/Continuous%20Integration/badge.svg
+        :target: https://github.com/seignovert/python-webgeocalc/actions/workflows/actions.yml
 .. |Coverage| image:: https://img.shields.io/codecov/c/github/seignovert/python-webgeocalc.svg?label=Codecov&logo=codecov&logoColor=white
               :target: https://codecov.io/gh/seignovert/python-webgeocalc
-.. |CodeFactor| image:: https://www.codefactor.io/repository/github/seignovert/python-webgeocalc/badge/master
-                :target: https://www.codefactor.io/repository/github/seignovert/python-webgeocalc/overview/master
+.. |CodeFactor| image:: https://www.codefactor.io/repository/github/seignovert/python-webgeocalc/badge/main
+                :target: https://www.codefactor.io/repository/github/seignovert/python-webgeocalc/overview/main
 .. |PyPI| image:: https://img.shields.io/badge/PyPI-webgeocalc-blue.svg?logo=python&logoColor=white
         :target: https://pypi.org/project/webgeocalc
 .. |Conda| image:: https://img.shields.io/badge/conda|seignovert-webgeocalc-blue.svg?logo=python&logoColor=white
@@ -36,7 +36,7 @@ Python package for NAIF WebGeoCalc API
 .. |License| image:: https://img.shields.io/github/license/seignovert/python-webgeocalc.svg?label=License
              :target: https://github.com/seignovert/python-webgeocalc/
 .. |Examples| image:: https://img.shields.io/badge/Jupyter%20Notebook-examples-blue.svg?logo=jupyter&logoColor=orange
-        :target: https://nbviewer.jupyter.org/github/seignovert/python-webgeocalc/blob/master/examples/api.ipynb
+        :target: https://nbviewer.jupyter.org/github/seignovert/python-webgeocalc/blob/main/examples/api.ipynb
 
 
 In december 2018, `JPL/NAIF`_ announced an **experimental**
