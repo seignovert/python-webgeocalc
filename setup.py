@@ -9,7 +9,7 @@ with open('README.rst', encoding='utf-8') as f:
 
 setup(
     name='webgeocalc',
-    version='1.3.0',
+    version='1.4.0',
     description='Python package for NAIF WebGeoCalc API',
     author='Benoit Seignovert',
     author_email='benoit.a.seignovert@univ-nantes.fr',
