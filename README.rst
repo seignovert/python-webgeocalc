@@ -216,28 +216,32 @@ Local development and testing
 -----------------------------
 
 Setup:
-```bash
-pip install -e .
-pip install -r tests/requirements.txt -r docs/requirements.txt
-```
+
+.. code:: bash
+
+    pip install -e .
+    pip install -r tests/requirements.txt -r docs/requirements.txt
 
 Linter:
-```bash
-flake8 setup.py docs/conf.py tests/ webgeocalc/
-pylint webgeocalc/ tests/*.py
-```
+
+.. code:: bash
+
+    flake8 setup.py docs/conf.py tests/ webgeocalc/
+    pylint webgeocalc/ tests/*.py
 
 Pytest:
-```bash
-pytest --cov=webgeocalc/ tests/
-pytest --nbval-lax examples/
-```
+
+.. code:: bash
+
+    pytest --cov=webgeocalc/ tests/
+    pytest --nbval-lax examples/
 
 Docs:
-```bash
-sphinx-build docs docs/_build --color -W -bhtml
-sphinx-build docs docs/_build --color -W -bdoctest
-```
+
+.. code:: bash
+
+    sphinx-build docs docs/_build --color -W -bhtml
+    sphinx-build docs docs/_build --color -W -bdoctest
 
 
 Disclaimer
