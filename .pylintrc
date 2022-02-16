@@ -151,7 +151,8 @@ disable=
     redefined-outer-name,
     disallowed-name,
     duplicate-code,
-    wrong-import-order # Handle by flake8
+    wrong-import-order, # Handle by flake8
+    unused-private-member,
 
 # Enable the message, report, category or checker with the given id(s). You can
 # either give multiple identifier separated by comma (,) or put this option

@@ -394,7 +394,7 @@ class Api:
         """API metadata."""
         if self._meta is None:
             self._meta = self.get('/')
-        return self._meta
+        return dict(self._meta)
 
 
 # Export default API object
