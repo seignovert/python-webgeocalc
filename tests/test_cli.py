@@ -53,7 +53,7 @@ def test_cli_bodies(capsys):
     captured = capsys.readouterr()
     assert captured.out == ' - TITAN: (id: 606)\n'
 
-    argv = '--api esa 6 --name 67P'.split()
+    argv = '--api esa 13 --name 67P'.split()
     cli_bodies(argv)
     captured = capsys.readouterr()
     assert captured.out == ' - 67P/CHURYUMOV-GERASIMENKO (1969 R1): (id: 1000012)\n'
