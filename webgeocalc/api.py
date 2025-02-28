@@ -226,8 +226,8 @@ class Api:
         if isinstance(kernel_set, KernelSetDetails):
             return int(kernel_set)
 
-        raise TypeError(f"'kernel_set' must be a 'int', a 'str' of a 'KernelSetDetails' object:\n' + \
-                        '>>> Type({kernel_set}) = {type(kernel_set)}")
+        raise TypeError(f"'kernel_set' must be a 'int', a 'str' of a 'KernelSetDetails' "
+                        f"object:\n' + '>>> Type({kernel_set}) = {type(kernel_set)}")
 
     def bodies(self, kernel_set):
         """Get list of bodies available in a kernel set.
