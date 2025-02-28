@@ -18,8 +18,10 @@ def solar_system_kernel_set():
     return {
         'caption': 'Solar System Kernels',
         'sclkId': '0',
-        'description': 'Generic kernels for planets, satellites, and some asteroids '
-                       'covering from 1950-01-01 to 2050-01-01.',
+        'description': 'Generic kernels for planets, satellites, and some asteroids, '
+                       'covering at least from 1950-01-01 to 2050-01-01, and including '
+                       'the latest generic text PCK and the mars_iau2000_v1.tpc PCK '
+                       'loaded in this order.',
         'kernelSetId': '1',
         'missionId': 'gen',
     }
