@@ -191,7 +191,7 @@ def test_cli_angular_size_run(capsys):
     assert "timeSystem: UTC," in captured.out
     assert 'API status:\n[Calculation submit] Phase:' in captured.out
     assert 'Results:\nDATE:\n> 2012-10-19 08:24:00.000000 UTC' in captured.out
-    assert 'ANGULAR_SIZE:\n> 0.03037939' in captured.out
+    assert 'ANGULAR_SIZE:\n> 0.03032491' in captured.out
 
 
 def test_cli_frame_transformation_dry_run(capsys):
@@ -386,7 +386,7 @@ def test_cli_state_vector_esa(capsys):
     captured = capsys.readouterr()
     assert 'API: http://spice.esac.esa.int/webgeocalc/api' in captured.out
     assert 'Payload:' in captured.out
-    assert "kernels: [{'type': 'KERNEL_SET', 'id': 6}]" in captured.out
+    assert "kernels: [{'type': 'KERNEL_SET', 'id': 13}]" in captured.out
     assert "times: ['2014-01-01T01:23:45.000']" in captured.out
     assert 'target: 67P/CHURYUMOV-GERASIMENKO (1969 R1)' in captured.out
     assert 'observer: ROSETTA ORBITER' in captured.out
