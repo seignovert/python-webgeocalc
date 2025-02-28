@@ -62,7 +62,7 @@ class Api:
         [<KernelSetDetails> Solar System Kernels (id: 1), ...]
 
         """
-        response = requests.get(self.url + url)
+        response = requests.get(self.url + url, timeout=60)
         if response.ok:
             return self.read(response.json())
 
