@@ -143,6 +143,7 @@ disable=
     C0103, # UPPER_CASE naming style (invalid-name)
     C0301, # Line too long (already handle by flake8)
     too-many-arguments,
+    too-many-positional-arguments,
     too-many-public-methods,
     too-many-lines,
     too-many-instance-attributes,
