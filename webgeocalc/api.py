@@ -95,7 +95,7 @@ class Api:
         ('0788aba2-d4e5-4028-9ef1-4867ad5385e0', 'COMPLETE')
 
         """
-        response = requests.post(self.url + url, json=payload)
+        response = requests.post(self.url + url, json=payload, timeout=60)
         if response.ok:
             return self.read(response.json())
 
