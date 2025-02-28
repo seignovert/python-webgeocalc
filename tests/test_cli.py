@@ -104,7 +104,7 @@ def test_cli_instruments(capsys):
     assert ' - CASSINI_ISS_WAC: (id: -82361)' in captured.out
     assert ' - CASSINI_VIMS_IR: (id: -82370)' not in captured.out
 
-    argv = '--api esa 6 --name NAVCAM'.split()
+    argv = '--api esa 13 --name NAVCAM'.split()
     cli_instruments(argv)
     captured = capsys.readouterr()
     assert ' - ROS_NAVCAM-A: (id: -226170)' in captured.out
