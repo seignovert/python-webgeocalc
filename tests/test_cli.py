@@ -78,7 +78,7 @@ def test_cli_frames(capsys):
     assert ' - IAU_TITAN: (id: 10044)' in captured.out
     assert ' - J2000: (id: 1)' not in captured.out
 
-    argv = '--api esa 6 --name 67P'.split()
+    argv = '--api esa 13 --name 67P'.split()
     cli_frames(argv)
     captured = capsys.readouterr()
     assert '- 67P/C-G_CK: (id: -1000012000)' in captured.out
