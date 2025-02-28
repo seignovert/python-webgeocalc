@@ -28,10 +28,10 @@ def test_cli_kernel_sets(capsys):
     assert ' - Solar System Kernels: (id: 1)' in captured.out
     assert 'Too many kernel sets contains \'Cassini\' in their names:' in captured.out
 
-    argv = '--api esa --kernel 6'.split()
+    argv = '--api esa --kernel 13'.split()
     cli_kernel_sets(argv)
     captured = capsys.readouterr()
-    assert ' - OPS  --     Rosetta               -- Operational: (id: 6)' in captured.out
+    assert ' - OPS  --     Rosetta               -- Operational: (id: 13)' in captured.out
     assert '' in captured.out
 
 
