@@ -62,7 +62,7 @@ class Api:
         [<KernelSetDetails> Solar System Kernels (id: 1), ...]
 
         """
-        response = requests.get(self.url + url)
+        response = requests.get(self.url + url, timeout=60)
         if response.ok:
             return self.read(response.json())
 
@@ -95,7 +95,7 @@ class Api:
         ('0788aba2-d4e5-4028-9ef1-4867ad5385e0', 'COMPLETE')
 
         """
-        response = requests.post(self.url + url, json=payload)
+        response = requests.post(self.url + url, json=payload, timeout=60)
         if response.ok:
             return self.read(response.json())
 
@@ -226,8 +226,8 @@ class Api:
         if isinstance(kernel_set, KernelSetDetails):
             return int(kernel_set)
 
-        raise TypeError(f"'kernel_set' must be a 'int', a 'str' of a 'KernelSetDetails' object:\n' + \
-                        '>>> Type({kernel_set}) = {type(kernel_set)}")
+        raise TypeError(f"'kernel_set' must be a 'int', a 'str' of a 'KernelSetDetails' "
+                        f"object:\n' + '>>> Type({kernel_set}) = {type(kernel_set)}")
 
     def bodies(self, kernel_set):
         """Get list of bodies available in a kernel set.

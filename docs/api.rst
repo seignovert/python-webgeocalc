@@ -38,7 +38,7 @@ and can be retrieved directly as items:
 'WGC2 -- a WebGeocalc Server with enabled API at NAIF, JPL'
 
 >>> API['version']
-'2.2.9'
+'2.7.6'
 
 
 Request kernel sets

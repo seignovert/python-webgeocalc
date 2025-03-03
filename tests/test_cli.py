@@ -28,10 +28,10 @@ def test_cli_kernel_sets(capsys):
     assert ' - Solar System Kernels: (id: 1)' in captured.out
     assert 'Too many kernel sets contains \'Cassini\' in their names:' in captured.out
 
-    argv = '--api esa --kernel 6'.split()
+    argv = '--api esa --kernel 13'.split()
     cli_kernel_sets(argv)
     captured = capsys.readouterr()
-    assert ' - OPS  --     Rosetta               -- Operational: (id: 6)' in captured.out
+    assert ' - OPS  --     Rosetta               -- Operational: (id: 13)' in captured.out
     assert '' in captured.out
 
 
@@ -53,7 +53,7 @@ def test_cli_bodies(capsys):
     captured = capsys.readouterr()
     assert captured.out == ' - TITAN: (id: 606)\n'
 
-    argv = '--api esa 6 --name 67P'.split()
+    argv = '--api esa 13 --name 67P'.split()
     cli_bodies(argv)
     captured = capsys.readouterr()
     assert captured.out == ' - 67P/CHURYUMOV-GERASIMENKO (1969 R1): (id: 1000012)\n'
@@ -78,7 +78,7 @@ def test_cli_frames(capsys):
     assert ' - IAU_TITAN: (id: 10044)' in captured.out
     assert ' - J2000: (id: 1)' not in captured.out
 
-    argv = '--api esa 6 --name 67P'.split()
+    argv = '--api esa 13 --name 67P'.split()
     cli_frames(argv)
     captured = capsys.readouterr()
     assert '- 67P/C-G_CK: (id: -1000012000)' in captured.out
@@ -104,7 +104,7 @@ def test_cli_instruments(capsys):
     assert ' - CASSINI_ISS_WAC: (id: -82361)' in captured.out
     assert ' - CASSINI_VIMS_IR: (id: -82370)' not in captured.out
 
-    argv = '--api esa 6 --name NAVCAM'.split()
+    argv = '--api esa 13 --name NAVCAM'.split()
     cli_instruments(argv)
     captured = capsys.readouterr()
     assert ' - ROS_NAVCAM-A: (id: -226170)' in captured.out
@@ -191,7 +191,7 @@ def test_cli_angular_size_run(capsys):
     assert "timeSystem: UTC," in captured.out
     assert 'API status:\n[Calculation submit] Phase:' in captured.out
     assert 'Results:\nDATE:\n> 2012-10-19 08:24:00.000000 UTC' in captured.out
-    assert 'ANGULAR_SIZE:\n> 0.03037939' in captured.out
+    assert 'ANGULAR_SIZE:\n> 0.03032491' in captured.out
 
 
 def test_cli_frame_transformation_dry_run(capsys):
@@ -386,7 +386,7 @@ def test_cli_state_vector_esa(capsys):
     captured = capsys.readouterr()
     assert 'API: http://spice.esac.esa.int/webgeocalc/api' in captured.out
     assert 'Payload:' in captured.out
-    assert "kernels: [{'type': 'KERNEL_SET', 'id': 6}]" in captured.out
+    assert "kernels: [{'type': 'KERNEL_SET', 'id': 13}]" in captured.out
     assert "times: ['2014-01-01T01:23:45.000']" in captured.out
     assert 'target: 67P/CHURYUMOV-GERASIMENKO (1969 R1)' in captured.out
     assert 'observer: ROSETTA ORBITER' in captured.out

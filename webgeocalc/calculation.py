@@ -1455,11 +1455,11 @@ class Calculation:
 
         keys = self.params.keys()
         if val in ['VECTOR_IN_INSTRUMENT_FOV', 'VECTOR_IN_REFERENCE_FRAME']:
-            if not(
+            if not (
                     'direction_vector_x' in keys and  # noqa: W504
                     'direction_vector_y' in keys and  # noqa: W504
                     'direction_vector_z' in keys
-            ) and not(
+            ) and not (
                 'direction_vector_ra' in keys and  # noqa: W504
                 'direction_vector_dec' in keys
             ):
