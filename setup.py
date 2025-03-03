@@ -24,7 +24,7 @@ setup(
     license='MIT',
     python_requires='>=3.8',
     install_requires=[
-        'requests==2.25.1',
+        'requests==2.31.0',
     ],
     packages=find_packages(),
     include_package_data=False,
