@@ -2056,13 +2056,15 @@ class Calculation:
 
     @parameter
     def direction_1(self, val):
-        """The first direction definition for two-directions angular separation.
+        """The first direction object.
+
+        Definition of first direction for two-directions angular
+        separation calculation.
 
         Parameters
         ----------
         direction_1: dict
             Direction configuration. See: :py:func:`direction`.
-
         """
         val.setdefault("aberrationCorrection", "NONE")
         val.setdefault("antiVectorFlag", False)
@@ -2070,13 +2072,15 @@ class Calculation:
 
     @parameter
     def direction_2(self, val):
-        """The second direction definition for two-directions angular separation.
+        """The second direction object.
+
+        Definition of second direction for two-directions angular
+        separation calculation.
 
         Parameters
         ----------
         direction_2: dict
             Direction configuration. See: :py:func:`direction`.
-
         """
         val.setdefault("aberrationCorrection", "NONE")
         val.setdefault("antiVectorFlag", False)
