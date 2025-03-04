@@ -2055,18 +2055,6 @@ class Calculation:
         self.__specType = val
 
     @parameter
-    def spec_type(self, val):
-        """The specification type for anguler separation.
-
-        Parameters
-        ----------
-        spec_type: str
-            Specification type.
-        """
-
-        self.__specType = val
-
-    @parameter
     def direction_1(self, val):
         """The first direction definition for two-directions angular separation.
 

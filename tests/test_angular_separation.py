@@ -94,6 +94,7 @@ def kernel_set():
     """Input kernel set."""
     return 5
 
+
 @fixture
 def direction_1():
     """Input first direction."""
@@ -128,13 +129,14 @@ def params_two_directions(kernel_set, time, direction_1, direction_2, corr):
         'aberration_correction': corr
     }
 
+
 @fixture
 def payload_two_directions(kernel_set, time, direction_1, direction_2, corr):
     """Input parameters from WGC API example."""
     return {
         "kernels": [{
             "type": "KERNEL_SET",
-            "id": 5,
+            "id": kernel_set,
         }],
         "specType": "TWO_DIRECTIONS",
         "timeSystem": "UTC",
@@ -147,7 +149,6 @@ def payload_two_directions(kernel_set, time, direction_1, direction_2, corr):
         "direction2": direction_2,
         "aberrationCorrection": corr
     }
-
 
 
 def test_angular_separation_payload(params, payload):
