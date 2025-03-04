@@ -15,6 +15,12 @@ def kernel_paths():
 
 
 @fixture
+def kernels():
+    """Input kernel set."""
+    return 5
+
+
+@fixture
 def time():
     """Input time."""
     return '2012-10-19T08:24:00.000'
@@ -83,6 +89,75 @@ def payload(kernel_paths, time, target_1, target_2, observer, corr):
     }
 
 
+@fixture
+def kernel_set():
+    """Input kernel set."""
+    return 5
+
+@fixture
+def direction_1():
+    """Input first direction."""
+    return {
+        "directionType": "VECTOR",
+        "directionVectorType": "REFERENCE_FRAME_AXIS",
+        "directionFrame": "CASSINI_RPWS_EDIPOLE",
+        "directionFrameAxis": "Z"
+    }
+
+
+@fixture
+def direction_2():
+    """Input second direction."""
+    return {
+        "directionType": "POSITION",
+        "target": "SUN",
+        "shape": "POINT",
+        "observer": "CASSINI"
+    }
+
+
+@fixture
+def params_two_directions(kernel_set, time, direction_1, direction_2, corr):
+    """Input parameters from WGC API example."""
+    return {
+        'spec_type': 'TWO_DIRECTIONS',
+        'kernels': kernel_set,
+        'times': time,
+        'direction_1': direction_1,
+        'direction_2': direction_2,
+        'aberration_correction': corr
+    }
+
+@fixture
+def payload_two_directions(kernel_set, time, direction_1, direction_2, corr):
+    """Input parameters from WGC API example."""
+    return {
+        "kernels": [{
+            "type": "KERNEL_SET",
+            "id": 5,
+        }],
+        "specType": "TWO_DIRECTIONS",
+        "timeSystem": "UTC",
+        "timeFormat": "CALENDAR",
+        "times": [
+            time,
+        ],
+        "calculationType": "ANGULAR_SEPARATION",
+        "direction1": direction_1,
+        "direction2": direction_2,
+        "aberrationCorrection": corr
+    }
+
+
+
 def test_angular_separation_payload(params, payload):
     """Test angular separation payload."""
     assert AngularSeparation(**params).payload == payload
+
+
+def test_angular_separation_payload_two_directions(
+        params_two_directions,
+        payload_two_directions
+):
+    """Test angular separation payload (`TWO_DIRECTIONS` mode)."""
+    assert AngularSeparation(**params_two_directions).payload == payload_two_directions

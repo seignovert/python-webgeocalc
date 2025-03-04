@@ -2039,3 +2039,57 @@ class Calculation:
                     ) from None
 
             self.__condition = kwargs
+
+    @parameter
+    def spec_type(self, val):
+        """Type of angular separation calculation.
+
+        Parameters
+        ----------
+        spec_type: str
+            One of the following:
+
+            - TWO_TARGETS
+            - TWO_DIRECTIONS
+        """
+        self.__specType = val
+
+    @parameter
+    def spec_type(self, val):
+        """The specification type for anguler separation.
+
+        Parameters
+        ----------
+        spec_type: str
+            Specification type.
+        """
+
+        self.__specType = val
+
+    @parameter
+    def direction_1(self, val):
+        """The first direction definition for two-directions angular separation.
+
+        Parameters
+        ----------
+        direction_1: dict
+            Direction configuration. See: :py:func:`direction`.
+
+        """
+        val.setdefault("aberrationCorrection", "NONE")
+        val.setdefault("antiVectorFlag", False)
+        self.__direction1 = val
+
+    @parameter
+    def direction_2(self, val):
+        """The second direction definition for two-directions angular separation.
+
+        Parameters
+        ----------
+        direction_2: dict
+            Direction configuration. See: :py:func:`direction`.
+
+        """
+        val.setdefault("aberrationCorrection", "NONE")
+        val.setdefault("antiVectorFlag", False)
+        self.__direction2 = val
