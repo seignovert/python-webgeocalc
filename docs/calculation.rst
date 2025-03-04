@@ -339,7 +339,9 @@ Angular Separation
 ------------------
 
 Calculates the angular separation of two bodies as seen by an
-observer body.
+observer body. There are two types of calculation. The default
+one is the angular separation between two targets (`TWO_TARGETS`
+mode), which is the default mode.
 
 >>> AngularSeparation(
 ...     kernel_paths = ['pds/wgc/kernels/lsk/naif0012.tls',
@@ -352,14 +354,39 @@ observer body.
 ... ).run()
 {'DATE': '2012-10-19 08:24:00.000000 UTC', 'ANGULAR_SEPARATION': 175.17072258}
 
+The second case is the angular separation between two directions
+(`TWO_DIRECTIONS` mode).
+
+>>> AngularSeparation(
+...     spec_type = 'TWO_DIRECTIONS',
+...     kernels = 5,
+...     times = '2012-10-19T08:24:00.000',
+...     direction_1 = {
+...         "directionType": "VECTOR",
+...         "directionVectorType": "REFERENCE_FRAME_AXIS",
+...         "directionFrame": "CASSINI_RPWS_EDIPOLE",
+...         "directionFrameAxis": "Z"
+...     },
+...     direction_2 = {
+...         "directionType": "POSITION",
+...         "target": "SUN",
+...         "shape": "POINT",
+...         "observer": "CASSINI"
+...     },
+...     verbose = False,
+... ).run()
+{'DATE': '2012-10-19 08:24:00.000000 UTC', 'ANGULAR_SEPARATION': 90.10114616}
+
 .. important::
 
     Calculation required parameters:
         - :py:attr:`.kernels` or/and :py:attr:`.kernel_paths`
         - :py:attr:`.times` or :py:attr:`.intervals` with :py:attr:`.time_step` and :py:attr:`.time_step_units`
-        - :py:attr:`.target_1`
-        - :py:attr:`.target_2`
-        - :py:attr:`.observer`
+        - :py:attr:`.target_1` if :py:attr:`.spec_type` is `TWO_TARGETS` or not set
+        - :py:attr:`.target_2` if :py:attr:`.spec_type` is `TWO_TARGETS` or not set
+        - :py:attr:`.observer` if :py:attr:`.spec_type` is `TWO_TARGETS` or not set
+        - :py:attr:`.direction_1` if :py:attr:`.spec_type` is `TWO_DIRECTIONS`
+        - :py:attr:`.direction_2` if :py:attr:`.spec_type` is `TWO_DIRECTIONS`
 
     Default parameters:
         - :py:attr:`.time_system`: ``UTC``
