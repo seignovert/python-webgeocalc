@@ -3,8 +3,8 @@
 from pytest import fixture
 from pytest import raises
 
-from webgeocalc.errors import CalculationInvalidAttr
 from webgeocalc import AngularSeparation
+from webgeocalc.errors import CalculationInvalidAttr
 
 
 @fixture
@@ -191,8 +191,6 @@ def direction_vector_in_ref_frame_radec_payload():
     }
 
 
-
-
 @fixture
 def direction_vector_in_ref_frame_azel():
     """Input vector direction."""
@@ -257,6 +255,7 @@ def direction_position():
         "observer": "CASSINI"
     }
 
+
 @fixture
 def direction_position_payload():
     """Position direction payload."""
@@ -280,6 +279,7 @@ def direction_position_anti_vector_flag_invalid():
         "observer": "CASSINI",
         "anti_vector_flag": "Test"
     }
+
 
 @fixture
 def params_two_directions_anti_vector_flag_invalid(
@@ -550,7 +550,8 @@ def test_angular_separation_payload_two_directions_1(
         payload_two_directions_1
 ):
     """Test angular separation payload (`TWO_DIRECTIONS` mode)."""
-    assert AngularSeparation(**params_two_directions_1).payload == payload_two_directions_1
+    payload = AngularSeparation(**params_two_directions_1).payload
+    assert payload == payload_two_directions_1
 
 
 def test_angular_separation_payload_two_directions_1_anti_vector_flag_error(
@@ -560,12 +561,14 @@ def test_angular_separation_payload_two_directions_1_anti_vector_flag_error(
     with raises(CalculationInvalidAttr):
         AngularSeparation(**params_two_directions_anti_vector_flag_invalid)
 
+
 def test_angular_separation_payload_two_directions_2(
         params_two_directions_2,
         payload_two_directions_2
 ):
     """Test angular separation payload (`TWO_DIRECTIONS` mode)."""
-    assert AngularSeparation(**params_two_directions_2).payload == payload_two_directions_2
+    payload = AngularSeparation(**params_two_directions_2).payload
+    assert payload == payload_two_directions_2
 
 
 def test_angular_separation_payload_two_directions_3(
@@ -573,7 +576,8 @@ def test_angular_separation_payload_two_directions_3(
         payload_two_directions_3
 ):
     """Test angular separation payload (`TWO_DIRECTIONS` mode)."""
-    assert AngularSeparation(**params_two_directions_3).payload == payload_two_directions_3
+    payload = AngularSeparation(**params_two_directions_3).payload
+    assert payload == payload_two_directions_3
 
 
 def test_angular_separation_payload_two_directions_4(
@@ -581,7 +585,8 @@ def test_angular_separation_payload_two_directions_4(
         payload_two_directions_4
 ):
     """Test angular separation payload (`TWO_DIRECTIONS` mode)."""
-    assert AngularSeparation(**params_two_directions_4).payload == payload_two_directions_4
+    payload = AngularSeparation(**params_two_directions_4).payload
+    assert payload == payload_two_directions_4
 
 
 def test_angular_separation_payload_two_directions_5(
@@ -589,7 +594,8 @@ def test_angular_separation_payload_two_directions_5(
         payload_two_directions_5
 ):
     """Test angular separation payload (`TWO_DIRECTIONS` mode)."""
-    assert AngularSeparation(**params_two_directions_5).payload == payload_two_directions_5
+    payload = AngularSeparation(**params_two_directions_5).payload
+    assert payload == payload_two_directions_5
 
 
 def test_angular_separation_payload_two_directions_6(
@@ -597,4 +603,5 @@ def test_angular_separation_payload_two_directions_6(
         payload_two_directions_6
 ):
     """Test angular separation payload (`TWO_DIRECTIONS` mode)."""
-    assert AngularSeparation(**params_two_directions_6).payload == payload_two_directions_6
+    payload = AngularSeparation(**params_two_directions_6).payload
+    assert payload == payload_two_directions_6
