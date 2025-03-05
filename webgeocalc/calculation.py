@@ -1939,6 +1939,7 @@ class Calculation:
             is not supplied.
             If the value is ``=``,  ``<``, ``>`` or ``RANGE``, and
             :py:attr:`reference_value` is not supplied.
+
         """
         self.gf_condition(relationalCondition=val)
 
@@ -2013,6 +2014,7 @@ class Calculation:
             If :py:attr:`calculation_type` is ``GF_COORDINATE_SEARCH``,
             ``GF_SUB_POINT_SEARCH`` or ``GF_SURFACE_INTERCEPT_POINT_SEARCH``, and
             :py:attr:`coordinate_system` or :py:attr:`coordinate` are not present.
+
         """
         try:
             self.__condition.update(kwargs)
@@ -2051,6 +2053,7 @@ class Calculation:
 
             - TWO_TARGETS
             - TWO_DIRECTIONS
+
         """
         self.__specType = val
 
@@ -2065,10 +2068,9 @@ class Calculation:
         ----------
         direction_1: dict
             Direction configuration. See: :py:func:`direction`.
+
         """
-        val.setdefault("aberrationCorrection", "NONE")
-        val.setdefault("antiVectorFlag", False)
-        self.__direction1 = val
+        self.__direction1 = _Direction(**val).payload
 
     @parameter
     def direction_2(self, val):
@@ -2080,8 +2082,427 @@ class Calculation:
         Parameters
         ----------
         direction_2: dict
-            Direction configuration. See: :py:func:`direction`.
+            Direction configuration. See: :py:class:`_Direction`.
+
         """
-        val.setdefault("aberrationCorrection", "NONE")
-        val.setdefault("antiVectorFlag", False)
-        self.__direction2 = val
+        self.__direction2 = _Direction(**val).payload
+
+
+class _Direction:
+    """Webgeocalc direction object."""
+
+    def __init__(self, aberration_correction="NONE",
+                 anti_vector_flag=False, **kwargs):
+
+        if kwargs["direction_type"] == "VECTOR":
+            kwargs["aberration_correction_vector"] = aberration_correction
+        else:
+            kwargs['aberration_correction'] = aberration_correction
+
+        kwargs['anti_vector_flag'] = anti_vector_flag
+
+        for key, value in kwargs.items():
+            setattr(self, key, value)
+
+    @property
+    def payload(self):
+        """Direction payload parameters *dict* for JSON input in WebGeoCalc format.
+
+        Return
+        ------
+        dict
+            Payload keys and values.
+
+        """
+        return {k.split('__')[-1]: v for k, v in vars(self).items() if k.startswith('_')}
+
+    @parameter(only='ABERRATION_CORRECTION')
+    def aberration_correction(self, val):
+        """SPICE aberration correction.
+
+        Parameters
+        ----------
+        aberration_correction: str
+            The SPICE aberration correction string. One of:
+
+            - NONE
+            - LT
+            - LT+S
+            - CN
+            - CN+S
+            - XLT
+            - XLT+S
+            - XCN
+            - XCN+S
+
+        Raises
+        ------
+        CalculationInvalidAttr
+            If the value provided is invalid.
+
+        """
+        self.__aberrationCorrection = val
+
+    @parameter(only='DIRECTION_TYPE')
+    def direction_type(self, val):
+        """Type of direction.
+
+        Method used to specify a direction. Directions could be specified as the
+        position of an object as seen from the observer, as the velocity vector of
+        an object as seen from the observer in a given reference frame, or by
+        providing a vector in a given reference frame.
+
+        Parameters
+        ----------
+        direction_type: str
+            The type of direction string. One of:
+
+            - POSITION
+            - VELOCITY
+            - VECTOR
+
+        Raises
+        ------
+        CalculationInvalidAttr
+            If the value provided is invalid.
+
+        """
+        self.__directionType = val
+
+    @parameter
+    def anti_vector_flag(self, val):
+        """Anti Vector Flag.
+
+        Parameters
+        ----------
+        anti_vector_flag: bool
+            `True` if the anti-vector shall be used for the direction, and `False`
+            otherwise. Required when the target shape is `POINT`. If provided when
+            the target shape is `SPHERE`, it must be set to false, i.e., using
+            anti-vector direction is not supported for target bodies modeled as
+            spheres.
+
+        """
+        if not isinstance(val, bool):
+            raise CalculationInvalidAttr(
+                name="ANTI_VECTOR_FLAG",
+                attr=val,
+                valids=["True", "False"]
+            )
+        self.__antiVectorFlag = val
+
+    @parameter
+    def target(self, val):
+        """Target body.
+
+        Parameters
+        ----------
+        target: str or int
+            The target body ``name`` or ``id`` from :py:func:`API.bodies`.
+
+        """
+        self.__target = val if isinstance(val, int) else val.upper()
+
+    @parameter(only='TARGET_SHAPE')
+    def shape(self, val):
+        """The shape to use for the first body.
+
+        Parameters
+        ----------
+        shape: str
+            One of:
+            - POINT
+            - SPHERE
+
+        Raises
+        -------
+        CalculationInvalidAttr
+            If the value provided is invalid.
+
+        """
+        self.__shape = val
+
+    @parameter
+    def observer(self, val):
+        """Observing body.
+
+        Parameters
+        ----------
+        observer: str or int
+            The observing body ``name`` or ``id`` from :py:func:`API.bodies`.
+
+        """
+        self.__observer = val if isinstance(val, int) else val.upper()
+
+    @parameter
+    def reference_frame(self, val):
+        """The reference frame name.
+
+        Parameters
+        ----------
+        reference_frame: str
+            The reference frame name.
+
+        """
+        self.__referenceFrame = val.upper()
+
+    @parameter(only='ABERRATION_CORRECTION_VECTOR')
+    def aberration_correction_vector(self, val):
+        """SPICE aberration correction.
+
+        Parameters
+        ----------
+        aberration_correction: str
+            The SPICE aberration correction string. One of:
+
+            - NONE
+            - LT
+            - CN
+            - XLT
+            - XCN
+            - S
+            - XS
+
+        Raises
+        ------
+        CalculationInvalidAttr
+            If the value provided is invalid.
+
+        """
+        self.__aberrationCorrection = val
+
+    @parameter(only='DIRECTION_VECTOR_TYPE')
+    def direction_vector_type(self, val):
+        """Direction vector type.
+
+        Parameters
+        ----------
+        direction_vector_type: str
+            The direction vector type string. One of:
+
+                - INSTRUMENT_BORESIGHT
+                - INSTRUMENT_FOV_BOUNDARY_VECTORS
+                - REFERENCE_FRAME_AXIS
+                - VECTOR_IN_INSTRUMENT_FOV
+                - VECTOR_IN_REFERENCE_FRAME
+
+        Raises
+        ------
+        CalculationInvalidAttr
+            If the value provided is invalid.
+
+        """
+        self.__directionVectorType = val
+
+    @parameter
+    def direction_instrument(self, val):
+        """The instrument name or ID.
+
+        Required only if directionVectorType is INSTRUMENT_BORESIGHT,
+        VECTOR_IN_INSTRUMENT_FOV or INSTRUMENT_FOV_BOUNDARY_VECTORS.
+
+        Parameters
+        ----------
+        direction_instrument: str or int
+            The instrument ``name`` or ``ID``.
+
+        """
+        self.__directionInstrument = val if isinstance(val, int) else val.upper()
+
+    @parameter
+    def direction_frame(self, val):
+        """The vector's reference frame name.
+
+        Required only if directionVectorType is REFERENCE_FRAME_AXIS
+        or VECTOR_IN_REFERENCE_FRAME.
+
+        Parameters:
+        -----------
+        direction_frame: str
+            The vector's reference frame name.
+
+        """
+        self.__directionFrame = val
+
+    @parameter(only='AXIS')
+    def direction_frame_axis(self, val):
+        """The direction vector frame axis.
+
+        Required only if directionVectorType is REFERENCE_FRAME_AXIS.
+
+        Parameters
+        ----------
+        direction_frame_axis: str
+            The direction frame axis string. One of:
+
+                - X
+                - Y
+                - Z
+
+        Raises
+        ------
+        CalculationInvalidAttr
+            If the value provided is invalid.
+
+        """
+        self.__directionFrameAxis = val
+
+    @parameter
+    def direction_vector_x(self, val):
+        """The X direction vector coordinate.
+
+        If directionVectorType is VECTOR_IN_INSTRUMENT_FOV or
+        VECTOR_IN_REFERENCE_FRAME, then either all three of directionVectorX,
+        directionVectorY, and directionVectorZ must be provided, or both
+        directionVectorRA and directionVectorDec, or both directionVectorAz
+        and directionVectorEl.
+
+        Parameter
+        ---------
+        direction_vector_x: float
+            The X direction vector coordinate value.
+
+        """
+        self.__directionVectorX = val
+
+    @parameter
+    def direction_vector_y(self, val):
+        """The Y direction vector coordinate.
+
+        If directionVectorType is VECTOR_IN_INSTRUMENT_FOV or
+        VECTOR_IN_REFERENCE_FRAME, then either all three of directionVectorX,
+        directionVectorY, and directionVectorZ must be provided, or both
+        directionVectorRA and directionVectorDec, or both directionVectorAz
+        and directionVectorEl.
+
+        Parameter
+        ---------
+        direction_vector_y: float
+            The Y direction vector coordinate value.
+
+        """
+        self.__directionVectorY = val
+
+    @parameter
+    def direction_vector_z(self, val):
+        """The Z direction vector coordinate.
+
+        If directionVectorType is VECTOR_IN_INSTRUMENT_FOV or
+        VECTOR_IN_REFERENCE_FRAME, then either all three of directionVectorX,
+        directionVectorY, and directionVectorZ must be provided, or both
+        directionVectorRA and directionVectorDec, or both directionVectorAz
+        and directionVectorEl.
+
+        Parameter
+        ---------
+        direction_vector_z: float
+            The Z direction vector coordinate value.
+
+        """
+        self.__directionVectorZ = val
+
+    @parameter
+    def direction_vector_ra(self, val):
+        """The right ascension direction vector coordinate.
+
+        If directionVectorType is VECTOR_IN_INSTRUMENT_FOV or
+        VECTOR_IN_REFERENCE_FRAME, then either all three of directionVectorX,
+        directionVectorY, and directionVectorZ must be provided, or both
+        directionVectorRA and directionVectorDec, or both directionVectorAz
+        and directionVectorEl.
+
+        Parameter
+        ---------
+        direction_vector_ra: float
+            The right ascension direction vector coordinate value.
+
+        """
+        self.__directionVectorRA = val
+
+    @parameter
+    def direction_vector_dec(self, val):
+        """The declination direction vector coordinate.
+
+        If directionVectorType is VECTOR_IN_INSTRUMENT_FOV or
+        VECTOR_IN_REFERENCE_FRAME, then either all three of directionVectorX,
+        directionVectorY, and directionVectorZ must be provided, or both
+        directionVectorRA and directionVectorDec, or both directionVectorAz
+        and directionVectorEl.
+
+        Parameter
+        ---------
+        direction_vector_dec: float
+            The declination direction vector coordinate value.
+
+        """
+        self.__directionVectorDec = val
+
+    @parameter
+    def direction_vector_az(self, val):
+        """The azimuth direction vector coordinate.
+
+        If directionVectorType is VECTOR_IN_INSTRUMENT_FOV or
+        VECTOR_IN_REFERENCE_FRAME, then either all three of directionVectorX,
+        directionVectorY, and directionVectorZ must be provided, or both
+        directionVectorRA and directionVectorDec, or both directionVectorAz
+        and directionVectorEl.
+
+        Parameter
+        ---------
+        direction_vector_az: float
+            The azimuth direction vector coordinate value.
+
+        """
+        self.__directionVectorAz = val
+
+    @parameter
+    def direction_vector_el(self, val):
+        """The elevation direction vector coordinate.
+
+        If directionVectorType is VECTOR_IN_INSTRUMENT_FOV or
+        VECTOR_IN_REFERENCE_FRAME, then either all three of directionVectorX,
+        directionVectorY, and directionVectorZ must be provided, or both
+        directionVectorRA and directionVectorDec, or both directionVectorAz
+        and directionVectorEl.
+
+        Parameter
+        ---------
+        direction_vector_el: float
+            The elevation vector coordinate value.
+
+        """
+        self.__directionVectorEl = val
+
+    @parameter
+    def azccw_flag(self, val):
+        """Flag indicating how azimuth is measured.
+
+        If azccwFlag is ``true``, azimuth increases in the counterclockwise
+        direction; otherwise it increases in the clockwise direction. Required
+        only when directionVectorAz and directionVectorEl are used to provide
+        the coordinates of the direction vector.
+
+        Parameter
+        ---------
+        azccw_flag: bool
+            Flag indicating how azimuth is measured.
+
+        """
+        self.__azccwFlag = val
+
+    @parameter
+    def elplsz_flag(self, val):
+        """Flag indicating how elevation is measured.
+
+        If elplszFlag is true, elevation increases from the XY plane toward
+        +Z; otherwise toward -Z. Required only when directionVectorAz and
+        directionVectorEl are used to provide the coordinates of the direction
+        vector.
+
+        Parameter
+        ---------
+        elplsz_flag: bool
+            ag indicating how elevation is measured.
+
+        """
+        self.__elplszFlag = val
