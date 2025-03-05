@@ -362,13 +362,13 @@ The second case is the angular separation between two directions
 ...     kernels = 5,
 ...     times = '2012-10-19T08:24:00.000',
 ...     direction_1 = {
-...         "directionType": "VECTOR",
-...         "directionVectorType": "REFERENCE_FRAME_AXIS",
-...         "directionFrame": "CASSINI_RPWS_EDIPOLE",
-...         "directionFrameAxis": "Z"
+...         "direction_type": "VECTOR",
+...         "direction_vector_type": "REFERENCE_FRAME_AXIS",
+...         "direction_frame": "CASSINI_RPWS_EDIPOLE",
+...         "direction_frame_axis": "Z"
 ...     },
 ...     direction_2 = {
-...         "directionType": "POSITION",
+...         "direction_type": "POSITION",
 ...         "target": "SUN",
 ...         "shape": "POINT",
 ...         "observer": "CASSINI"

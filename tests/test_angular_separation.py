@@ -99,6 +99,19 @@ def kernel_set():
 def direction_1():
     """Input first direction."""
     return {
+        "direction_type": "VECTOR",
+        "direction_vector_type": "REFERENCE_FRAME_AXIS",
+        "direction_frame": "CASSINI_RPWS_EDIPOLE",
+        "direction_frame_axis": "Z"
+    }
+
+
+@fixture
+def direction1_payload():
+    """First direction payload."""
+    return {
+        'aberrationCorrection': 'NONE',
+        'antiVectorFlag': False,
         "directionType": "VECTOR",
         "directionVectorType": "REFERENCE_FRAME_AXIS",
         "directionFrame": "CASSINI_RPWS_EDIPOLE",
@@ -110,6 +123,19 @@ def direction_1():
 def direction_2():
     """Input second direction."""
     return {
+        "direction_type": "POSITION",
+        "target": "SUN",
+        "shape": "POINT",
+        "observer": "CASSINI"
+    }
+
+
+@fixture
+def direction2_payload():
+    """Input second direction."""
+    return {
+        'aberrationCorrection': 'NONE',
+        'antiVectorFlag': False,
         "directionType": "POSITION",
         "target": "SUN",
         "shape": "POINT",
@@ -131,7 +157,8 @@ def params_two_directions(kernel_set, time, direction_1, direction_2, corr):
 
 
 @fixture
-def payload_two_directions(kernel_set, time, direction_1, direction_2, corr):
+def payload_two_directions(kernel_set, time, direction1_payload, direction2_payload,
+                           corr):
     """Input parameters from WGC API example."""
     return {
         "kernels": [{
@@ -145,8 +172,8 @@ def payload_two_directions(kernel_set, time, direction_1, direction_2, corr):
             time,
         ],
         "calculationType": "ANGULAR_SEPARATION",
-        "direction1": direction_1,
-        "direction2": direction_2,
+        "direction1": direction1_payload,
+        "direction2": direction2_payload,
         "aberrationCorrection": corr
     }
 
