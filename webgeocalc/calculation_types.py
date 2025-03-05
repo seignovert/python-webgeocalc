@@ -67,12 +67,16 @@ class AngularSeparation(Calculation):
     """Angular separation calculation.
 
     Calculates the angular separation of two bodies as seen by an observer body.
+    There are two types of calculation. The default one is the angular separation
+    between two targets (`TWO_TARGETS` mode). The second case is the angular
+    separation between two directions (`TWO_DIRECTIONS` mode).
+
 
     Parameters
     ----------
-    shape_1: str, optional
+    shape_1: str, optional (`TWO_TARGETS` mode)
         See: :py:attr:`shape_1`
-    shape_2: str, optional
+    shape_2: str, optional (`TWO_TARGETS` mode)
         See: :py:attr:`shape_2`
     aberration_correction: str, optional
         See: :py:attr:`aberration_correction`
@@ -95,29 +99,50 @@ class AngularSeparation(Calculation):
         See: :py:attr:`time_system`
     time_format: str
         See: :py:attr:`time_format`
-    target_1: str or int
+    spec_type: str, optional
+        See: :py:attr:`spec_type`
+    target_1: str or int (`TWO_TARGETS` mode)
         See: :py:attr:`target_1`
-    target_2: str or int
+    target_2: str or int (`TWO_TARGETS` mode)
         See: :py:attr:`target_2`
-    observer: str or int
+    observer: str or int (`TWO_TARGETS` mode)
         See: :py:attr:`observer`
+    direction_1: dict (`TWO_DIRECTIONS` mode)
+        See: :py:attr:`direction_1`
+    direction_2: dict (`TWO_DIRECTIONS` mode)
+        See: :py:attr:`direction_2`
+
 
     Raises
     ------
     CalculationRequiredAttr
-        If :py:attr:`target_1`, :py:attr:`target_2` and
-        :py:attr:`observer` are not provided.
+        If :py:attr:`spec_type` is `TWO_TARGETS` or not set:
+            If py:attr:`target_1`, :py:attr:`target_2`
+                and :py:attr:`observer` are not provided.
+        If :py:attr:`spec_type` is `TWO_DIRECTIONS`:
+            If :py:attr:`direction_1` and :py:attr:`direction_2`
+                are not provided.
 
     """
 
-    REQUIRED = ('target_1', 'target_2', 'observer')
-
-    def __init__(self, shape_1='POINT', shape_2='POINT',
+    def __init__(self, spec_type='TWO_TARGETS',
                  aberration_correction='CN', **kwargs):
 
         kwargs['calculation_type'] = 'ANGULAR_SEPARATION'
-        kwargs['shape_1'] = shape_1
-        kwargs['shape_2'] = shape_2
+
+        spec_type_required = {
+            'TWO_TARGETS': ('target_1', 'target_2', 'observer'),
+            'TWO_DIRECTIONS': ('direction_1', 'direction_2')
+        }
+        self.REQUIRED = spec_type_required[spec_type]
+
+        if spec_type == 'TWO_TARGETS':
+            for key in ['shape_1', 'shape_2']:
+                kwargs.setdefault(key, 'POINT')
+
+        if spec_type == 'TWO_DIRECTIONS':
+            kwargs['spec_type'] = spec_type
+
         kwargs['aberration_correction'] = aberration_correction
 
         super().__init__(**kwargs)
@@ -174,7 +199,7 @@ class AngularSize(Calculation):
 
 
 class FrameTransformation(Calculation):
-    """Frame transforme calculation.
+    """Frame transform calculation.
 
     Calculate the transformation from one reference frame (Frame 1)
     to another reference frame (Frame 2).

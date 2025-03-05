@@ -97,6 +97,15 @@ VALID_PARAMETERS = {
         'CN',
         'CN+S',
     ],
+    'ABERRATION_CORRECTION_VECTOR': [
+        'NONE',
+        'LT',
+        'CN',
+        'XLT',
+        'XCN',
+        'S',
+        'XS',
+    ],
     'STATE_REPRESENTATION': [
         'RECTANGULAR',
         'RA_DEC',
@@ -206,5 +215,18 @@ VALID_PARAMETERS = {
         'ABSMIN',
         'LOCMAX',
         'LOCMIN',
-    ]
+    ],
+    "SPEC_TYPE": [
+        "TWO_TARGETS",
+        "TWO_DIRECTIONS",
+    ],
+    "TARGET_SHAPE": [
+        "POINT",
+        "SPHERE",
+    ],
+    "DIRECTION_TYPE": [
+        "POSITION",
+        "VELOCITY",
+        "VECTOR",
+    ],
 }
