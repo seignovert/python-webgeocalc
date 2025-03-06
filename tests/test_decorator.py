@@ -29,7 +29,7 @@ def test_decorator_parameter():
         @parameter(only='WRONG')
         def qux(self, value):
             """Dummy parameter with an invalid ``only``."""
-            self.qux_ = value
+            self.qux_ = value  # pragma: no cover
 
     a = A()
 
