@@ -2,7 +2,7 @@ name: Release
 
 env:
   PACKAGE: webgeocalc
-  PYTHON: 3.8
+  PYTHON: 3.11
 
 on:
   push:

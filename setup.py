@@ -22,7 +22,7 @@ setup(
         'Documentation': 'https://webgeocalc.readthedocs.io/',
     },
     license='MIT',
-    python_requires='>=3.8',
+    python_requires='>=3.11',
     install_requires=[
         'requests>=2.31',
     ],
