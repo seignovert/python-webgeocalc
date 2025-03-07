@@ -132,5 +132,5 @@ class CalculationTimeOut(IOError):
 
     def __init__(self, timeout, sleep):
         msg = f'Calculation time-out after {timeout} seconds' + \
-              f' ({int(timeout/sleep)} attempts)'
+              f' ({int(timeout / sleep)} attempts)'
         super().__init__(msg)

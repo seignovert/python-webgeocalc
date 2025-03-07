@@ -106,7 +106,7 @@ VALID_PARAMETERS = {
         'S',
         'XS',
     ],
-        'SPEC_TYPE': [
+    'SPEC_TYPE': [
         'TWO_TARGETS',
         'TWO_DIRECTIONS',
     ],

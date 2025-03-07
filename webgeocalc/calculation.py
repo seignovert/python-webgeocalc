@@ -9,6 +9,7 @@ from .errors import (CalculationAlreadySubmitted, CalculationConflictAttr,
                      CalculationInvalidAttr, CalculationInvalidValue,
                      CalculationNotCompleted, CalculationRequiredAttr,
                      CalculationTimeOut, CalculationUndefinedAttr)
+from .payload import Payload
 from .types import KernelSetDetails
 from .vars import CALCULATION_FAILED_PHASES, VALID_PARAMETERS
 
@@ -20,7 +21,7 @@ APIs = {
 }
 
 
-class Calculation:
+class Calculation(Payload):
     """Webgeocalc calculation object.
 
     Parameters
@@ -151,16 +152,13 @@ class Calculation:
 
     """
 
-    REQUIRED = ()
-
     def __init__(self, api='', time_system='UTC',
                  time_format='CALENDAR', verbose=True, **kwargs):
         # Add default parameters to kwargs
         kwargs['time_system'] = time_system
         kwargs['time_format'] = time_format
 
-        # Init parameters
-        self.params = kwargs
+        # Init other parameters
         self.__kernels = []
         self.id = None
         self.phase = 'NOT SUBMITTED'
@@ -182,12 +180,11 @@ class Calculation:
         if 'times' not in kwargs and 'intervals' not in kwargs:
             raise CalculationRequiredAttr("times' or 'intervals")
 
-        self._required('calculation_type', 'time_system', 'time_format',
-                       *self.REQUIRED)
+        # Prepend calculation required parameters
+        self.REQUIRED = ('calculation_type', 'time_system', 'time_format') + self.REQUIRED
 
-        # Set parameters
-        for key, value in kwargs.items():
-            setattr(self, key, value)
+        # Set all parameters
+        super().__init__(**kwargs)
 
     def __repr__(self):
         return '\n'.join([
@@ -195,38 +192,6 @@ class Calculation:
         ] + [
             f' - {k}: {v}' for k, v in self.payload.items()
         ])
-
-    def _required(self, *attrs):
-        """Check if the required arguments are in the params."""
-        for attr in attrs:
-            if attr not in self.params:
-                raise CalculationRequiredAttr(attr)
-
-    @property
-    def payload(self):
-        """Calculation payload parameters *dict* for JSON input in WebGeoCalc format.
-
-        Return
-        ------
-        dict
-            Payload keys and values.
-
-        Example
-        -------
-        >>> Calculation(
-        ...    kernels = 'Cassini Huygens',
-        ...    times = '2012-10-19T08:24:00.000',
-        ...    calculation_type = 'STATE_VECTOR',
-        ...    target = 'CASSINI',
-        ...    observer = 'SATURN',
-        ...    reference_frame = 'IAU_SATURN',
-        ...    aberration_correction = 'NONE',
-        ...    state_representation = 'PLANETOGRAPHIC',
-        ... ).payload  # noqa: E501
-        {'kernels': [{'type': 'KERNEL_SET', 'id': 5}], 'times': ['2012-10-19T08:24:00.000'], ...}
-
-        """
-        return {k.split('__')[-1]: v for k, v in vars(self).items() if k.startswith('_')}
 
     def submit(self):
         """Submit calculation parameters and get calculation ``id`` and ``phase``.
@@ -469,7 +434,7 @@ class Calculation:
 
     @staticmethod
     def _kernel_path_obj(server_path):
-        # Payloaf individual kernel path object
+        # Payload individual kernel path object
         return {"type": "KERNEL", "path": server_path}
 
     @parameter
