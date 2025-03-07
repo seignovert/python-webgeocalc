@@ -74,12 +74,9 @@ class AngularSeparation(Calculation):
 
     Parameters
     ----------
-    shape_1: str, optional (`TWO_TARGETS` mode)
-        See: :py:attr:`shape_1`
-    shape_2: str, optional (`TWO_TARGETS` mode)
-        See: :py:attr:`shape_2`
-    aberration_correction: str, optional
-        See: :py:attr:`aberration_correction`
+    spec_type: str, optional
+        See: :py:attr:`spec_type` either `'TWO_TARGETS'` (default)
+        or `'TWO_DIRECTIONS'`.
 
     Other Parameters
     ----------------
@@ -99,19 +96,28 @@ class AngularSeparation(Calculation):
         See: :py:attr:`time_system`
     time_format: str
         See: :py:attr:`time_format`
-    spec_type: str, optional
-        See: :py:attr:`spec_type`
-    target_1: str or int (`TWO_TARGETS` mode)
-        See: :py:attr:`target_1`
-    target_2: str or int (`TWO_TARGETS` mode)
-        See: :py:attr:`target_2`
-    observer: str or int (`TWO_TARGETS` mode)
-        See: :py:attr:`observer`
-    direction_1: dict (`TWO_DIRECTIONS` mode)
-        See: :py:attr:`direction_1`
-    direction_2: dict (`TWO_DIRECTIONS` mode)
-        See: :py:attr:`direction_2`
 
+    `TWO_TARGETS` parameters
+    ------------------------
+    target_1: str or int
+        See: :py:attr:`target_1`
+    shape_1: str, optional
+        See: :py:attr:`shape_1`
+    target_2: str or int
+        See: :py:attr:`target_2`
+    shape_2: str, optional
+        See: :py:attr:`shape_2`
+    observer: str or int
+        See: :py:attr:`observer`
+    aberration_correction: str, optional
+        See: :py:attr:`aberration_correction`
+
+    `TWO_DIRECTIONS` parameters
+    ---------------------------
+    direction_1: Direction
+        See: :py:attr:`direction_1`
+    direction_2: Direction
+        See: :py:attr:`direction_2`
 
     Raises
     ------
@@ -142,6 +148,10 @@ class AngularSeparation(Calculation):
 
         if spec_type == 'TWO_DIRECTIONS':
             kwargs['spec_type'] = spec_type
+            # FIXME self._required('shape') in both directions
+
+            # FIXME: VECTOR type != INSTRUMENT_FOV_BOUNDARY_VECTORS
+            # (only for PointingDirection calculations)
 
         kwargs['aberration_correction'] = aberration_correction
 

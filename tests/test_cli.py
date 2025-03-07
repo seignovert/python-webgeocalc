@@ -164,6 +164,16 @@ def test_cli_state_vector_empty(capsys):
     assert 'usage:' in captured.out
 
 
+def test_cli_angular_separation_two_targets_dry_run(capsys):
+    """Test dry-run angular separation calculation for 2 targets with the CLI."""
+    assert False  # FIXME
+
+
+def test_cli_angular_separation_two_directions_dry_run(capsys):
+    """Test dry-run angular separation calculation for 2 direction with the CLI."""
+    assert False  # FIXME
+
+
 def test_cli_angular_separation_wrong_attr(capsys):
     """Test attribute in angular separation calculation parameter with the CLI."""
     argv = '--kernels 1 --times 2012-10-19T08:24:00 --wrong 123'.split()

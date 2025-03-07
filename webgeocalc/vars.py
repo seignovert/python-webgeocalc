@@ -110,11 +110,6 @@ VALID_PARAMETERS = {
         'TWO_TARGETS',
         'TWO_DIRECTIONS',
     ],
-    'DIRECTION_TYPE': [
-        'POSITION',
-        'VELOCITY',
-        'VECTOR',
-    ],
     'STATE_REPRESENTATION': [
         'RECTANGULAR',
         'RA_DEC',
@@ -180,13 +175,6 @@ VALID_PARAMETERS = {
         'NADIR/DSK/UNPRIORITIZED',
         'INTERCEPT/DSK/UNPRIORITIZED',
     ],
-    'DIRECTION_VECTOR_TYPE': [
-        'INSTRUMENT_BORESIGHT',
-        'INSTRUMENT_FOV_BOUNDARY_VECTORS',
-        'REFERENCE_FRAME_AXIS',
-        'VECTOR_IN_INSTRUMENT_FOV',
-        'VECTOR_IN_REFERENCE_FRAME',
-    ],
     'INTERVAL_ADJUSTMENT': [
         'NO_ADJUSTMENT',
         'EXPAND_INTERVALS',
@@ -228,5 +216,27 @@ VALID_PARAMETERS = {
         'ABSMIN',
         'LOCMAX',
         'LOCMIN',
+    ],
+    'DIRECTION_TYPE': [
+        'POSITION',
+        'VELOCITY',
+        'VECTOR',
+    ],
+    'BOOLEAN': [
+        True,
+        False,
+        'true',
+        'false',
+        'True',
+        'False',
+        'TRUE',
+        'FALSE',
+    ],
+    'DIRECTION_VECTOR_TYPE': [
+        'INSTRUMENT_BORESIGHT',
+        'REFERENCE_FRAME_AXIS',
+        'VECTOR_IN_INSTRUMENT_FOV',
+        'VECTOR_IN_REFERENCE_FRAME',
+        'INSTRUMENT_FOV_BOUNDARY_VECTORS',
     ],
 }
