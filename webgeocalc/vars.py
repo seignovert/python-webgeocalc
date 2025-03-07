@@ -106,6 +106,15 @@ VALID_PARAMETERS = {
         'S',
         'XS',
     ],
+        'SPEC_TYPE': [
+        'TWO_TARGETS',
+        'TWO_DIRECTIONS',
+    ],
+    'DIRECTION_TYPE': [
+        'POSITION',
+        'VELOCITY',
+        'VECTOR',
+    ],
     'STATE_REPRESENTATION': [
         'RECTANGULAR',
         'RA_DEC',
@@ -120,6 +129,10 @@ VALID_PARAMETERS = {
         'SPHERE',
         'ELLIPSOID',
         'DSK ',
+    ],
+    'TARGET_SHAPE': [
+        'POINT',
+        'SPHERE',
     ],
     'TIME_LOCATION': [
         'FRAME1',
@@ -215,18 +228,5 @@ VALID_PARAMETERS = {
         'ABSMIN',
         'LOCMAX',
         'LOCMIN',
-    ],
-    "SPEC_TYPE": [
-        "TWO_TARGETS",
-        "TWO_DIRECTIONS",
-    ],
-    "TARGET_SHAPE": [
-        "POINT",
-        "SPHERE",
-    ],
-    "DIRECTION_TYPE": [
-        "POSITION",
-        "VELOCITY",
-        "VECTOR",
     ],
 }
