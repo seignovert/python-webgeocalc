@@ -1,7 +1,8 @@
 """Webgeocalc Directions."""
 
 from .decorator import parameter
-from .errors import CalculationInvalidAttr, CalculationIncompatibleAttr
+from .errors import (CalculationIncompatibleAttr, CalculationInvalidAttr,
+                     CalculationUndefinedAttr)
 from .payload import Payload
 from .vars import VALID_PARAMETERS
 
@@ -179,9 +180,10 @@ class Direction(Payload):
             val = val.upper() == 'TRUE'
 
         if self.params['direction_type'] == 'POSITION':
-           if self.params.get('shape') == 'SPHERE' and val:
+            if self.params.get('shape') == 'SPHERE' and val:
                 raise CalculationInvalidAttr(
-                    'anti_vector_flag', val, ['False'])
+                    'anti_vector_flag', val, ['False']
+                )
 
         self.__antiVectorFlag = val
 
@@ -315,7 +317,37 @@ class Direction(Payload):
             case 'VECTOR_IN_REFERENCE_FRAME':
                 self._required('direction_frame')
 
+        match val:
+            case (
+                'VECTOR_IN_INSTRUMENT_FOV' |
+                'VECTOR_IN_REFERENCE_FRAME'
+            ):
+                if not self._vector_coordinates():
+                    raise CalculationUndefinedAttr(
+                        'direction_vector_type', val,
+                        "' or '".join([
+                            'direction_vector_x/y/z',
+                            'direction_vector_ra/dec',
+                            'direction_vector_az/el',
+                        ])
+                    )
+
         self.__directionVectorType = val
+
+    def _vector_coordinates(self):
+        """Check if the vector any coordinates are present."""
+        keys = self.params.keys()
+        return (
+            'direction_vector_x' in keys and
+            'direction_vector_y' in keys and
+            'direction_vector_z' in keys
+        ) or (
+            'direction_vector_ra' in keys and
+            'direction_vector_dec' in keys
+        ) or (
+            'direction_vector_az' in keys and
+            'direction_vector_el' in keys
+        )
 
     @parameter
     def direction_instrument(self, val):
@@ -548,7 +580,7 @@ class Direction(Payload):
             The azimuth direction vector coordinate value.
 
         """
-        self._required('azccwFlag')
+        self._required('azccw_flag')
         self.__directionVectorAz = self._vector('az', val)
 
     @parameter
@@ -567,7 +599,7 @@ class Direction(Payload):
             The elevation vector coordinate value.
 
         """
-        self._required('elplszFlag')
+        self._required('elplsz_flag')
         self.__directionVectorEl = self._vector('el', val)
 
     @parameter(only='BOOLEAN')

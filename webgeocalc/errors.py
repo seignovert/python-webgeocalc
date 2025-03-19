@@ -60,7 +60,9 @@ class CalculationInvalidAttr(AttributeError):
 
     def __init__(self, name, attr, valids):
         msg = '\n - '.join(
-            [f"Attribute '{name}'='{attr}' is only applicable with:"] + valids)
+            [f"Attribute '{name}'='{attr}' is only applicable with:"] +
+            [str(v) for v in valids]
+        )
         super().__init__(msg)
 
 

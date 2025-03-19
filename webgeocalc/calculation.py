@@ -1482,11 +1482,11 @@ class Calculation(Payload):
         keys = self.params.keys()
         if val in ['VECTOR_IN_INSTRUMENT_FOV', 'VECTOR_IN_REFERENCE_FRAME']:
             if not (
-                    'direction_vector_x' in keys and  # noqa: W504
-                    'direction_vector_y' in keys and  # noqa: W504
+                    'direction_vector_x' in keys and
+                    'direction_vector_y' in keys and
                     'direction_vector_z' in keys
             ) and not (
-                'direction_vector_ra' in keys and  # noqa: W504
+                'direction_vector_ra' in keys and
                 'direction_vector_dec' in keys
             ):
                 raise CalculationUndefinedAttr(
