@@ -45,13 +45,13 @@ All WebGeoCalc calculation objects take their input attributes in
 .. important::
 
     Calculation required parameters:
-        - :py:attr:`.calculation_type`
-        - :py:attr:`.kernels` or/and :py:attr:`.kernel_paths`
-        - :py:attr:`.times` or :py:attr:`.intervals` with :py:attr:`.time_step` and :py:attr:`.time_step_units`
+        - :py:attr:`~Calculation.calculation_type`
+        - :py:attr:`~Calculation.kernels` or/and :py:attr:`~Calculation.kernel_paths`
+        - :py:attr:`~Calculation.times` or :py:attr:`~Calculation.intervals` with :py:attr:`~Calculation.time_step` and :py:attr:`~Calculation.time_step_units`
 
     Calculation default parameters:
-        - :py:attr:`.time_system`: ``UTC``
-        - :py:attr:`.time_format`: ``CALENDAR``
+        - :py:attr:`~Calculation.time_system`: ``UTC``
+        - :py:attr:`~Calculation.time_format`: ``CALENDAR``
 
 
 .. note::
@@ -102,7 +102,7 @@ All WebGeoCalc calculation objects take their input attributes in
 
 The payload that will be submitted to
 the WebGeoCalc API can be retrieve with the
-:py:attr:`.payload` attribute:
+:py:attr:`~Calculation.payload` attribute:
 
 >>> calc.payload
 {'kernels': [{'type': 'KERNEL_SET', 'id': 5}],
@@ -116,10 +116,10 @@ the WebGeoCalc API can be retrieve with the
  'timeSystem': 'UTC',
  'timeFormat': 'CALENDAR'}
 
-Example of :py:class:`StateVector` calculation with multi :py:attr:`.kernels`
-inputs (requested by ``name`` in this case), with multiple :py:attr:`.times`
-inputs for :py:attr:`.target`, :py:attr:`.observer` and
-:py:attr:`.reference_frame` requested by ``id``:
+Example of :py:class:`StateVector` calculation with multi :py:attr:`~Calculation.kernels`
+inputs (requested by ``name`` in this case), with multiple :py:attr:`~Calculation.times`
+inputs for :py:attr:`~Calculation.target`, :py:attr:`~Calculation.observer` and
+:py:attr:`~Calculation.reference_frame` requested by ``id``:
 
 >>> StateVector(
 ...    kernels = ['Solar System Kernels', 'Cassini Huygens'],
@@ -142,7 +142,7 @@ inputs for :py:attr:`.target`, :py:attr:`.observer` and
 
 
 Example of :py:class:`AngularSeparation` calculation
-with specific :py:attr:`.kernel_paths` and multiple :py:attr:`.intervals`:
+with specific :py:attr:`~Calculation.kernel_paths` and multiple :py:attr:`~Calculation.intervals`:
 
 >>> AngularSeparation(
 ...    kernel_paths = [
@@ -197,7 +197,7 @@ calculation status with :py:func:`Calculation.update` method:
 [Calculation update] Status: COMPLETE (id: 8750344d-645d-4e43-b159-c8d88d28aac6)
 
 3. When the calculation status is `COMPLETE`, the
-results are retrieved by the :py:attr:`.results` attribute:
+results are retrieved by the :py:attr:`~Calculation.results` attribute:
 
 >>> calc.results  # doctest: +SKIP
 {
@@ -320,17 +320,17 @@ calculated in a desired reference frame:
 .. important::
 
     Calculation required parameters:
-        - :py:attr:`.kernels` or/and :py:attr:`.kernel_paths`
-        - :py:attr:`.times` or :py:attr:`.intervals` with :py:attr:`.time_step` and :py:attr:`.time_step_units`
-        - :py:attr:`.target`
-        - :py:attr:`.observer`
-        - :py:attr:`.reference_frame`
+        - :py:attr:`~Calculation.kernels` or/and :py:attr:`~Calculation.kernel_paths`
+        - :py:attr:`~Calculation.times` or :py:attr:`~Calculation.intervals` with :py:attr:`~Calculation.time_step` and :py:attr:`~Calculation.time_step_units`
+        - :py:attr:`~Calculation.target`
+        - :py:attr:`~Calculation.observer`
+        - :py:attr:`~Calculation.reference_frame`
 
     Default parameters:
-        - :py:attr:`.time_system`: ``UTC``
-        - :py:attr:`.time_format`: ``CALENDAR``
-        - :py:attr:`.aberration_correction`: ``CN``
-        - :py:attr:`.state_representation`: ``RECTANGULAR``
+        - :py:attr:`~Calculation.time_system`: ``UTC``
+        - :py:attr:`~Calculation.time_format`: ``CALENDAR``
+        - :py:attr:`~Calculation.aberration_correction`: ``CN``
+        - :py:attr:`~Calculation.state_representation`: ``RECTANGULAR``
 
 .. autoclass:: StateVector
 
@@ -380,20 +380,20 @@ The second case is the angular separation between two directions
 .. important::
 
     Calculation required parameters:
-        - :py:attr:`.kernels` or/and :py:attr:`.kernel_paths`
-        - :py:attr:`.times` or :py:attr:`.intervals` with :py:attr:`.time_step` and :py:attr:`.time_step_units`
-        - :py:attr:`.target_1` if :py:attr:`.spec_type` is `TWO_TARGETS` or not set
-        - :py:attr:`.target_2` if :py:attr:`.spec_type` is `TWO_TARGETS` or not set
-        - :py:attr:`.observer` if :py:attr:`.spec_type` is `TWO_TARGETS` or not set
-        - :py:attr:`.direction_1` if :py:attr:`.spec_type` is `TWO_DIRECTIONS`
-        - :py:attr:`.direction_2` if :py:attr:`.spec_type` is `TWO_DIRECTIONS`
+        - :py:attr:`~Calculation.kernels` or/and :py:attr:`~Calculation.kernel_paths`
+        - :py:attr:`~Calculation.times` or :py:attr:`~Calculation.intervals` with :py:attr:`~Calculation.time_step` and :py:attr:`~Calculation.time_step_units`
+        - :py:attr:`~Calculation.target_1` if :py:attr:`~Calculation.spec_type` is `TWO_TARGETS` or not set
+        - :py:attr:`~Calculation.target_2` if :py:attr:`~Calculation.spec_type` is `TWO_TARGETS` or not set
+        - :py:attr:`~Calculation.observer` if :py:attr:`~Calculation.spec_type` is `TWO_TARGETS` or not set
+        - :py:attr:`~Calculation.direction_1` if :py:attr:`~Calculation.spec_type` is `TWO_DIRECTIONS`
+        - :py:attr:`~Calculation.direction_2` if :py:attr:`~Calculation.spec_type` is `TWO_DIRECTIONS`
 
     Default parameters:
-        - :py:attr:`.time_system`: ``UTC``
-        - :py:attr:`.time_format`: ``CALENDAR``
-        - :py:attr:`.shape_1`: ``POINT``
-        - :py:attr:`.shape_2`: ``POINT``
-        - :py:attr:`.aberration_correction`: ``CN``
+        - :py:attr:`~Calculation.time_system`: ``UTC``
+        - :py:attr:`~Calculation.time_format`: ``CALENDAR``
+        - :py:attr:`~Calculation.shape_1`: ``POINT``
+        - :py:attr:`~Calculation.shape_2`: ``POINT``
+        - :py:attr:`~Calculation.aberration_correction`: ``CN``
 
 .. autoclass:: AngularSeparation
 
@@ -420,15 +420,15 @@ Calculates the angular size of a target as seen by an observer.
 .. important::
 
     Calculation required parameters:
-        - :py:attr:`.kernels` or/and :py:attr:`.kernel_paths`
-        - :py:attr:`.times` or :py:attr:`.intervals` with :py:attr:`.time_step` and :py:attr:`.time_step_units`
-        - :py:attr:`.target`
-        - :py:attr:`.observer`
+        - :py:attr:`~Calculation.kernels` or/and :py:attr:`~Calculation.kernel_paths`
+        - :py:attr:`~Calculation.times` or :py:attr:`~Calculation.intervals` with :py:attr:`~Calculation.time_step` and :py:attr:`~Calculation.time_step_units`
+        - :py:attr:`~Calculation.target`
+        - :py:attr:`~Calculation.observer`
 
     Default parameters:
-        - :py:attr:`.time_system`: ``UTC``
-        - :py:attr:`.time_format`: ``CALENDAR``
-        - :py:attr:`.aberration_correction`: ``CN``
+        - :py:attr:`~Calculation.time_system`: ``UTC``
+        - :py:attr:`~Calculation.time_format`: ``CALENDAR``
+        - :py:attr:`~Calculation.aberration_correction`: ``CN``
 
 .. autoclass:: AngularSize
 
@@ -463,23 +463,23 @@ another reference frame (Frame 2).
 .. important::
 
     Calculation required parameters:
-        - :py:attr:`.kernels` or/and :py:attr:`.kernel_paths`
-        - :py:attr:`.times` or :py:attr:`.intervals` with :py:attr:`.time_step` and :py:attr:`.time_step_units`
-        - :py:attr:`.frame_1`
-        - :py:attr:`.frame_2`
+        - :py:attr:`~Calculation.kernels` or/and :py:attr:`~Calculation.kernel_paths`
+        - :py:attr:`~Calculation.times` or :py:attr:`~Calculation.intervals` with :py:attr:`~Calculation.time_step` and :py:attr:`~Calculation.time_step_units`
+        - :py:attr:`~Calculation.frame_1`
+        - :py:attr:`~Calculation.frame_2`
 
     Default parameters:
-        - :py:attr:`.time_system`: ``UTC``
-        - :py:attr:`.time_format`: ``CALENDAR``
-        - :py:attr:`.aberration_correction`: ``CN``
-        - :py:attr:`.time_location`: ``FRAME1``,
-        - :py:attr:`.orientation_representation`: ``EULER_ANGLES``,
-        - :py:attr:`.axis_1`: ``X``,
-        - :py:attr:`.axis_2`: ``Y``,
-        - :py:attr:`.axis_3`: ``Z``,
-        - :py:attr:`.angular_units`: ``deg``,
-        - :py:attr:`.angular_velocity_representation`: ``VECTOR_IN_FRAME1``,
-        - :py:attr:`.angular_velocity_units`: ``deg/s``'
+        - :py:attr:`~Calculation.time_system`: ``UTC``
+        - :py:attr:`~Calculation.time_format`: ``CALENDAR``
+        - :py:attr:`~Calculation.aberration_correction`: ``CN``
+        - :py:attr:`~Calculation.time_location`: ``FRAME1``,
+        - :py:attr:`~Calculation.orientation_representation`: ``EULER_ANGLES``,
+        - :py:attr:`~Calculation.axis_1`: ``X``,
+        - :py:attr:`~Calculation.axis_2`: ``Y``,
+        - :py:attr:`~Calculation.axis_3`: ``Z``,
+        - :py:attr:`~Calculation.angular_units`: ``deg``,
+        - :py:attr:`~Calculation.angular_velocity_representation`: ``VECTOR_IN_FRAME1``,
+        - :py:attr:`~Calculation.angular_velocity_units`: ``deg/s``'
 
 .. autoclass:: FrameTransformation
 
@@ -517,20 +517,20 @@ target as seen from an observer.
 .. important::
 
     Calculation required parameters:
-        - :py:attr:`.kernels` or/and :py:attr:`.kernel_paths`
-        - :py:attr:`.times` or :py:attr:`.intervals` with :py:attr:`.time_step` and :py:attr:`.time_step_units`
-        - :py:attr:`.target`
-        - :py:attr:`.target_frame`
-        - :py:attr:`.observer`
-        - :py:attr:`.latitude`
-        - :py:attr:`.longitude`
+        - :py:attr:`~Calculation.kernels` or/and :py:attr:`~Calculation.kernel_paths`
+        - :py:attr:`~Calculation.times` or :py:attr:`~Calculation.intervals` with :py:attr:`~Calculation.time_step` and :py:attr:`~Calculation.time_step_units`
+        - :py:attr:`~Calculation.target`
+        - :py:attr:`~Calculation.target_frame`
+        - :py:attr:`~Calculation.observer`
+        - :py:attr:`~Calculation.latitude`
+        - :py:attr:`~Calculation.longitude`
 
     Default parameters:
-        - :py:attr:`.time_system`: ``UTC``
-        - :py:attr:`.time_format`: ``CALENDAR``
-        - :py:attr:`.shape_1`: ``ELLIPSOID``
-        - :py:attr:`.coordinate_representation`: ``LATITUDINAL``
-        - :py:attr:`.aberration_correction`: ``CN``
+        - :py:attr:`~Calculation.time_system`: ``UTC``
+        - :py:attr:`~Calculation.time_format`: ``CALENDAR``
+        - :py:attr:`~Calculation.shape_1`: ``ELLIPSOID``
+        - :py:attr:`~Calculation.coordinate_representation`: ``LATITUDINAL``
+        - :py:attr:`~Calculation.aberration_correction`: ``CN``
 
 .. autoclass:: IlluminationAngles
 
@@ -568,18 +568,18 @@ Calculates the sub-solar point on a target as seen from an observer.
 .. important::
 
     Calculation required parameters:
-        - :py:attr:`.kernels` or/and :py:attr:`.kernel_paths`
-        - :py:attr:`.times` or :py:attr:`.intervals` with :py:attr:`.time_step` and :py:attr:`.time_step_units`
-        - :py:attr:`.target`
-        - :py:attr:`.target_frame`
-        - :py:attr:`.observer`
+        - :py:attr:`~Calculation.kernels` or/and :py:attr:`~Calculation.kernel_paths`
+        - :py:attr:`~Calculation.times` or :py:attr:`~Calculation.intervals` with :py:attr:`~Calculation.time_step` and :py:attr:`~Calculation.time_step_units`
+        - :py:attr:`~Calculation.target`
+        - :py:attr:`~Calculation.target_frame`
+        - :py:attr:`~Calculation.observer`
 
     Default parameters:
-        - :py:attr:`.time_system`: ``UTC``
-        - :py:attr:`.time_format`: ``CALENDAR``
-        - :py:attr:`.sub_point_type`: ``Near point: ellipsoid``
-        - :py:attr:`.aberration_correction`: ``CN``
-        - :py:attr:`.state_representation`: ``RECTANGULAR``
+        - :py:attr:`~Calculation.time_system`: ``UTC``
+        - :py:attr:`~Calculation.time_format`: ``CALENDAR``
+        - :py:attr:`~Calculation.sub_point_type`: ``Near point: ellipsoid``
+        - :py:attr:`~Calculation.aberration_correction`: ``CN``
+        - :py:attr:`~Calculation.state_representation`: ``RECTANGULAR``
 
 .. autoclass:: SubSolarPoint
 
@@ -618,18 +618,18 @@ Calculate the sub-observer point on a target as seen from an observer.
 .. important::
 
     Calculation required parameters:
-        - :py:attr:`.kernels` or/and :py:attr:`.kernel_paths`
-        - :py:attr:`.times` or :py:attr:`.intervals` with :py:attr:`.time_step` and :py:attr:`.time_step_units`
-        - :py:attr:`.target`
-        - :py:attr:`.target_frame`
-        - :py:attr:`.observer`
+        - :py:attr:`~Calculation.kernels` or/and :py:attr:`~Calculation.kernel_paths`
+        - :py:attr:`~Calculation.times` or :py:attr:`~Calculation.intervals` with :py:attr:`~Calculation.time_step` and :py:attr:`~Calculation.time_step_units`
+        - :py:attr:`~Calculation.target`
+        - :py:attr:`~Calculation.target_frame`
+        - :py:attr:`~Calculation.observer`
 
     Default parameters:
-        - :py:attr:`.time_system`: ``UTC``
-        - :py:attr:`.time_format`: ``CALENDAR``
-        - :py:attr:`.sub_point_type`: ``Near point: ellipsoid``
-        - :py:attr:`.aberration_correction`: ``CN``
-        - :py:attr:`.state_representation`: ``RECTANGULAR``
+        - :py:attr:`~Calculation.time_system`: ``UTC``
+        - :py:attr:`~Calculation.time_format`: ``CALENDAR``
+        - :py:attr:`~Calculation.sub_point_type`: ``Near point: ellipsoid``
+        - :py:attr:`~Calculation.aberration_correction`: ``CN``
+        - :py:attr:`~Calculation.state_representation`: ``RECTANGULAR``
 
 .. autoclass:: SubObserverPoint
 
@@ -671,19 +671,19 @@ from an observer.
 .. important::
 
     Calculation required parameters:
-        - :py:attr:`.kernels` or/and :py:attr:`.kernel_paths`
-        - :py:attr:`.times` or :py:attr:`.intervals` with :py:attr:`.time_step` and :py:attr:`.time_step_units`
-        - :py:attr:`.target`
-        - :py:attr:`.target_frame`
-        - :py:attr:`.observer`
+        - :py:attr:`~Calculation.kernels` or/and :py:attr:`~Calculation.kernel_paths`
+        - :py:attr:`~Calculation.times` or :py:attr:`~Calculation.intervals` with :py:attr:`~Calculation.time_step` and :py:attr:`~Calculation.time_step_units`
+        - :py:attr:`~Calculation.target`
+        - :py:attr:`~Calculation.target_frame`
+        - :py:attr:`~Calculation.observer`
 
     Default parameters:
-        - :py:attr:`.time_system`: ``UTC``
-        - :py:attr:`.time_format`: ``CALENDAR``
+        - :py:attr:`~Calculation.time_system`: ``UTC``
+        - :py:attr:`~Calculation.time_format`: ``CALENDAR``
         - :py:attr:`shape_1`: ``ELLIPSOID``
-        - :py:attr:`.intercept_vector_type`: ``INSTRUMENT_BORESIGHT``
-        - :py:attr:`.aberration_correction`: ``CN``
-        - :py:attr:`.state_representation`: ``RECTANGULAR``
+        - :py:attr:`~Calculation.intercept_vector_type`: ``INSTRUMENT_BORESIGHT``
+        - :py:attr:`~Calculation.aberration_correction`: ``CN``
+        - :py:attr:`~Calculation.state_representation`: ``RECTANGULAR``
 
 .. autoclass:: SurfaceInterceptPoint
 
@@ -721,15 +721,15 @@ central body. The orbit may be elliptical, parabolic, or hyperbolic.
 .. important::
 
     Calculation required parameters:
-        - :py:attr:`.kernels` or/and :py:attr:`.kernel_paths`
-        - :py:attr:`.times` or :py:attr:`.intervals` with :py:attr:`.time_step` and :py:attr:`.time_step_units`
-        - :py:attr:`.orbiting_body`
-        - :py:attr:`.center_body`
+        - :py:attr:`~Calculation.kernels` or/and :py:attr:`~Calculation.kernel_paths`
+        - :py:attr:`~Calculation.times` or :py:attr:`~Calculation.intervals` with :py:attr:`~Calculation.time_step` and :py:attr:`~Calculation.time_step_units`
+        - :py:attr:`~Calculation.orbiting_body`
+        - :py:attr:`~Calculation.center_body`
 
     Default parameters:
-        - :py:attr:`.time_system`: ``UTC``
-        - :py:attr:`.time_format`: ``CALENDAR``
-        - :py:attr:`.reference_frame`: ``J2000``
+        - :py:attr:`~Calculation.time_system`: ``UTC``
+        - :py:attr:`~Calculation.time_format`: ``CALENDAR``
+        - :py:attr:`~Calculation.reference_frame`: ``J2000``
 
 .. autoclass:: OsculatingElements
 
@@ -756,14 +756,14 @@ Convert times from one time system or format to another.
 .. important::
 
     Calculation required parameters:
-        - :py:attr:`.kernels` or/and :py:attr:`.kernel_paths`
-        - :py:attr:`.times` or :py:attr:`.intervals` with :py:attr:`.time_step` and :py:attr:`.time_step_units`
+        - :py:attr:`~Calculation.kernels` or/and :py:attr:`~Calculation.kernel_paths`
+        - :py:attr:`~Calculation.times` or :py:attr:`~Calculation.intervals` with :py:attr:`~Calculation.time_step` and :py:attr:`~Calculation.time_step_units`
 
     Default parameters:
-        - :py:attr:`.time_system`: ``UTC``
-        - :py:attr:`.time_format`: ``CALENDAR``
-        - :py:attr:`.output_time_system`: ``UTC``
-        - :py:attr:`.output_time_format`: ``CALENDAR``
+        - :py:attr:`~Calculation.time_system`: ``UTC``
+        - :py:attr:`~Calculation.time_format`: ``CALENDAR``
+        - :py:attr:`~Calculation.output_time_system`: ``UTC``
+        - :py:attr:`~Calculation.output_time_format`: ``CALENDAR``
 
 .. autoclass:: TimeConversion
 
@@ -804,24 +804,24 @@ Find time intervals when a coordinate of an observer-target position vector sati
 .. important::
 
     Calculation required parameters:
-        - :py:attr:`.kernels` or/and :py:attr:`.kernel_paths`
-        - :py:attr:`.times` or :py:attr:`.intervals` with :py:attr:`.time_step` and :py:attr:`.time_step_units`
-        - :py:attr:`.observer`
-        - :py:attr:`.target`
-        - :py:attr:`.reference_frame`
-        - :py:attr:`.coordinate_system`
-        - :py:attr:`.coordinate`
-        - :py:attr:`.relational_condition`
-        - :py:attr:`.reference_value` only if :py:attr:`.relational_condition` is not ``ABSMAX``, ``ABSMIN``, ``LOCMAX``, or ``LOCMIN``
-        - :py:attr:`.upper_limit` only if :py:attr:`.relational_condition` is ``RANGE``
-        - :py:attr:`.adjustment_value` only if :py:attr:`.relational_condition` is ``ABSMAX`` or ``ABSMIN``
+        - :py:attr:`~Calculation.kernels` or/and :py:attr:`~Calculation.kernel_paths`
+        - :py:attr:`~Calculation.times` or :py:attr:`~Calculation.intervals` with :py:attr:`~Calculation.time_step` and :py:attr:`~Calculation.time_step_units`
+        - :py:attr:`~Calculation.observer`
+        - :py:attr:`~Calculation.target`
+        - :py:attr:`~Calculation.reference_frame`
+        - :py:attr:`~Calculation.coordinate_system`
+        - :py:attr:`~Calculation.coordinate`
+        - :py:attr:`~Calculation.relational_condition`
+        - :py:attr:`~Calculation.reference_value` only if :py:attr:`~Calculation.relational_condition` is not ``ABSMAX``, ``ABSMIN``, ``LOCMAX``, or ``LOCMIN``
+        - :py:attr:`~Calculation.upper_limit` only if :py:attr:`~Calculation.relational_condition` is ``RANGE``
+        - :py:attr:`~Calculation.adjustment_value` only if :py:attr:`~Calculation.relational_condition` is ``ABSMAX`` or ``ABSMIN``
 
     Default parameters:
-        - :py:attr:`.time_system`: ``UTC``
-        - :py:attr:`.time_format`: ``CALENDAR``
-        - :py:attr:`.output_duration_units`: ``SECONDS``
-        - :py:attr:`.should_complement_window`: ``False``
-        - :py:attr:`.interval_adjustment`: ``NO_ADJUSTMENT``
-        - :py:attr:`.interval_filtering`: ``NO_FILTERING``
+        - :py:attr:`~Calculation.time_system`: ``UTC``
+        - :py:attr:`~Calculation.time_format`: ``CALENDAR``
+        - :py:attr:`~Calculation.output_duration_units`: ``SECONDS``
+        - :py:attr:`~Calculation.should_complement_window`: ``False``
+        - :py:attr:`~Calculation.interval_adjustment`: ``NO_ADJUSTMENT``
+        - :py:attr:`~Calculation.interval_filtering`: ``NO_FILTERING``
 
 .. autoclass:: GFCoordinateSearch
