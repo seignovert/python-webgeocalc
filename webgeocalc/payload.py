@@ -1,10 +1,12 @@
-"""WebGeoCalc Payload."""
+"""WebGeoCalc Payload submodule."""
+
+from abc import ABC
 
 from .errors import CalculationRequiredAttr
 
 
-class Payload:
-    """Abstract WebGeoCalc payload class.
+class Payload(ABC):
+    """Abstract WebGeoCalc payload abstract class.
 
     Check if any required parameters is missing.
 
@@ -52,19 +54,12 @@ class Payload:
     def payload(self) -> dict:
         """Payload parameters *dict* for JSON input in WebGeoCalc format.
 
-        Collect all the properties prefixed with `__`.
+        Collect all the properties prefixed with ``__*``.
 
         Return
         ------
-        dict
+        dict:
             Payload keys and values.
-
-        Example
-        -------
-        >>> Payload(
-        ...    foo = 'bar',
-        ... ).payload  # noqa: E501
-        {'foo': 'bar'}
 
         """
         return dict(self)

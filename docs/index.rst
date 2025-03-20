@@ -95,6 +95,7 @@ Documentation
 
    api
    calculation
+   params
    cli
 
 .. important::

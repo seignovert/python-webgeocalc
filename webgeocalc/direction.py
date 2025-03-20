@@ -12,38 +12,31 @@ class Direction(Payload):
 
     Parameters
     ----------
-    aberration_correction: str, optional
-        See: :py:attr:`aberration_correction` (default: ``'NONE'``)
-    anti_vector_flag: str or bool, optional
-        See: :py:attr:`anti_vector_flag` (default: ``False``)
-
-    Other Parameters
-    ----------------
     direction_type: str
         See: :py:attr:`direction_type`
         Depending on the desired :py:attr:`direction_type`,
         different parameters are required.
     observer: str or int
         See: :py:attr:`observer`
-        Required if :py:attr:`aberration_correction` is not ``'NONE'``
-        for direction vector of type ``'VECTOR'``.
+        Not required if :py:attr:`aberration_correction` is ``NONE``
+        and :py:attr:`direction vector` is ``VECTOR``.
 
-    `POSITION` parameters
-    ---------------------
+    Required parameters 'POSITION'
+
     target: str or int
         See: :py:attr:`target`
     shape: str
         See: :py:attr:`shape`
 
-    `VELOCITY` parameters
-    ---------------------
+    Required parameters 'VELOCITY'
+
     target: str or int
         See: :py:attr:`target`
     reference_frame: str, optional
         See: :py:attr:`reference_frame`
 
-    `VECTOR` parameters
-    ---------------------
+    Required parameters 'VECTOR'
+
     direction_vector_type: str
         See: :py:attr:`direction_vector_type`
     direction_instrument: str or int
@@ -71,6 +64,14 @@ class Direction(Payload):
     elplsz_flag: bool or str
         See: :py:attr:`elplsz_flag`
 
+    Other Parameters
+    ----------------
+    aberration_correction: str, optional
+        See: :py:attr:`aberration_correction` (default: ``NONE``)
+    anti_vector_flag: str or bool, optional
+        See: :py:attr:`anti_vector_flag` (default: ``False``)
+
+
     """
 
     REQUIRED = ('direction_type', )
@@ -91,102 +92,6 @@ class Direction(Payload):
 
         super().__init__(**kwargs)
 
-    @parameter
-    def aberration_correction(self, val):
-        """SPICE aberration correction.
-
-        Parameters
-        ----------
-        aberration_correction: str
-            The SPICE aberration correction string.
-
-            For ``POSITION`` or ``VELOCITY``, one of:
-
-            - NONE
-            - LT
-            - LT+S
-            - CN
-            - CN+S
-            - XLT
-            - XLT+S
-            - XCN
-            - XCN+S
-
-            For ``VECTOR``, light time correction is applied
-            to the rotation from the vector frame to J2000,
-            while stellar aberration corrections apply
-            to the vector direction. One of:
-
-            - NONE
-            - LT
-            - CN
-            - XLT
-            - XCN
-            - S
-            - XS
-
-        Raises
-        ------
-        CalculationInvalidAttr
-            If the value provided is invalid.
-        CalculationRequiredAttr
-            If this ``DIRECTION_TYPE`` is ``VECTOR`` and
-            ``ABERRATION_CORRECTION`` is ``NONE``
-            but :py:attr:`observer` is not provided.
-
-        """
-        match self.params['direction_type']:
-            case 'VECTOR':
-                valid = 'ABERRATION_CORRECTION_VECTOR'
-                if val != 'NONE':
-                    self._required('observer')
-            case _:
-                valid = 'ABERRATION_CORRECTION'
-
-        if val not in VALID_PARAMETERS[valid]:
-            raise CalculationInvalidAttr(
-                'aberration_correction',
-                val,
-                VALID_PARAMETERS[valid],
-            )
-
-        self.__aberrationCorrection = val
-
-    @parameter(only='BOOLEAN')
-    def anti_vector_flag(self, val):
-        """Anti-vector flag.
-
-        Parameters
-        ----------
-        anti_vector_flag: bool
-            `True` if the anti-vector shall be used for the direction, and `False`
-            otherwise.
-
-            In type ``POSITION``, required when the target shape is `POINT` (default).
-            If provided when the target shape is `SPHERE`, it must be set to false,
-            i.e., using anti-vector direction is not supported for target bodies
-            modeled as spheres.
-
-        Raises
-        ------
-        CalculationInvalidAttr
-            If the value provided is invalid.
-        CalculationInvalidAttr
-            If this ``DIRECTION_TYPE`` is ``POSITION`` and
-            ``SHAPE`` is ``SPHERE`` but :py:attr:`observer` is not provided.
-
-        """
-        if isinstance(val, str):
-            val = val.upper() == 'TRUE'
-
-        if self.params['direction_type'] == 'POSITION':
-            if self.params.get('shape') == 'SPHERE' and val:
-                raise CalculationInvalidAttr(
-                    'anti_vector_flag', val, ['False']
-                )
-
-        self.__antiVectorFlag = val
-
     @parameter(only='DIRECTION_TYPE')
     def direction_type(self, val):
         """Type of direction.
@@ -201,11 +106,11 @@ class Direction(Payload):
         direction_type: str
             The type of direction string. One of:
 
-            - POSITION
-            - VELOCITY
-            - VECTOR
+            - ``POSITION``
+            - ``VELOCITY``
+            - ``VECTOR``
 
-        Velocity depends on the reference frame in which it is expressed.
+            Velocity depends on the reference frame in which it is expressed.
 
         Raises
         ------
@@ -249,8 +154,9 @@ class Direction(Payload):
         ----------
         shape: str
             One of:
-            - POINT
-            - SPHERE
+
+            - ``POINT``
+            - ``SPHERE``
 
         Raises
         -------
@@ -281,13 +187,13 @@ class Direction(Payload):
         direction_vector_type: str
             The direction vector type string. One of:
 
-                - INSTRUMENT_BORESIGHT
-                - REFERENCE_FRAME_AXIS
-                - VECTOR_IN_INSTRUMENT_FOV
-                - VECTOR_IN_REFERENCE_FRAME
-                - INSTRUMENT_FOV_BOUNDARY_VECTORS (*)
+            - ``INSTRUMENT_BORESIGHT``
+            - ``REFERENCE_FRAME_AXIS``
+            - ``VECTOR_IN_INSTRUMENT_FOV``
+            - ``VECTOR_IN_REFERENCE_FRAME``
+            - ``INSTRUMENT_FOV_BOUNDARY_VECTORS`` (*)
 
-        (*) only for PointingDirection calculation
+            (*) only for :py:class:`PointingDirection` calculation.
 
         Raises
         ------
@@ -351,10 +257,10 @@ class Direction(Payload):
 
     @parameter
     def direction_instrument(self, val):
-        """The instrument name or ID.
+        """The instrument direction.
 
-        Required only if directionVectorType is `INSTRUMENT_BORESIGHT`,
-        `VECTOR_IN_INSTRUMENT_FOV` or `INSTRUMENT_FOV_BOUNDARY_VECTORS`.
+        Required only if :py:attr:`direction_vector_type` is ``INSTRUMENT_BORESIGHT``,
+        ``VECTOR_IN_INSTRUMENT_FOV`` or ``INSTRUMENT_FOV_BOUNDARY_VECTORS``.
 
         Parameters
         ----------
@@ -386,11 +292,11 @@ class Direction(Payload):
     def direction_frame(self, val):
         """The vector's reference frame name.
 
-        Required only if directionVectorType is REFERENCE_FRAME_AXIS
-        or VECTOR_IN_REFERENCE_FRAME.
+        Required only if :py:attr:`direction_vector_type` is ``REFERENCE_FRAME_AXIS``
+        or ``VECTOR_IN_REFERENCE_FRAME``.
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         direction_frame: str
             The vector's reference frame name.
 
@@ -417,16 +323,16 @@ class Direction(Payload):
     def direction_frame_axis(self, val):
         """The direction vector frame axis.
 
-        Required only if directionVectorType is REFERENCE_FRAME_AXIS.
+        Required only if :py:attr:`direction_vector_type` is ``REFERENCE_FRAME_AXIS``.
 
         Parameters
         ----------
         direction_frame_axis: str
             The direction frame axis string. One of:
 
-            - X
-            - Y
-            - Z
+            - ``X``
+            - ``Y``
+            - ``Z``
 
         Raises
         ------
@@ -478,14 +384,14 @@ class Direction(Payload):
     def direction_vector_x(self, val):
         """The X direction vector coordinate.
 
-        If directionVectorType is VECTOR_IN_INSTRUMENT_FOV or
-        VECTOR_IN_REFERENCE_FRAME, then either all three of directionVectorX,
-        directionVectorY, and directionVectorZ must be provided, or both
-        directionVectorRA and directionVectorDec, or both directionVectorAz
-        and directionVectorEl.
+        If :py:attr:`direction_vector_type` is ``VECTOR_IN_INSTRUMENT_FOV`` or
+        ``VECTOR_IN_REFERENCE_FRAME``, then either all three of
+        :py:attr:`direction_vector_x`,
+        :py:attr:`direction_vector_y`, and
+        :py:attr:`direction_vector_z` must be provided.
 
-        Parameter
-        ---------
+        Parameters
+        ----------
         direction_vector_x: float
             The X direction vector coordinate value.
 
@@ -496,14 +402,14 @@ class Direction(Payload):
     def direction_vector_y(self, val):
         """The Y direction vector coordinate.
 
-        If directionVectorType is VECTOR_IN_INSTRUMENT_FOV or
-        VECTOR_IN_REFERENCE_FRAME, then either all three of directionVectorX,
-        directionVectorY, and directionVectorZ must be provided, or both
-        directionVectorRA and directionVectorDec, or both directionVectorAz
-        and directionVectorEl.
+        If :py:attr:`direction_vector_type` is ``VECTOR_IN_INSTRUMENT_FOV`` or
+        ``VECTOR_IN_REFERENCE_FRAME``, then either all three of
+        :py:attr:`direction_vector_x`,
+        :py:attr:`direction_vector_y`, and
+        :py:attr:`direction_vector_z` must be provided.
 
-        Parameter
-        ---------
+        Parameters
+        ----------
         direction_vector_y: float
             The Y direction vector coordinate value.
 
@@ -514,14 +420,14 @@ class Direction(Payload):
     def direction_vector_z(self, val):
         """The Z direction vector coordinate.
 
-        If directionVectorType is VECTOR_IN_INSTRUMENT_FOV or
-        VECTOR_IN_REFERENCE_FRAME, then either all three of directionVectorX,
-        directionVectorY, and directionVectorZ must be provided, or both
-        directionVectorRA and directionVectorDec, or both directionVectorAz
-        and directionVectorEl.
+        If :py:attr:`direction_vector_type` is ``VECTOR_IN_INSTRUMENT_FOV`` or
+        ``VECTOR_IN_REFERENCE_FRAME``, then either all three of
+        :py:attr:`direction_vector_x`,
+        :py:attr:`direction_vector_y`, and
+        :py:attr:`direction_vector_z` must be provided.
 
-        Parameter
-        ---------
+        Parameters
+        ----------
         direction_vector_z: float
             The Z direction vector coordinate value.
 
@@ -532,14 +438,13 @@ class Direction(Payload):
     def direction_vector_ra(self, val):
         """The right ascension direction vector coordinate.
 
-        If directionVectorType is VECTOR_IN_INSTRUMENT_FOV or
-        VECTOR_IN_REFERENCE_FRAME, then either all three of directionVectorX,
-        directionVectorY, and directionVectorZ must be provided, or both
-        directionVectorRA and directionVectorDec, or both directionVectorAz
-        and directionVectorEl.
+        If :py:attr:`direction_vector_type` is ``VECTOR_IN_INSTRUMENT_FOV`` or
+        ``VECTOR_IN_REFERENCE_FRAME``, then either all three of
+        :py:attr:`direction_vector_ra` and
+        :py:attr:`direction_vector_dec` must be provided.
 
-        Parameter
-        ---------
+        Parameters
+        ----------
         direction_vector_ra: float
             The right ascension direction vector coordinate value.
 
@@ -550,14 +455,13 @@ class Direction(Payload):
     def direction_vector_dec(self, val):
         """The declination direction vector coordinate.
 
-        If directionVectorType is VECTOR_IN_INSTRUMENT_FOV or
-        VECTOR_IN_REFERENCE_FRAME, then either all three of directionVectorX,
-        directionVectorY, and directionVectorZ must be provided, or both
-        directionVectorRA and directionVectorDec, or both directionVectorAz
-        and directionVectorEl.
+        If :py:attr:`direction_vector_type` is ``VECTOR_IN_INSTRUMENT_FOV`` or
+        ``VECTOR_IN_REFERENCE_FRAME``, then either all three of
+        :py:attr:`direction_vector_ra` and
+        :py:attr:`direction_vector_dec` must be provided.
 
-        Parameter
-        ---------
+        Parameters
+        ----------
         direction_vector_dec: float
             The declination direction vector coordinate value.
 
@@ -568,14 +472,15 @@ class Direction(Payload):
     def direction_vector_az(self, val):
         """The azimuth direction vector coordinate.
 
-        If directionVectorType is VECTOR_IN_INSTRUMENT_FOV or
-        VECTOR_IN_REFERENCE_FRAME, then either all three of directionVectorX,
-        directionVectorY, and directionVectorZ must be provided, or both
-        directionVectorRA and directionVectorDec, or both directionVectorAz
-        and directionVectorEl.
+        If :py:attr:`direction_vector_type` is ``VECTOR_IN_INSTRUMENT_FOV`` or
+        ``VECTOR_IN_REFERENCE_FRAME``, then either all three of
+        :py:attr:`direction_vector_az`,
+        :py:attr:`direction_vector_el`,
+        :py:attr:`azccw_flag` and
+        :py:attr:`elplsz_flag` must be provided.
 
-        Parameter
-        ---------
+        Parameters
+        ----------
         direction_vector_az: float
             The azimuth direction vector coordinate value.
 
@@ -587,14 +492,15 @@ class Direction(Payload):
     def direction_vector_el(self, val):
         """The elevation direction vector coordinate.
 
-        If directionVectorType is VECTOR_IN_INSTRUMENT_FOV or
-        VECTOR_IN_REFERENCE_FRAME, then either all three of directionVectorX,
-        directionVectorY, and directionVectorZ must be provided, or both
-        directionVectorRA and directionVectorDec, or both directionVectorAz
-        and directionVectorEl.
+        If :py:attr:`direction_vector_type` is ``VECTOR_IN_INSTRUMENT_FOV`` or
+        ``VECTOR_IN_REFERENCE_FRAME``, then either all three of
+        :py:attr:`direction_vector_az`,
+        :py:attr:`direction_vector_el`,
+        :py:attr:`azccw_flag` and
+        :py:attr:`elplsz_flag` must be provided.
 
-        Parameter
-        ---------
+        Parameters
+        ----------
         direction_vector_el: float
             The elevation vector coordinate value.
 
@@ -606,13 +512,15 @@ class Direction(Payload):
     def azccw_flag(self, val):
         """Flag indicating how azimuth is measured.
 
-        If azccwFlag is ``true``, azimuth increases in the counterclockwise
-        direction; otherwise it increases in the clockwise direction. Required
-        only when directionVectorAz and directionVectorEl are used to provide
-        the coordinates of the direction vector.
+        If :py:attr:`direction_vector_type` is ``VECTOR_IN_INSTRUMENT_FOV`` or
+        ``VECTOR_IN_REFERENCE_FRAME``, then either all three of
+        :py:attr:`direction_vector_az`,
+        :py:attr:`direction_vector_el`,
+        :py:attr:`azccw_flag` and
+        :py:attr:`elplsz_flag` must be provided.
 
-        Parameter
-        ---------
+        Parameters
+        ----------
         azccw_flag: bool
             Flag indicating how azimuth is measured.
 
@@ -637,13 +545,15 @@ class Direction(Payload):
     def elplsz_flag(self, val):
         """Flag indicating how elevation is measured.
 
-        If elplszFlag is true, elevation increases from the XY plane toward
-        +Z; otherwise toward -Z. Required only when directionVectorAz and
-        directionVectorEl are used to provide the coordinates of the direction
-        vector.
+        If :py:attr:`direction_vector_type` is ``VECTOR_IN_INSTRUMENT_FOV`` or
+        ``VECTOR_IN_REFERENCE_FRAME``, then either all three of
+        :py:attr:`direction_vector_az`,
+        :py:attr:`direction_vector_el`,
+        :py:attr:`azccw_flag` and
+        :py:attr:`elplsz_flag` must be provided.
 
-        Parameter
-        ---------
+        Parameters
+        ----------
         elplsz_flag: bool
             ag indicating how elevation is measured.
 
@@ -663,3 +573,99 @@ class Direction(Payload):
             val = val.upper() == 'TRUE'
 
         self.__elplszFlag = val
+
+    @parameter
+    def aberration_correction(self, val):
+        """SPICE aberration correction.
+
+        Parameters
+        ----------
+        aberration_correction: str
+            The SPICE aberration correction string.
+
+            For ``POSITION`` or ``VELOCITY``, one of:
+
+            - ``NONE``
+            - ``LT``
+            - ``LT+S``
+            - ``CN``
+            - ``CN+S``
+            - ``XLT``
+            - ``XLT+S``
+            - ``XCN``
+            - ``XCN+S``
+
+            For ``VECTOR``, light time correction is applied
+            to the rotation from the vector frame to ``J2000``,
+            while stellar aberration corrections apply
+            to the vector direction. One of:
+
+            - ``NONE``
+            - ``LT``
+            - ``CN``
+            - ``XLT``
+            - ``XCN``
+            - ``S``
+            - ``XS``
+
+        Raises
+        ------
+        CalculationInvalidAttr
+            If the value provided is invalid.
+        CalculationRequiredAttr
+            If this ``DIRECTION_TYPE`` is ``VECTOR`` and
+            ``ABERRATION_CORRECTION`` is ``NONE``
+            but :py:attr:`observer` is not provided.
+
+        """
+        match self.params['direction_type']:
+            case 'VECTOR':
+                valid = 'ABERRATION_CORRECTION_VECTOR'
+                if val != 'NONE':
+                    self._required('observer')
+            case _:
+                valid = 'ABERRATION_CORRECTION'
+
+        if val not in VALID_PARAMETERS[valid]:
+            raise CalculationInvalidAttr(
+                'aberration_correction',
+                val,
+                VALID_PARAMETERS[valid],
+            )
+
+        self.__aberrationCorrection = val
+
+    @parameter(only='BOOLEAN')
+    def anti_vector_flag(self, val):
+        """Anti-vector flag.
+
+        Parameters
+        ----------
+        anti_vector_flag: bool
+            `True` if the anti-vector shall be used for the direction, and `False`
+            otherwise.
+
+            In type ``POSITION``, required when the target shape is `POINT` (default).
+            If provided when the target shape is `SPHERE`, it must be set to false,
+            i.e., using anti-vector direction is not supported for target bodies
+            modeled as spheres.
+
+        Raises
+        ------
+        CalculationInvalidAttr
+            If the value provided is invalid.
+        CalculationInvalidAttr
+            If this :py:attr:`direction_type` is ``POSITION`` and
+            ``SHAPE`` is ``SPHERE`` but :py:attr:`observer` is not provided.
+
+        """
+        if isinstance(val, str):
+            val = val.upper() == 'TRUE'
+
+        if self.params['direction_type'] == 'POSITION':
+            if self.params.get('shape') == 'SPHERE' and val:
+                raise CalculationInvalidAttr(
+                    'anti_vector_flag', val, ['False']
+                )
+
+        self.__antiVectorFlag = val
