@@ -60,7 +60,9 @@ class CalculationInvalidAttr(AttributeError):
 
     def __init__(self, name, attr, valids):
         msg = '\n - '.join(
-            [f"Attribute '{name}'='{attr}' is only applicable with:"] + valids)
+            [f"Attribute '{name}'='{attr}' is only applicable with:"] +
+            [str(v) for v in valids]
+        )
         super().__init__(msg)
 
 
@@ -132,5 +134,5 @@ class CalculationTimeOut(IOError):
 
     def __init__(self, timeout, sleep):
         msg = f'Calculation time-out after {timeout} seconds' + \
-              f' ({int(timeout/sleep)} attempts)'
+              f' ({int(timeout / sleep)} attempts)'
         super().__init__(msg)

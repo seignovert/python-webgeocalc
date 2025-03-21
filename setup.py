@@ -12,7 +12,7 @@ setup(
     version='1.4.0',
     description='Python package for NAIF WebGeoCalc API',
     author='Benoit Seignovert',
-    author_email='benoit.a.seignovert@univ-nantes.fr',
+    author_email='benoit.seignovert@univ-nantes.fr',
     url='https://github.com/seignovert/python-webgeocalc',
     project_urls={
         'Bug Tracker': 'https://github.com/seignovert/python-webgeocalc/issues',
@@ -22,9 +22,9 @@ setup(
         'Documentation': 'https://webgeocalc.readthedocs.io/',
     },
     license='MIT',
-    python_requires='>=3.8',
+    python_requires='>=3.11',
     install_requires=[
-        'requests==2.25.1',
+        'requests>=2.31',
     ],
     packages=find_packages(),
     include_package_data=False,

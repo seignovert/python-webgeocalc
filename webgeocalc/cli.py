@@ -170,11 +170,27 @@ def cli_instruments(argv=None):
         parser.print_help()
 
 
-def _split(string, sep=','):
-    # Replace and split string
-    for char in ['[', ']', '=', '"', "'"]:
+def _strip(string, chars='[]="\''):
+    for char in chars:
         string = string.replace(char, '')
-    return string.split(sep)
+    return string
+
+
+def _strip_split(string, sep=',', strip='[]="\''):
+    """Strip and split string."""
+    # Split inline dict (eg. `foo=bar baz=qux`)
+    if '=' in string and ' ' in string:
+        return [
+            dict(
+                _strip(s, chars='"\'').split('=')
+                for s in string.split()
+            )
+        ]
+
+    # Replace and split string
+    for char in strip:
+        string = string.replace(char, '')
+    return _strip(string, chars='[]="\'').split(sep)
 
 
 def _underscore_case(string):
@@ -212,11 +228,12 @@ def _params(params):
         if key is None:
             continue
 
-        for value in _split(param):
+        for value in _strip_split(param):
             if value == '':
                 continue
 
-            value = _int_float_str(value)
+            if not isinstance(value, dict):
+                value = _int_float_str(value)
 
             if key not in out:
                 out[key] = value
@@ -289,47 +306,47 @@ def cli_state_vector(argv=None):
 
 
 def cli_angular_separation(argv=None):
-    """Submit angular separation calcultion with the CLI."""
+    """Submit angular separation calculation with the CLI."""
     cli_calculation(argv, AngularSeparation, desc='Angular Separation')
 
 
 def cli_angular_size(argv=None):
-    """Submit angular size calcultion with the CLI."""
+    """Submit angular size calculation with the CLI."""
     cli_calculation(argv, AngularSize, desc='Angular Size')
 
 
 def cli_frame_transformation(argv=None):
-    """Submit frame transformation calcultion with the CLI."""
+    """Submit frame transformation calculation with the CLI."""
     cli_calculation(argv, FrameTransformation, desc='Frame Transformation')
 
 
 def cli_illumination_angles(argv=None):
-    """Submit illumination angles calcultion with the CLI."""
+    """Submit illumination angles calculation with the CLI."""
     cli_calculation(argv, IlluminationAngles, desc='Illumination Angles')
 
 
 def cli_subsolar_point(argv=None):
-    """Submit sub-solar point calcultion with the CLI."""
+    """Submit sub-solar point calculation with the CLI."""
     cli_calculation(argv, SubSolarPoint, desc='Sub-Solar Point')
 
 
 def cli_subobserver_point(argv=None):
-    """Submit sub-observer point calcultion with the CLI."""
+    """Submit sub-observer point calculation with the CLI."""
     cli_calculation(argv, SubObserverPoint, desc='Sub-Observer Point')
 
 
 def cli_surface_intercept_point(argv=None):
-    """Submit surface intercept point calcultion with the CLI."""
+    """Submit surface intercept point calculation with the CLI."""
     cli_calculation(argv, SurfaceInterceptPoint, desc='Surface Intercept Point')
 
 
 def cli_osculating_elements(argv=None):
-    """Submit osculating elements calcultion with the CLI."""
+    """Submit osculating elements calculation with the CLI."""
     cli_calculation(argv, OsculatingElements, desc='Osculating Elements')
 
 
 def cli_time_conversion(argv=None):
-    """Submit time conversion calcultion with the CLI."""
+    """Submit time conversion calculation with the CLI."""
     cli_calculation(argv, TimeConversion, desc='Time Conversion')
 
 

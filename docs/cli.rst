@@ -250,6 +250,36 @@ Here is the list of all the calculation entry points available on the CLI:
 - ``wgc-time-conversion``
 - ``wgc-gf-coordinate-search``
 
+.. hint::
+
+    If you need to provide a :py:class:`~webgeocalc.direction.Direction`
+    (eg. an :py:class:`~webgeocalc.AngularSeparation` calculation with ``TWO_DIRECTIONS``).
+    You need to encapsulate the nested parameters into single (``'``) or double (``"``) quotes
+    separated with spaces:
+
+    .. code:: bash
+
+        $ wgc-angular-separation --dry-run \
+                                --kernels 5 \
+                                --times 2012-10-19T08:24:00 \
+                                --spec_type TWO_DIRECTIONS \
+                                --direction_1 "direction_type=POSITION target=SUN shape=POINT observer='CASSINI'" \
+                                --direction_2 'direction_type=VECTOR direction_vector_type=REFERENCE_FRAME_AXIS direction_frame="CASSINI_RPWS_EDIPOLE" direction_frame_axis=Z'
+
+        API: https://wgc2.jpl.nasa.gov:8443/webgeocalc/api
+        Payload:
+        {
+            kernels: [{'type': 'KERNEL_SET', 'id': 5}],
+            times: ['2012-10-19T08:24:00.000'],
+            direction1: {'directionType': 'POSITION', 'target': 'SUN', 'shape': 'POINT', 'observer': 'CASSINI', 'aberrationCorrection': 'NONE', 'antiVectorFlag': False},
+            direction2: {'directionType': 'VECTOR', 'directionVectorType': 'REFERENCE_FRAME_AXIS', 'directionFrame': 'CASSINI_RPWS_EDIPOLE', 'directionFrameAxis': 'Z', 'aberrationCorrection': 'NONE', 'antiVectorFlag': False},
+            calculationType: ANGULAR_SEPARATION,
+            specType: TWO_DIRECTIONS,
+            timeSystem: UTC,
+            timeFormat: CALENDAR,
+        }
+
+
 All the calculation entry point accept an optional ``api`` attribute
 to submit the query to a custom endpoint.
 If ``WGC_URL`` global environment variable is defined,

@@ -154,6 +154,39 @@ def test_cli_input_parameters():
     assert parse('--kernels "Cassini" "Solar"') == {'kernels': ['Cassini', 'Solar']}
 
     assert parse("--times '2012-10-19T08:24:00'") == {'times': '2012-10-19T08:24:00'}
+    assert parse("--times 2000-01-01 --times 2000-01-02'") == {
+        'times': ['2000-01-01', '2000-01-02']
+    }
+
+
+def test_cli_input_parameters_nested():
+    """Test CLI nested input parameters parsing."""
+    # Double quotes
+    assert _params([
+        '--double-quotes',
+        '"direction_type=POSITION target=SUN shape=POINT observer=\'CASSINI\'"',
+    ]) == {
+        'double_quotes': {
+            'direction_type': 'POSITION',
+            'target': 'SUN',
+            'shape': 'POINT',
+            'observer': 'CASSINI',
+        }
+    }
+
+    # Single quote
+    assert _params([
+        '--single-quote',
+        "'direction_type=VECTOR direction_vector_type=REFERENCE_FRAME_AXIS"
+        " direction_frame=\"CASSINI_RPWS_EDIPOLE\" direction_frame_axis=Z'",
+    ]) == {
+        'single_quote': {
+            'direction_type': 'VECTOR',
+            'direction_vector_type': 'REFERENCE_FRAME_AXIS',
+            'direction_frame': 'CASSINI_RPWS_EDIPOLE',
+            'direction_frame_axis': 'Z',
+        }
+    }
 
 
 def test_cli_state_vector_empty(capsys):
@@ -162,6 +195,111 @@ def test_cli_state_vector_empty(capsys):
     cli_state_vector(argv)
     captured = capsys.readouterr()
     assert 'usage:' in captured.out
+
+
+def test_cli_state_vector_esa(capsys):
+    """Test dry-run state vector calculation on ESA API with the CLI."""
+    argv = [
+        '--dry-run',
+        '--api', 'ESA',
+        '--kernels', '"OPS  --     Rosetta"',
+        '--times', '2014-01-01T01:23:45.000',
+        '--calculation_type', 'STATE_VECTOR',
+        '--target', '"67P/CHURYUMOV-GERASIMENKO (1969 R1)"',
+        '--observer', '"ROSETTA ORBITER"',
+        '--reference_frame', '"67P/C-G_CK"',
+        '--aberration_correction', 'NONE',
+        '--state_representation', 'LATITUDINAL',
+    ]
+
+    cli_state_vector(argv)
+    captured = capsys.readouterr()
+    assert 'API: http://spice.esac.esa.int/webgeocalc/api' in captured.out
+    assert 'Payload:' in captured.out
+    assert "kernels: [{'type': 'KERNEL_SET', 'id': 13}]" in captured.out
+    assert "times: ['2014-01-01T01:23:45.000']" in captured.out
+    assert 'target: 67P/CHURYUMOV-GERASIMENKO (1969 R1)' in captured.out
+    assert 'observer: ROSETTA ORBITER' in captured.out
+    assert 'referenceFrame: 67P/C-G_CK' in captured.out
+    assert 'calculationType: STATE_VECTOR' in captured.out
+    assert 'aberrationCorrection: NONE' in captured.out
+    assert 'stateRepresentation: LATITUDINAL' in captured.out
+    assert 'timeSystem: UTC' in captured.out
+    assert 'timeFormat: CALENDAR' in captured.out
+
+
+def test_cli_angular_separation_two_targets_dry_run(capsys):
+    """Test dry-run angular separation calculation for 2 targets with the CLI."""
+    argv = ('--dry-run '
+            '--kernels 5 '
+            '--times 2012-10-19T08:24:00 '
+            '--target_1 VENUS '
+            '--target_2 MERCURY '
+            '--observer SUN').split()
+
+    cli_angular_separation(argv)
+    captured = capsys.readouterr()
+    assert 'Payload:' in captured.out
+    assert "kernels: [{'type': 'KERNEL_SET', 'id': 5}]" in captured.out
+    assert "times: ['2012-10-19T08:24:00']" in captured.out
+    assert 'target1: VENUS' in captured.out
+    assert 'shape1: POINT' in captured.out
+    assert 'target2: MERCURY' in captured.out
+    assert 'shape2: POINT' in captured.out
+    assert 'observer: SUN' in captured.out
+    assert 'timeSystem: UTC' in captured.out
+    assert 'aberrationCorrection: CN' in captured.out
+    assert 'timeFormat: CALENDAR' in captured.out
+
+
+def test_cli_angular_separation_two_directions_dry_run(capsys):
+    """Test dry-run angular separation calculation for 2 direction with the CLI."""
+    argv = [
+        '--dry-run',
+        '--kernels', '5',
+        '--times', '2012-10-19T08:24:00',
+        '--spec_type', 'TWO_DIRECTIONS',
+        # double quotes
+        '--direction_1', '"direction_type=POSITION '
+        'target=SUN '
+        'shape=POINT '
+        'observer=\'CASSINI\'"',
+        # single quote
+        '--direction_2', "'direction_type=VECTOR "
+        "direction_vector_type=REFERENCE_FRAME_AXIS "
+        "direction_frame=\"CASSINI_RPWS_EDIPOLE\" "
+        "direction_frame_axis=Z'",
+    ]
+
+    cli_angular_separation(argv)
+    captured = capsys.readouterr()
+    assert 'Payload:' in captured.out
+    assert "calculationType: ANGULAR_SEPARATION" in captured.out
+    assert "kernels: [{'type': 'KERNEL_SET', 'id': 5}]" in captured.out
+    assert "times: ['2012-10-19T08:24:00']" in captured.out
+    assert "specType: TWO_DIRECTIONS" in captured.out
+    assert (
+        "direction1: {"
+        "'directionType': 'POSITION', "
+        "'target': 'SUN', "
+        "'shape': 'POINT', "
+        "'observer': 'CASSINI', "
+        "'aberrationCorrection': 'NONE', "
+        "'antiVectorFlag': False"
+        "}"
+    ) in captured.out
+    assert (
+        "direction2: {"
+        "'directionType': 'VECTOR', "
+        "'directionVectorType': 'REFERENCE_FRAME_AXIS', "
+        "'directionFrame': 'CASSINI_RPWS_EDIPOLE', "
+        "'directionFrameAxis': 'Z', "
+        "'aberrationCorrection': 'NONE', "
+        "'antiVectorFlag': False"
+        "}"
+    ) in captured.out
+    assert 'timeSystem: UTC' in captured.out
+    assert 'timeFormat: CALENDAR' in captured.out
 
 
 def test_cli_angular_separation_wrong_attr(capsys):
@@ -365,34 +503,3 @@ def test_cli_gf_coordinate_search_dry_run(capsys):
             "'relationalCondition': '<', "
             "'referenceValue': 0.25"
             "}") in captured.out
-
-
-def test_cli_state_vector_esa(capsys):
-    """Test dry-run state vector calculation on ESA API with the CLI."""
-    argv = [
-        '--dry-run',
-        '--api', 'ESA',
-        '--kernels', '"OPS  --     Rosetta"',
-        '--times', '2014-01-01T01:23:45.000',
-        '--calculation_type', 'STATE_VECTOR',
-        '--target', '"67P/CHURYUMOV-GERASIMENKO (1969 R1)"',
-        '--observer', '"ROSETTA ORBITER"',
-        '--reference_frame', '"67P/C-G_CK"',
-        '--aberration_correction', 'NONE',
-        '--state_representation', 'LATITUDINAL',
-    ]
-
-    cli_state_vector(argv)
-    captured = capsys.readouterr()
-    assert 'API: http://spice.esac.esa.int/webgeocalc/api' in captured.out
-    assert 'Payload:' in captured.out
-    assert "kernels: [{'type': 'KERNEL_SET', 'id': 13}]" in captured.out
-    assert "times: ['2014-01-01T01:23:45.000']" in captured.out
-    assert 'target: 67P/CHURYUMOV-GERASIMENKO (1969 R1)' in captured.out
-    assert 'observer: ROSETTA ORBITER' in captured.out
-    assert 'referenceFrame: 67P/C-G_CK' in captured.out
-    assert 'calculationType: STATE_VECTOR' in captured.out
-    assert 'aberrationCorrection: NONE' in captured.out
-    assert 'stateRepresentation: LATITUDINAL' in captured.out
-    assert 'timeSystem: UTC' in captured.out
-    assert 'timeFormat: CALENDAR' in captured.out

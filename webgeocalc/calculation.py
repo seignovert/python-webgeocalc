@@ -4,11 +4,13 @@ import time
 
 from .api import API, Api, ESA_API, JPL_API
 from .decorator import parameter
+from .direction import Direction
 from .errors import (CalculationAlreadySubmitted, CalculationConflictAttr,
                      CalculationFailed, CalculationIncompatibleAttr,
                      CalculationInvalidAttr, CalculationInvalidValue,
                      CalculationNotCompleted, CalculationRequiredAttr,
                      CalculationTimeOut, CalculationUndefinedAttr)
+from .payload import Payload
 from .types import KernelSetDetails
 from .vars import CALCULATION_FAILED_PHASES, VALID_PARAMETERS
 
@@ -20,7 +22,7 @@ APIs = {
 }
 
 
-class Calculation:
+class Calculation(Payload):
     """Webgeocalc calculation object.
 
     Parameters
@@ -94,6 +96,12 @@ class Calculation:
         See: :py:attr:`center_body`
     aberration_correction: str
         See: :py:attr:`aberration_correction`
+    spec_type: str
+        See: :py:attr:`spec_type`
+    direction_1: str
+        See: :py:attr:`direction_1`
+    direction_2: str
+        See: :py:attr:`direction_2`
     state_representation: str
         See: :py:attr:`state_representation`
     time_location: str
@@ -151,16 +159,13 @@ class Calculation:
 
     """
 
-    REQUIRED = ()
-
     def __init__(self, api='', time_system='UTC',
                  time_format='CALENDAR', verbose=True, **kwargs):
         # Add default parameters to kwargs
         kwargs['time_system'] = time_system
         kwargs['time_format'] = time_format
 
-        # Init parameters
-        self.params = kwargs
+        # Init other parameters
         self.__kernels = []
         self.id = None
         self.phase = 'NOT SUBMITTED'
@@ -182,12 +187,11 @@ class Calculation:
         if 'times' not in kwargs and 'intervals' not in kwargs:
             raise CalculationRequiredAttr("times' or 'intervals")
 
-        self._required('calculation_type', 'time_system', 'time_format',
-                       *self.REQUIRED)
+        # Prepend calculation required parameters
+        self.REQUIRED = ('calculation_type', 'time_system', 'time_format') + self.REQUIRED
 
-        # Set parameters
-        for key, value in kwargs.items():
-            setattr(self, key, value)
+        # Set all parameters
+        super().__init__(**kwargs)
 
     def __repr__(self):
         return '\n'.join([
@@ -195,38 +199,6 @@ class Calculation:
         ] + [
             f' - {k}: {v}' for k, v in self.payload.items()
         ])
-
-    def _required(self, *attrs):
-        """Check if the required arguments are in the params."""
-        for attr in attrs:
-            if attr not in self.params:
-                raise CalculationRequiredAttr(attr)
-
-    @property
-    def payload(self):
-        """Calculation payload parameters *dict* for JSON input in WebGeoCalc format.
-
-        Return
-        ------
-        dict
-            Payload keys and values.
-
-        Example
-        -------
-        >>> Calculation(
-        ...    kernels = 'Cassini Huygens',
-        ...    times = '2012-10-19T08:24:00.000',
-        ...    calculation_type = 'STATE_VECTOR',
-        ...    target = 'CASSINI',
-        ...    observer = 'SATURN',
-        ...    reference_frame = 'IAU_SATURN',
-        ...    aberration_correction = 'NONE',
-        ...    state_representation = 'PLANETOGRAPHIC',
-        ... ).payload  # noqa: E501
-        {'kernels': [{'type': 'KERNEL_SET', 'id': 5}], 'times': ['2012-10-19T08:24:00.000'], ...}
-
-        """
-        return {k.split('__')[-1]: v for k, v in vars(self).items() if k.startswith('_')}
 
     def submit(self):
         """Submit calculation parameters and get calculation ``id`` and ``phase``.
@@ -469,7 +441,7 @@ class Calculation:
 
     @staticmethod
     def _kernel_path_obj(server_path):
-        # Payloaf individual kernel path object
+        # Payload individual kernel path object
         return {"type": "KERNEL", "path": server_path}
 
     @parameter
@@ -1056,6 +1028,60 @@ class Calculation:
         """
         self.__aberrationCorrection = val
 
+    @parameter(only='SPEC_TYPE')
+    def spec_type(self, val):
+        """Angular separation computation type.
+
+        Method used to specify the directions between which
+        the angular separation is computed.
+
+        Parameters
+        ----------
+        spec_type: str
+            One of the following:
+
+            - TWO_TARGETS
+            - TWO_DIRECTIONS
+
+        """
+        self.__specType = val
+
+    @parameter
+    def direction_1(self, val):
+        """The first direction object.
+
+        Definition of first direction for two-directions angular
+        separation calculation.
+
+        Parameters
+        ----------
+        direction_1: dict or Direction
+            Direction vector. See: :py:class:`Direction`.
+
+        """
+        if not isinstance(val, Direction):
+            val = Direction(**val)
+
+        self.__direction1 = val.payload
+
+    @parameter
+    def direction_2(self, val):
+        """The second direction object.
+
+        Definition of second direction for two-directions angular
+        separation calculation.
+
+        Parameters
+        ----------
+        direction_2: dict or Direction
+            Direction vector. See: :py:class:`Direction`.
+
+        """
+        if not isinstance(val, Direction):
+            val = Direction(**val)
+
+        self.__direction2 = val.payload
+
     @parameter(only='STATE_REPRESENTATION')
     def state_representation(self, val):
         """State representation.
@@ -1456,11 +1482,11 @@ class Calculation:
         keys = self.params.keys()
         if val in ['VECTOR_IN_INSTRUMENT_FOV', 'VECTOR_IN_REFERENCE_FRAME']:
             if not (
-                    'direction_vector_x' in keys and  # noqa: W504
-                    'direction_vector_y' in keys and  # noqa: W504
+                    'direction_vector_x' in keys and
+                    'direction_vector_y' in keys and
                     'direction_vector_z' in keys
             ) and not (
-                'direction_vector_ra' in keys and  # noqa: W504
+                'direction_vector_ra' in keys and
                 'direction_vector_dec' in keys
             ):
                 raise CalculationUndefinedAttr(
@@ -1939,6 +1965,7 @@ class Calculation:
             is not supplied.
             If the value is ``=``,  ``<``, ``>`` or ``RANGE``, and
             :py:attr:`reference_value` is not supplied.
+
         """
         self.gf_condition(relationalCondition=val)
 
@@ -2013,6 +2040,7 @@ class Calculation:
             If :py:attr:`calculation_type` is ``GF_COORDINATE_SEARCH``,
             ``GF_SUB_POINT_SEARCH`` or ``GF_SURFACE_INTERCEPT_POINT_SEARCH``, and
             :py:attr:`coordinate_system` or :py:attr:`coordinate` are not present.
+
         """
         try:
             self.__condition.update(kwargs)
