@@ -1,72 +1,23 @@
 """Test WGC angular size calculation."""
 
-from pytest import fixture
-
 from webgeocalc import AngularSize
 
 
-@fixture
-def kernels():
-    """Input kernel."""
-    return 5  # Cassini-Huygens
-
-
-@fixture
-def time():
-    """Input time."""
-    return '2012-10-19T08:24:00.000'
-
-
-@fixture
-def target():
-    """Input target name."""
-    return 'ENCELADUS'
-
-
-@fixture
-def observer():
-    """Input observer name."""
-    return 'CASSINI'
-
-
-@fixture
-def corr():
-    """Input aberration correction."""
-    return 'CN+S'
-
-
-@fixture
-def params(kernels, time, target, observer, corr):
-    """Input parameters from WGC API example."""
-    return {
-        'kernels': kernels,
-        'times': time,
-        'target': target,
-        'observer': observer,
-        'aberration_correction': corr,
-    }
-
-
-@fixture
-def payload(kernels, time, target, observer, corr):
-    """Payload from WGC API example."""
-    return {
-        "kernels": [{
-            "type": "KERNEL_SET",
-            "id": kernels,
-        }],
+def test_angular_size_payload():
+    """Test angular size payload."""
+    assert AngularSize(
+        kernels=5,  # Cassini-Huygens
+        times='2012-10-19T08:24:00.000',
+        target='ENCELADUS',
+        observer='CASSINI',
+        aberration_correction='CN+S',
+    ) == {
+        "kernels": [{"type": "KERNEL_SET", "id": 5}],
         "timeSystem": "UTC",
         "timeFormat": "CALENDAR",
-        "times": [
-            time,
-        ],
+        "times": ['2012-10-19T08:24:00.000'],
         "calculationType": "ANGULAR_SIZE",
-        "target": target,
-        "observer": observer,
-        "aberrationCorrection": corr
+        "target": 'ENCELADUS',
+        "observer": 'CASSINI',
+        "aberrationCorrection": 'CN+S',
     }
-
-
-def test_angular_size_payload(params, payload):
-    """Test angular size payload."""
-    assert AngularSize(**params).payload == payload

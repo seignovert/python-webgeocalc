@@ -15,17 +15,30 @@ __all__ = [
     'API',
     'JPL_API',
     'ESA_API',
+    'Calculation',
+    'StateVector',
     'AngularSeparation',
     'AngularSize',
-    'Calculation',
     'FrameTransformation',
-    'GFCoordinateSearch',
     'IlluminationAngles',
-    'OsculatingElements',
-    'StateVector',
-    'SubObserverPoint',
+    # 'PhaseAngle',
+    # 'PointingDirection',
     'SubSolarPoint',
+    'SubObserverPoint',
     'SurfaceInterceptPoint',
+    # 'TangentPoint',
+    'OsculatingElements',
+    'GFCoordinateSearch',
+    # 'GFAngularSeparationSearch'
+    # 'GFDistanceSearch'
+    # 'GFSubPointSearch'
+    # 'GFOccultationSearch'
+    # 'GFSurfaceInterceptPointSearch'
+    # 'GFTargetInInstrumentFovSearch'
+    # 'GFRayInFovSearch'
+    # 'GFRangeRateSearch'
+    # 'GFPhaseAngleSearch'
+    # 'GFIlluminationAnglesSearch'
     'TimeConversion',
     '__version__',
 ]

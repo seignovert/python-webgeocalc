@@ -1,204 +1,122 @@
 """Test WGC angular separation calculation."""
 
-from pytest import fixture, raises
-from pytest import mark
+from pytest import raises
 
 from webgeocalc import AngularSeparation
 from webgeocalc.direction import Direction
 from webgeocalc.errors import CalculationInvalidAttr, CalculationRequiredAttr
 
 
-@fixture
-def kernel_paths():
-    """Input kernel paths."""
-    return [
-        'pds/wgc/kernels/lsk/naif0012.tls',
-        'pds/wgc/kernels/spk/de430.bsp',
-    ]
-
-
-@fixture
-def time():
-    """Input time."""
-    return '2012-10-19T08:24:00.000'
-
-
-@fixture
-def target_1():
-    """Input name for the first target."""
-    return 'VENUS'
-
-
-@fixture
-def target_2():
-    """Input name for the second target."""
-    return 'MERCURY'
-
-
-@fixture
-def observer():
-    """Input name of the observer."""
-    return 'SUN'
-
-
-@fixture
-def corr():
-    """Input aberration correction."""
-    return 'NONE'
-
-
-@fixture
-def params_two_targets(kernel_paths, time, target_1, target_2, observer, corr):
-    """Input parameters from WGC API example (TWO_TARGETS mode)."""
-    return {
-        'kernel_paths': kernel_paths,
-        'times': time,
-        'target_1': target_1,
-        'target_2': target_2,
-        'observer': observer,
-        'aberration_correction': corr,
-    }
-
-
-@fixture
-def payload_two_targets(kernel_paths, time, target_1, target_2, observer, corr):
-    """Payload from WGC API example (TWO_TARGETS mode)."""
-    return {
+def test_angular_separation_two_targets_payload():
+    """Test angular separation payload for TWO_TARGETS."""
+    assert AngularSeparation(
+        kernel_paths=[
+            'pds/wgc/kernels/lsk/naif0012.tls',
+            'pds/wgc/kernels/spk/de430.bsp',
+        ],
+        times='2012-10-19T08:24:00.000',
+        # spec_type='TWO_TARGETS',  # Implicit / default
+        target_1='VENUS',
+        target_2='MERCURY',
+        observer='SUN',
+        aberration_correction='NONE',
+    ) == {
         "kernels": [{
             "type": "KERNEL",
-            "path": kernel_paths[0],
+            "path": 'pds/wgc/kernels/lsk/naif0012.tls',
         }, {
             "type": "KERNEL",
-            "path": kernel_paths[1],
+            "path": 'pds/wgc/kernels/spk/de430.bsp',
         }],
         "timeSystem": "UTC",
         "timeFormat": "CALENDAR",
-        "times": [time],
+        "times": ['2012-10-19T08:24:00.000'],
         "calculationType": "ANGULAR_SEPARATION",
-        "target1": target_1,
+        "target1": 'VENUS',
         "shape1": "POINT",
-        "target2": target_2,
+        "target2": 'MERCURY',
         "shape2": "POINT",
-        "observer": observer,
-        "aberrationCorrection": corr
+        "observer": 'SUN',
+        "aberrationCorrection": 'NONE',
     }
 
 
-@fixture
-def kernel_set():
-    """Input kernel set."""
-    return 5
-
-
-@fixture
-def direction_position():
-    """Input position direction as dict object."""
-    return {
-        "direction_type": "POSITION",
-        "target": "SUN",
-        "shape": "POINT",
-        "observer": "CASSINI"
-    }
-
-
-@fixture
-def direction_position_payload():
-    """Position direction payload."""
-    return {
-        'aberrationCorrection': 'NONE',
-        'antiVectorFlag': False,
-        "directionType": "POSITION",
-        "target": "SUN",
-        "shape": "POINT",
-        "observer": "CASSINI"
-    }
-
-
-@fixture
-def direction_vector():
-    """Input vector direction as Direction object."""
-    return Direction(
-        direction_type='VECTOR',
-        direction_vector_type='REFERENCE_FRAME_AXIS',
-        direction_frame='CASSINI_RPWS_EDIPOLE',
-        direction_frame_axis='Z',
-    )
-
-
-@fixture
-def direction_vector_payload():
-    """Vector direction payload."""
-    return {
-        'aberrationCorrection': 'NONE',
-        'antiVectorFlag': False,
-        "directionType": "VECTOR",
-        "directionVectorType": "REFERENCE_FRAME_AXIS",
-        "directionFrame": "CASSINI_RPWS_EDIPOLE",
-        "directionFrameAxis": "Z"
-    }
-
-
-@fixture
-def params_two_directions(
-        kernel_set, time, direction_vector,
-        direction_position,
-):
-    """Input parameters for TWO_DIRECTIONS mode."""
-    return {
-        'spec_type': 'TWO_DIRECTIONS',
-        'kernels': kernel_set,
-        'times': time,
-        'direction_1': direction_vector,
-        'direction_2': direction_position,
-    }
-
-
-@fixture
-def payload_two_directions(
-        kernel_set, time, direction_vector_payload,
-        direction_position_payload,
-):
-    """Input parameters for TWO_DIRECTIONS mode."""
-    return {
+def test_angular_separation_two_directions_payload():
+    """Test angular separation payload for TWO_DIRECTIONS."""
+    assert AngularSeparation(
+        kernels=5,
+        times='2012-10-19T08:24:00.000',
+        spec_type='TWO_DIRECTIONS',
+        direction_1={
+            "direction_type": "POSITION",
+            "target": "SUN",
+            "shape": "POINT",
+            "observer": "CASSINI"
+        },
+        direction_2=Direction(
+            direction_type='VECTOR',
+            direction_vector_type='REFERENCE_FRAME_AXIS',
+            direction_frame='CASSINI_RPWS_EDIPOLE',
+            direction_frame_axis='Z',
+        ),
+    ) == {
         "kernels": [{
             "type": "KERNEL_SET",
-            "id": kernel_set,
+            "id": 5,
         }],
         "specType": "TWO_DIRECTIONS",
         "timeSystem": "UTC",
         "timeFormat": "CALENDAR",
-        "times": [time],
+        "times": ['2012-10-19T08:24:00.000'],
         "calculationType": "ANGULAR_SEPARATION",
-        "direction1": direction_vector_payload,
-        "direction2": direction_position_payload,
+        "direction1": {
+            'aberrationCorrection': 'NONE',
+            'antiVectorFlag': False,
+            "directionType": "POSITION",
+            "target": "SUN",
+            "shape": "POINT",
+            "observer": "CASSINI",
+        },
+        "direction2": {
+            'aberrationCorrection': 'NONE',
+            'antiVectorFlag': False,
+            "directionType": "VECTOR",
+            "directionVectorType": "REFERENCE_FRAME_AXIS",
+            "directionFrame": "CASSINI_RPWS_EDIPOLE",
+            "directionFrameAxis": "Z",
+        },
     }
 
 
-@mark.parametrize('spec_type', [
-    ('TWO_TARGETS'),
-    ('TWO_DIRECTIONS'),
-])
-def test_angular_separation_payload(request, spec_type):
-    """Test angular separation payload."""
-    params = request.getfixturevalue(f'params_{spec_type.lower()}')
-    payload = request.getfixturevalue(f'payload_{spec_type.lower()}')
-
-    assert AngularSeparation(**params).payload == payload
-
-
-def test_angular_separation_errors(params_two_targets, params_two_directions,
-                                   kernel_set, time):
+def test_angular_separation_errors():
     """Test angular separation payload errors."""
-    # Missing observer for TWO_TARGETS
-    params_two_targets.pop('observer')
+    # Missing `observer` or `target_1/2` for TWO_TARGETS
     with raises(CalculationRequiredAttr):
-        AngularSeparation(**params_two_targets)
+        AngularSeparation(
+            kernels=5,
+            times='2012-10-19T08:24:00.000',
+            target_1='VENUS',
+            target_2='MERCURY',
+        )
 
-    # Missing direction_1 for TWO_DIRECTIONS
-    params_two_directions.pop('direction_1')
+    # Missing `direction_1/2` for TWO_DIRECTIONS
     with raises(CalculationRequiredAttr):
-        AngularSeparation(**params_two_directions)
+        AngularSeparation(
+            kernels=5,
+            times='2012-10-19T08:24:00.000',
+            spec_type='TWO_DIRECTIONS',
+            direction_1={
+                "direction_type": "POSITION",
+                "target": "SUN",
+                "shape": "POINT",
+                "observer": "CASSINI"
+            },
+        )
 
     # Invalid spec_type value
     with raises(CalculationInvalidAttr):
-        AngularSeparation(kernels=kernel_set, times=time, spec_type='WRONG')
+        AngularSeparation(
+            kernels=5,
+            times='2012-10-19T08:24:00.000',
+            spec_type='WRONG'
+        )

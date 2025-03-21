@@ -1,126 +1,42 @@
 """Test WGC time conversion calculation."""
 
-from pytest import fixture
-
 from webgeocalc import TimeConversion
 
 
-@fixture
-def kernels():
-    """Cassini kernel set."""
-    return 5
-
-
-@fixture
-def time_1():
-    """Input time in spacecraft clock format."""
-    return '1/1729329441.042'
-
-
-@fixture
-def time_2():
-    """Input time 2."""
-    return '2012-10-19T08:24:00.000'
-
-
-@fixture
-def time_system():
-    """Input time system."""
-    return 'SPACECRAFT_CLOCK'
-
-
-@fixture
-def time_format():
-    """Input time format."""
-    return 'SPACECRAFT_CLOCK_STRING'
-
-
-@fixture
-def sclk_id():
-    """Cassini spacecraft id."""
-    return -82
-
-
-@fixture
-def output_time_format():
-    """Input output time format."""
-    return 'CUSTOM'
-
-
-@fixture
-def output_time_custom_format():
-    """Input output time custom format."""
-    return 'YYYY Month DD HR:MN'
-
-
-@fixture
-def params_1(kernels, time_1, time_system, time_format, sclk_id):
-    """Input parameters from WGC API example 1."""
-    return {
-        'kernels': kernels,
-        'times': time_1,
-        'time_system': time_system,
-        'time_format': time_format,
-        'sclk_id': sclk_id,
-    }
-
-
-@fixture
-def payload_1(kernels, time_1, time_system, time_format, sclk_id):
-    """Payload from WGC API example 1."""
-    return {
-        "kernels": [{
-            "type": "KERNEL_SET",
-            "id": kernels,
-        }],
-        "times": [
-            time_1,
-        ],
+def test_time_conversion_payload():
+    """Test time conversion payload with spacecraft clock input."""
+    assert TimeConversion(
+        kernels=5,
+        times='1/1729329441.042',
+        time_system='SPACECRAFT_CLOCK',
+        time_format='SPACECRAFT_CLOCK_STRING',
+        sclk_id=-82,
+    ) == {
+        "kernels": [{"type": "KERNEL_SET", "id": 5}],
+        "times": ['1/1729329441.042'],
         "calculationType": "TIME_CONVERSION",
-        "timeSystem": time_system,
-        "timeFormat": time_format,
-        "sclkId": sclk_id,
+        "timeSystem": 'SPACECRAFT_CLOCK',
+        "timeFormat": 'SPACECRAFT_CLOCK_STRING',
+        "sclkId": -82,
         "outputTimeSystem": "UTC",
         "outputTimeFormat": "CALENDAR",
     }
 
 
-@fixture
-def params_2(kernels, time_2, output_time_format, output_time_custom_format):
-    """Input parameters from WGC API example 2."""
-    return {
-        'kernels': kernels,
-        'times': time_2,
-        'output_time_format': output_time_format,
-        'output_time_custom_format': output_time_custom_format,
-    }
-
-
-@fixture
-def payload_2(kernels, time_2, output_time_format, output_time_custom_format):
-    """Payload from WGC API example 2."""
-    return {
-        "kernels": [{
-            "type": "KERNEL_SET",
-            "id": kernels,
-        }],
-        "times": [
-            time_2,
-        ],
+def test_time_conversion_custom_format_payload():
+    """Test time conversion payload with custom format output."""
+    assert TimeConversion(
+        kernels=5,
+        times='2012-10-19T08:24:00.000',
+        output_time_format='CUSTOM',
+        output_time_custom_format='YYYY Month DD HR:MN',
+    ) == {
+        "kernels": [{"type": "KERNEL_SET", "id": 5}],
+        "times": ['2012-10-19T08:24:00.000'],
         "calculationType": "TIME_CONVERSION",
         "timeSystem": "UTC",
         "timeFormat": "CALENDAR",
         "outputTimeSystem": "UTC",
-        "outputTimeFormat": output_time_format,
-        "outputTimeCustomFormat": output_time_custom_format,
+        "outputTimeFormat": 'CUSTOM',
+        "outputTimeCustomFormat": 'YYYY Month DD HR:MN',
     }
-
-
-def test_time_conversion_payload(params_1, payload_1):
-    """Test time conversion payload with spacecraft clock input."""
-    assert TimeConversion(**params_1).payload == payload_1
-
-
-def test_time_conversion_custom_format_payload(params_2, payload_2):
-    """Test time conversion payload with custom format output."""
-    assert TimeConversion(**params_2).payload == payload_2

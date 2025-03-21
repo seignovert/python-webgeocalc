@@ -46,6 +46,9 @@ def test_payload_derived():
     assert d.params == {'foo': 'bar', 'baz': 'X', 'qux': 'quux'}
     assert d.payload == {'foo': 'bar', 'baz': 'X'}  # parameters only
 
+    # __eq__
+    assert d == {'foo': 'bar', 'baz': 'X'}  # compare with payload directly
+
     assert repr(d) == '<DerivedPayload>\n - foo: bar\n - baz: X'
 
     # __iter__
@@ -55,7 +58,7 @@ def test_payload_derived():
         break
 
     # Only with required parameter(s)
-    assert DerivedPayload(foo='bar').payload == {'foo': 'bar'}
+    assert DerivedPayload(foo='bar') == {'foo': 'bar'}
 
     # Without required parameter(s)
     with raises(CalculationRequiredAttr):

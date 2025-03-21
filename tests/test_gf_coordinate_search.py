@@ -285,17 +285,17 @@ def payload_3(kernels, intervals, target, reference_frame, observer, time_step,
 
 def test_coordinate_search_default(params_1, payload_1):
     """Test Coordinate Search with single interval and default parameters."""
-    assert GFCoordinateSearch(**params_1).payload == payload_1
+    assert GFCoordinateSearch(**params_1) == payload_1
 
 
 def test_coordinate_search_adjust_interval(params_2, payload_2):
     """Test Coordinate Search with single interval with adjusted interval option."""
-    assert GFCoordinateSearch(**params_2).payload == payload_2
+    assert GFCoordinateSearch(**params_2) == payload_2
 
 
 def test_coordinate_search_filter_interval(params_3, payload_3):
     """Test Coordinate Search with single interval with filtered interval option."""
-    assert GFCoordinateSearch(**params_3).payload == payload_3
+    assert GFCoordinateSearch(**params_3) == payload_3
 
 
 def test_coordinate_search_attr_type_err(params_1):

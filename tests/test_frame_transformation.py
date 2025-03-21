@@ -73,13 +73,13 @@ def payload(kernels, time, frame_1, frame_2, corr):
         "axis3": "Z",
         "angularUnits": "deg",
         "angularVelocityRepresentation": "VECTOR_IN_FRAME1",
-        "angularVelocityUnits": "deg/s"
+        "angularVelocityUnits": "deg/s",
     }
 
 
 def test_frame_transformation_payload(params, payload):
     """Test angular frame transformation payload."""
-    assert FrameTransformation(**params).payload == payload
+    assert FrameTransformation(**params) == payload
 
 
 def test_frame_transformation_attr_err(params):

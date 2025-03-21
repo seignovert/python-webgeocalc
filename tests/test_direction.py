@@ -16,7 +16,7 @@ def test_direction_position_with_shape():
         target='MARS',
         shape='POINT',
         observer='EARTH',
-    ).payload == {
+    ) == {
         'directionType': 'POSITION',
         'target': 'MARS',
         'shape': 'POINT',
@@ -34,7 +34,7 @@ def test_direction_position_without_shape():
         observer='EARTH',
         aberration_correction='LT+S',
         anti_vector_flag='TRUE',  # Uppercase
-    ).payload == {
+    ) == {
         'directionType': 'POSITION',
         'target': 'MARS',
         'observer': 'EARTH',
@@ -99,7 +99,7 @@ def test_direction_velocity():
         observer='EARTH',
         aberration_correction='XCN+S',
         anti_vector_flag='true',  # Lowercase
-    ).payload == {
+    ) == {
         'directionType': 'VELOCITY',
         'target': 'MARS',
         'referenceFrame': 'ITRF93',
@@ -143,7 +143,7 @@ def test_direction_vector_instrument_boresight():
         direction_type='VECTOR',
         direction_vector_type='INSTRUMENT_BORESIGHT',
         direction_instrument='CASSINI_ISS_NAC',
-    ).payload == {
+    ) == {
         'directionType': 'VECTOR',
         'directionVectorType': 'INSTRUMENT_BORESIGHT',
         'directionInstrument': 'CASSINI_ISS_NAC',
@@ -158,7 +158,7 @@ def test_direction_vector_instrument_boresight():
         direction_vector_type='INSTRUMENT_BORESIGHT',
         direction_instrument='CASSINI_ISS_NAC',
         aberration_correction='CN'
-    ).payload == {
+    ) == {
         'directionType': 'VECTOR',
         'observer': 'CASSINI',
         'directionVectorType': 'INSTRUMENT_BORESIGHT',
@@ -178,7 +178,7 @@ def test_direction_vector_frame_axis():
         direction_frame_axis='X',
         aberration_correction='S',
         anti_vector_flag=True,
-    ).payload == {
+    ) == {
         'directionType': 'VECTOR',
         'observer': 'EARTH',
         'directionVectorType': 'REFERENCE_FRAME_AXIS',
@@ -198,7 +198,7 @@ def test_direction_vector_in_instrument_fov_xyz():
         direction_vector_x=0,
         direction_vector_y=0,
         direction_vector_z=1,
-    ).payload == {
+    ) == {
         'directionType': 'VECTOR',
         'directionVectorType': 'VECTOR_IN_INSTRUMENT_FOV',
         'directionInstrument': 'CASSINI_ISS_NAC',
@@ -218,7 +218,7 @@ def test_direction_vector_in_reference_frame_radec():
         direction_frame='J2000',
         direction_vector_ra=0,
         direction_vector_dec=45,
-    ).payload == {
+    ) == {
         'directionType': 'VECTOR',
         'directionVectorType': 'VECTOR_IN_REFERENCE_FRAME',
         'directionFrame': 'J2000',
@@ -239,7 +239,7 @@ def test_direction_vector_in_reference_frame_azel():
         direction_vector_el=15,
         azccw_flag=True,
         elplsz_flag='True',
-    ).payload == {
+    ) == {
         'directionType': 'VECTOR',
         'directionVectorType': 'VECTOR_IN_REFERENCE_FRAME',
         'directionFrame': 'DSS-13_TOPO',
@@ -260,7 +260,7 @@ def test_direction_vector_instrument_fov_boundary_vectors():
         direction_vector_type='INSTRUMENT_FOV_BOUNDARY_VECTORS',
         direction_instrument='CASSINI_ISS_NAC',
         aberration_correction='CN',
-    ).payload == {
+    ) == {
         'directionType': 'VECTOR',
         'observer': 'CASSINI',
         'directionVectorType': 'INSTRUMENT_FOV_BOUNDARY_VECTORS',

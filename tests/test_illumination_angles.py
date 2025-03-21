@@ -96,7 +96,7 @@ def payload(kernels, time, target, target_frame, observer, lat, lon, corr):
 
 def test_illumination_angles_payload(params, payload):
     """Test illumination angles payload."""
-    assert IlluminationAngles(**params).payload == payload
+    assert IlluminationAngles(**params) == payload
 
 
 def test_illumination_angles_attr_error(params):

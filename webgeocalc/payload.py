@@ -44,6 +44,9 @@ class Payload(ABC):
             if k.startswith('_')
         )
 
+    def __eq__(self, other):
+        return self.payload == other
+
     def _required(self, *attrs):
         """Check if the required arguments are in the params."""
         for attr in attrs:
