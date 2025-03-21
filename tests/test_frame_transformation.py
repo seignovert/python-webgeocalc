@@ -86,7 +86,7 @@ def test_frame_transformation_attr_err(params):
     """Test errors when frame transformation is invalid."""
     del params['aberration_correction']
     with raises(CalculationInvalidAttr):
-        # aberration_correctin can not be '+S'
+        # aberration_correction can not be '+S'
         FrameTransformation(aberration_correction='CN+S', **params)
 
     with raises(CalculationInvalidAttr):

@@ -338,9 +338,9 @@ calculated in a desired reference frame:
 Angular Separation
 ------------------
 
-Calculates the angular separation of two bodies as seen by an
-observer body. There are two types of calculation. The default
-one is the angular separation between two targets (`TWO_TARGETS`
+Calculates the angular separation of two bodies/directions as seen
+by an observer body. There are two types of calculation. The default
+one is the angular separation between two targets (``TWO_TARGETS``
 mode), which is the default mode.
 
 >>> AngularSeparation(
@@ -355,23 +355,23 @@ mode), which is the default mode.
 {'DATE': '2012-10-19 08:24:00.000000 UTC', 'ANGULAR_SEPARATION': 175.17072258}
 
 The second case is the angular separation between two directions
-(`TWO_DIRECTIONS` mode).
+(``TWO_DIRECTIONS`` mode).
 
 >>> AngularSeparation(
-...     spec_type = 'TWO_DIRECTIONS',
 ...     kernels = 5,
 ...     times = '2012-10-19T08:24:00.000',
+...     spec_type = 'TWO_DIRECTIONS',
 ...     direction_1 = {
-...         "direction_type": "VECTOR",
-...         "direction_vector_type": "REFERENCE_FRAME_AXIS",
-...         "direction_frame": "CASSINI_RPWS_EDIPOLE",
-...         "direction_frame_axis": "Z"
+...         'direction_type': 'VECTOR',
+...         'direction_vector_type': 'REFERENCE_FRAME_AXIS',
+...         'direction_frame': 'CASSINI_RPWS_EDIPOLE',
+...         'direction_frame_axis': 'Z'
 ...     },
 ...     direction_2 = {
-...         "direction_type": "POSITION",
-...         "target": "SUN",
-...         "shape": "POINT",
-...         "observer": "CASSINI"
+...         'direction_type': 'POSITION',
+...         'target': 'SUN',
+...         'shape': 'POINT',
+...         'observer': 'CASSINI'
 ...     },
 ...     verbose = False,
 ... ).run()
@@ -382,18 +382,51 @@ The second case is the angular separation between two directions
     Calculation required parameters:
         - :py:attr:`~Calculation.kernels` or/and :py:attr:`~Calculation.kernel_paths`
         - :py:attr:`~Calculation.times` or :py:attr:`~Calculation.intervals` with :py:attr:`~Calculation.time_step` and :py:attr:`~Calculation.time_step_units`
-        - :py:attr:`~Calculation.target_1` if :py:attr:`~Calculation.spec_type` is `TWO_TARGETS` or not set
-        - :py:attr:`~Calculation.target_2` if :py:attr:`~Calculation.spec_type` is `TWO_TARGETS` or not set
-        - :py:attr:`~Calculation.observer` if :py:attr:`~Calculation.spec_type` is `TWO_TARGETS` or not set
-        - :py:attr:`~Calculation.direction_1` if :py:attr:`~Calculation.spec_type` is `TWO_DIRECTIONS`
-        - :py:attr:`~Calculation.direction_2` if :py:attr:`~Calculation.spec_type` is `TWO_DIRECTIONS`
 
     Default parameters:
+        - :py:attr:`~Calculation.spec_type`: ``TWO_TARGETS``
         - :py:attr:`~Calculation.time_system`: ``UTC``
         - :py:attr:`~Calculation.time_format`: ``CALENDAR``
+
+    Additional required parameters for ``TWO_TARGETS``:
+        - :py:attr:`~Calculation.target_1`
+        - :py:attr:`~Calculation.target_2`
+        - :py:attr:`~Calculation.observer`
+
+    Additional default parameters for ``TWO_TARGETS``:
         - :py:attr:`~Calculation.shape_1`: ``POINT``
         - :py:attr:`~Calculation.shape_2`: ``POINT``
         - :py:attr:`~Calculation.aberration_correction`: ``CN``
+
+    Additional required parameters for ``TWO_DIRECTIONS``:
+        - :py:attr:`~Calculation.direction_1`
+        - :py:attr:`~Calculation.direction_2`
+
+.. hint::
+
+    The directions can be specified either with an explicit :py:type:`dict`
+    or with a :py:class:`Direction` object:
+
+    >>> from webgeocalc.direction import Direction
+
+    >>> AngularSeparation(
+    ...     kernels = 5,
+    ...     times = '2012-10-19T08:24:00.000',
+    ...     spec_type = 'TWO_DIRECTIONS',
+    ...     direction_1 = Direction(
+    ...         direction_type = 'VECTOR',
+    ...         direction_vector_type = 'REFERENCE_FRAME_AXIS',
+    ...         direction_frame = 'CASSINI_RPWS_EDIPOLE',
+    ...         direction_frame_axis = 'Z',
+    ...     ),
+    ...     direction_2 = Direction(
+    ...         direction_type = 'POSITION',
+    ...         target = 'SUN',
+    ...         shape = 'POINT',
+    ...         observer = 'CASSINI',
+    ...     ),
+    ... )  # doctest: +SKIP
+
 
 .. autoclass:: AngularSeparation
 

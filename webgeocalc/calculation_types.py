@@ -68,18 +68,11 @@ class AngularSeparation(Calculation):
 
     Calculates the angular separation of two bodies as seen by an observer body.
     There are two types of calculation. The default one is the angular separation
-    between two targets (`TWO_TARGETS` mode). The second case is the angular
-    separation between two directions (`TWO_DIRECTIONS` mode).
-
+    between two targets (``TWO_TARGETS`` mode). The second case is the angular
+    separation between two directions (``TWO_DIRECTIONS`` mode).
 
     Parameters
     ----------
-    spec_type: str, optional
-        See: :py:attr:`spec_type` either `'TWO_TARGETS'` (default)
-        or `'TWO_DIRECTIONS'`.
-
-    Other Parameters
-    ----------------
     kernels: str, int, [str or/and int]
         See: :py:attr:`kernels`
     kernel_paths: str, [str]
@@ -97,36 +90,42 @@ class AngularSeparation(Calculation):
     time_format: str
         See: :py:attr:`time_format`
 
-    `TWO_TARGETS` parameters
-    ------------------------
+    Other Parameters
+    ----------------
+    spec_type: str, optional
+        See: :py:attr:`spec_type` either ``TWO_TARGETS`` (default)
+        or ``TWO_DIRECTIONS``.
+
+    Required parameters `TWO_TARGETS`
+
     target_1: str or int
         See: :py:attr:`target_1`
     shape_1: str, optional
-        See: :py:attr:`shape_1`
+        See: :py:attr:`shape_1` (default: ``POINT``)
     target_2: str or int
         See: :py:attr:`target_2`
     shape_2: str, optional
-        See: :py:attr:`shape_2`
+        See: :py:attr:`shape_2` (default: ``POINT``)
     observer: str or int
         See: :py:attr:`observer`
     aberration_correction: str, optional
         See: :py:attr:`aberration_correction`
 
-    `TWO_DIRECTIONS` parameters
-    ---------------------------
-    direction_1: Direction
+    Required parameters `TWO_DIRECTIONS`
+
+    direction_1: dict or Direction
         See: :py:attr:`direction_1`
-    direction_2: Direction
+    direction_2: dict or Direction
         See: :py:attr:`direction_2`
 
     Raises
     ------
     CalculationRequiredAttr
-        If :py:attr:`spec_type` is `TWO_TARGETS` or not set:
+        If :py:attr:`spec_type` is ``TWO_TARGETS`` or not set:
             If py:attr:`target_1`, :py:attr:`target_2`
-                and :py:attr:`observer` are not provided.
-        If :py:attr:`spec_type` is `TWO_DIRECTIONS`:
-            If :py:attr:`direction_1` and :py:attr:`direction_2`
+                or :py:attr:`observer` are not provided.
+        If :py:attr:`spec_type` is ``TWO_DIRECTIONS``:
+            If :py:attr:`direction_1` or :py:attr:`direction_2`
                 are not provided.
 
     """
@@ -136,24 +135,24 @@ class AngularSeparation(Calculation):
 
         kwargs['calculation_type'] = 'ANGULAR_SEPARATION'
 
-        spec_type_required = {
-            'TWO_TARGETS': ('target_1', 'target_2', 'observer'),
-            'TWO_DIRECTIONS': ('direction_1', 'direction_2')
-        }
-        self.REQUIRED = spec_type_required[spec_type]
+        match spec_type:
+            case 'TWO_TARGETS':
+                self.REQUIRED += ('target_1', 'target_2', 'observer')
 
-        if spec_type == 'TWO_TARGETS':
-            for key in ['shape_1', 'shape_2']:
-                kwargs.setdefault(key, 'POINT')
+                for key in ['shape_1', 'shape_2']:
+                    kwargs.setdefault(key, 'POINT')
 
-        if spec_type == 'TWO_DIRECTIONS':
-            kwargs['spec_type'] = spec_type
-            # FIXME self._required('shape') in both directions
+                kwargs['aberration_correction'] = aberration_correction
 
-            # FIXME: VECTOR type != INSTRUMENT_FOV_BOUNDARY_VECTORS
-            # (only for PointingDirection calculations)
+            case 'TWO_DIRECTIONS':
+                self.REQUIRED += ('direction_1', 'direction_2')
 
-        kwargs['aberration_correction'] = aberration_correction
+                kwargs['spec_type'] = spec_type
+
+            case _:
+                raise CalculationInvalidAttr(
+                    'spec_type', spec_type, VALID_PARAMETERS['SPEC_TYPE'],
+                )
 
         super().__init__(**kwargs)
 
