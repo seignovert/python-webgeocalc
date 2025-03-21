@@ -80,7 +80,7 @@ def payload(kernels, time, target, target_frame, observer, corr):
 
 def test_sub_solar_point_payload(params, payload):
     """Test sub observer point payload."""
-    assert SubSolarPoint(**params).payload == payload
+    assert SubSolarPoint(**params) == payload
 
 
 def test_sub_solar_point_attr_error(params):
