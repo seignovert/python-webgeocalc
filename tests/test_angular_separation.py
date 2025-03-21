@@ -4,6 +4,7 @@ from pytest import fixture, raises
 from pytest import mark
 
 from webgeocalc import AngularSeparation
+from webgeocalc.direction import Direction
 from webgeocalc.errors import CalculationInvalidAttr, CalculationRequiredAttr
 
 
@@ -91,7 +92,7 @@ def kernel_set():
 
 @fixture
 def direction_position():
-    """Input position direction."""
+    """Input position direction as dict object."""
     return {
         "direction_type": "POSITION",
         "target": "SUN",
@@ -115,13 +116,13 @@ def direction_position_payload():
 
 @fixture
 def direction_vector():
-    """Input vector direction."""
-    return {
-        "direction_type": "VECTOR",
-        "direction_vector_type": "REFERENCE_FRAME_AXIS",
-        "direction_frame": "CASSINI_RPWS_EDIPOLE",
-        "direction_frame_axis": "Z"
-    }
+    """Input vector direction as Direction object."""
+    return Direction(
+        direction_type='VECTOR',
+        direction_vector_type='REFERENCE_FRAME_AXIS',
+        direction_frame='CASSINI_RPWS_EDIPOLE',
+        direction_frame_axis='Z',
+    )
 
 
 @fixture

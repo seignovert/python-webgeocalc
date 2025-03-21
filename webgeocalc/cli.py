@@ -170,11 +170,27 @@ def cli_instruments(argv=None):
         parser.print_help()
 
 
-def _split(string, sep=','):
-    # Replace and split string
-    for char in ['[', ']', '=', '"', "'"]:
+def _strip(string, chars='[]="\''):
+    for char in chars:
         string = string.replace(char, '')
-    return string.split(sep)
+    return string
+
+
+def _strip_split(string, sep=',', strip='[]="\''):
+    """Strip and split string."""
+    # Split inline dict (eg. `foo=bar baz=qux`)
+    if '=' in string and ' ' in string:
+        return [
+            dict(
+                _strip(s, chars='"\'').split('=')
+                for s in string.split()
+            )
+        ]
+
+    # Replace and split string
+    for char in strip:
+        string = string.replace(char, '')
+    return _strip(string, chars='[]="\'').split(sep)
 
 
 def _underscore_case(string):
@@ -212,11 +228,12 @@ def _params(params):
         if key is None:
             continue
 
-        for value in _split(param):
+        for value in _strip_split(param):
             if value == '':
                 continue
 
-            value = _int_float_str(value)
+            if not isinstance(value, dict):
+                value = _int_float_str(value)
 
             if key not in out:
                 out[key] = value
