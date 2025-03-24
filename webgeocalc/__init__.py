@@ -5,8 +5,8 @@ from .calculation import Calculation
 from .calculation_types import (AngularSeparation, AngularSize,
                                 FrameTransformation, GFCoordinateSearch,
                                 IlluminationAngles, OsculatingElements, PhaseAngle,
-                                StateVector, SubObserverPoint, SubSolarPoint,
-                                SurfaceInterceptPoint, TimeConversion)
+                                PointingDirection, StateVector, SubObserverPoint,
+                                SubSolarPoint, SurfaceInterceptPoint, TimeConversion)
 from .version import __version__
 
 
@@ -22,7 +22,7 @@ __all__ = [
     'FrameTransformation',
     'IlluminationAngles',
     'PhaseAngle',
-    # 'PointingDirection',
+    'PointingDirection',
     'SubSolarPoint',
     'SubObserverPoint',
     'SurfaceInterceptPoint',

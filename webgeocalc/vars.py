@@ -18,7 +18,7 @@ VALID_PARAMETERS = {
         'FRAME_TRANSFORMATION',
         'ILLUMINATION_ANGLES',
         'PHASE_ANGLE',
-        # 'POINTING_DIRECTION',
+        'POINTING_DIRECTION',
         'SUB_SOLAR_POINT',
         'SUB_OBSERVER_POINT',
         'SURFACE_INTERCEPT_POINT',
@@ -171,9 +171,22 @@ VALID_PARAMETERS = {
         'Unitary',
     ],
     'COORDINATE_REPRESENTATION': [
-        'LATITUDINAL',
+        'RECTANGULAR',
+        'RA_DEC',
+        'LATITUDINAL',  # (planetocentric)
         'PLANETODETIC',
         'PLANETOGRAPHIC',
+        'CYLINDRICAL',
+        'SPHERICAL',
+        'AZ_EL',
+    ],
+    'COORDINATE_REPRESENTATION_POINTING_DIRECTION': [
+        'RECTANGULAR',
+        'RA_DEC',
+        'LATITUDINAL',  # (planetocentric)
+        'CYLINDRICAL',
+        'SPHERICAL',
+        'AZ_EL',
     ],
     'SUB_POINT_TYPE': [
         'Near point: ellipsoid',
@@ -245,4 +258,8 @@ VALID_PARAMETERS = {
         'VECTOR_IN_REFERENCE_FRAME',
         'INSTRUMENT_FOV_BOUNDARY_VECTORS',
     ],
+    'VECTOR_MAGNITUDE': [
+        'UNIT',
+        'PRESERVE_ORIGINAL',
+    ]
 }

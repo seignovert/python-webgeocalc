@@ -327,7 +327,7 @@ class Calculation(Payload):
         return {column.outputID: value for column, value in zip(self.columns, data)}
 
     def run(self, timeout=30, sleep=1):
-        """Submit, update and retrive calculation results at once.
+        """Submit, update and retrieve calculation results at once.
 
         See: :py:func:`submit`, :py:func:`update` and :py:attr:`results`.
 
@@ -1062,6 +1062,21 @@ class Calculation(Payload):
         self.__specType = val
 
     @parameter
+    def direction(self, val):
+        """The direction specification object.
+
+        Parameters
+        ----------
+        direction: dict or Direction
+            Direction position/velocity/vector. See: :py:class:`Direction`.
+
+        """
+        if not isinstance(val, Direction):
+            val = Direction(**val)
+
+        self.__direction = val.payload
+
+    @parameter
     def direction_1(self, val):
         """The first direction object.
 
@@ -1071,7 +1086,7 @@ class Calculation(Payload):
         Parameters
         ----------
         direction_1: dict or Direction
-            Direction vector. See: :py:class:`Direction`.
+            Direction position/velocity/vector. See: :py:class:`Direction`.
 
         """
         if not isinstance(val, Direction):
@@ -1089,13 +1104,29 @@ class Calculation(Payload):
         Parameters
         ----------
         direction_2: dict or Direction
-            Direction vector. See: :py:class:`Direction`.
+            Direction position/velocity/vector. See: :py:class:`Direction`.
 
         """
         if not isinstance(val, Direction):
             val = Direction(**val)
 
         self.__direction2 = val.payload
+
+    @parameter(only='VECTOR_MAGNITUDE')
+    def vector_magnitude(self, val):
+        """Magnitude of the output vector representation.
+
+        One of:
+
+        - ``UNIT``
+        - ``PRESERVE_ORIGINAL``
+
+        Use ``UNIT`` to represent the output direction vector
+        as a unit vector, and ``PRESERVE_ORIGINAL`` to output
+        the direction vector with its computed magnitude.
+
+        """
+        self.__vectorMagnitude = val
 
     @parameter(only='STATE_REPRESENTATION')
     def state_representation(self, val):
@@ -1369,9 +1400,14 @@ class Calculation(Payload):
         coordinate_representation: str
             One of:
 
-            - LATITUDINAL *(planetocentric)*
-            - PLANETODETIC
-            - PLANETOGRAPHIC
+            - ``RECTANGULAR``
+            - ``RA_DEC``
+            - ``LATITUDINAL``    *(planetocentric)*
+            - ``PLANETODETIC``    (not for ``POINTING_DIRECTION``)
+            - ``PLANETOGRAPHIC``  (not for ``POINTING_DIRECTION``)
+            - ``CYLINDRICAL``
+            - ``SPHERICAL``
+            - ``AZ_EL``
 
         Raises
         ------
@@ -1420,6 +1456,56 @@ class Calculation(Payload):
             self.__longitude = val
         else:
             raise CalculationInvalidValue('longitude', val, -180, 180)
+
+    @parameter(only='BOOLEAN')
+    def azccw_flag(self, val):
+        """Flag indicating how azimuth is measured.
+
+        If ``azccw_flag`` is ``True``, azimuth increases in the counterclockwise
+        direction; otherwise it increases in the clockwise direction.
+
+        Required only when :py:attr:`coordinate_representation` is set to ``AZ_EL``.
+
+        Parameters
+        ----------
+        azccw_flag: bool or str
+            Azimuth orientation.
+
+        Raises
+        ------
+        CalculationInvalidValue
+            If ``azccw_flag`` not a boolean.
+
+        """
+        if isinstance(val, str):
+            val = val.upper() == 'TRUE'
+
+        self.__azccwFlag = val
+
+    @parameter(only='BOOLEAN')
+    def elplsz_flag(self, val):
+        """Flag indicating how elevation is measured.
+
+        If ``elplsz_flag`` is ``True``, elevation increases from the XY plane
+        toward +Z; otherwise toward -Z.
+
+        Required only when :py:attr:`coordinate_representation` is set to ``AZ_EL``.
+
+        Parameters
+        ----------
+        elplsz_flag: bool or str
+            Azimuth orientation.
+
+        Raises
+        ------
+        CalculationInvalidValue
+            If ``elplsz_flag`` not a boolean.
+
+        """
+        if isinstance(val, str):
+            val = val.upper() == 'TRUE'
+
+        self.__elplszFlag = val
 
     @parameter(only='SUB_POINT_TYPE')
     def sub_point_type(self, val):

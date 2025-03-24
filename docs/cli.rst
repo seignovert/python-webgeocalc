@@ -243,6 +243,8 @@ Here is the list of all the calculation entry points available on the CLI:
 - ``wgc-angular-size``
 - ``wgc-frame-transformation``
 - ``wgc-illumination-angles``
+- ``wgc-phase-angle``
+- ``wgc-pointing_direction``
 - ``wgc-subsolar-point``
 - ``wgc-subobserver-point``
 - ``wgc-surface-intercept-point``
@@ -253,7 +255,8 @@ Here is the list of all the calculation entry points available on the CLI:
 .. hint::
 
     If you need to provide a :py:class:`~webgeocalc.direction.Direction`
-    (eg. an :py:class:`~webgeocalc.AngularSeparation` calculation with ``TWO_DIRECTIONS``).
+    (eg. an :py:class:`~webgeocalc.AngularSeparation` calculation with ``TWO_DIRECTIONS`` or
+    for :py:class:`~webgeocalc.PointingDirection`).
     You need to encapsulate the nested parameters into single (``'``) or double (``"``) quotes
     separated with spaces:
 

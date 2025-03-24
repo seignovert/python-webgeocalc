@@ -434,7 +434,7 @@ class PhaseAngle(Calculation):
     Raises
     ------
     CalculationRequiredAttr
-        If :py:attr:`target`, or :py:attr:`observer` are not provided.
+        If :py:attr:`target` or :py:attr:`observer` are not provided.
 
     """
 
@@ -445,6 +445,91 @@ class PhaseAngle(Calculation):
         kwargs['calculation_type'] = 'PHASE_ANGLE'
         kwargs['illuminator'] = illuminator
         kwargs['aberration_correction'] = aberration_correction
+
+        super().__init__(**kwargs)
+
+
+class PointingDirection(Calculation):
+    """Pointing direction calculation.
+
+    Calculates the pointing direction in a user specified reference frame and
+    output it as a unit or full magnitude vector represented in a user
+    specified coordinate system.
+
+    The direction can be specified by the position or velocity of an object
+    with respect to an observer, or by directly providing a vector,
+    which could be specified as coordinates in a given frame, a frame axis,
+    an instrument boresight, or as instrument FoV corner vectors.
+
+    The output reference frame may be different than the one used for specification
+    of the input vector (if such option is selected). If so, the orientations
+    of both frames relative to the inertial space are computed at the same time
+    taking into account the aberration corrections given in the direction specification.
+
+    The output direction could be given as unit or non-unit vector in
+    Rectangular, Azimuth/Elevation, Right Ascension/Declination/Range,
+    Planetocentric, Cylindrical, or Spherical coordinates.
+
+    Parameters
+    ----------
+    direction: dict or Direction
+        See: :py:attr:`direction`
+    reference_frame: str or int
+        See: :py:attr:`reference_frame`
+    vector_magnitude: str, optional
+        See: :py:attr:`vector_magnitude` (default: ``UNIT``)
+    coordinate_representation: str, optional
+        See: :py:attr:`coordinate_representation` (default: ``RECTANGULAR``)
+
+    Other Parameters
+    ----------------
+    kernels: str, int, [str or/and int]
+        See: :py:attr:`kernels`
+    kernel_paths: str, [str]
+        See: :py:attr:`kernel_paths`
+    times: str or [str]
+        See: :py:attr:`times`
+    intervals: [str, str] or {'startTime': str, 'endTime': str} or [interval, ...]
+        See: :py:attr:`intervals`
+    time_step: int
+        See: :py:attr:`time_step`
+    time_step_units: str
+        See: :py:attr:`time_step_units`
+    time_system: str
+        See: :py:attr:`time_system`
+    time_format: str
+        See: :py:attr:`time_format`
+
+    Required parameters `AZ_EL`
+
+    azccw_flag: bool or str
+        See: :py:attr:`azccw_flag`
+    elplsz_flag: bool or str
+        See: :py:attr:`elplsz_flag`
+
+    Raises
+    ------
+    CalculationRequiredAttr
+        If :py:attr:`target` or :py:attr:`reference_frame` are not provided.
+
+    """
+
+    REQUIRED = ('direction', 'reference_frame')
+
+    def __init__(self, vector_magnitude='UNIT',
+                 coordinate_representation='RECTANGULAR', **kwargs):
+
+        valid = VALID_PARAMETERS['COORDINATE_REPRESENTATION_POINTING_DIRECTION']
+        if coordinate_representation not in valid:
+            raise CalculationInvalidAttr(
+                'coordinate_representation', coordinate_representation, valid)
+
+        if coordinate_representation == 'AZ_EL':
+            self.REQUIRED += ('azccw_flag', 'elplsz_flag')
+
+        kwargs['calculation_type'] = 'POINTING_DIRECTION'
+        kwargs['vector_magnitude'] = vector_magnitude
+        kwargs['coordinate_representation'] = coordinate_representation
 
         super().__init__(**kwargs)
 

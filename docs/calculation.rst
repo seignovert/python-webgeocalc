@@ -11,11 +11,23 @@ For now only these geometry/time calculations are implemented:
 - :py:class:`FrameTransformation`
 - :py:class:`IlluminationAngles`
 - :py:class:`PhaseAngle`
+- :py:class:`PointingDirection`
 - :py:class:`SubSolarPoint`
 - :py:class:`SubObserverPoint`
 - :py:class:`SurfaceInterceptPoint`
+- :py:class:`TangentPoint`
 - :py:class:`OsculatingElements`
 - :py:class:`GFCoordinateSearch`
+- ``GFAngularSeparationSearch`` (not implemented)
+- ``GFDistanceSearch`` (not implemented)
+- ``GFSubPointSearch`` (not implemented)
+- ``GFOccultationSearch`` (not implemented)
+- ``GFSurfaceInterceptPointSearch`` (not implemented)
+- ``GFTargetInInstrumentFovSearch`` (not implemented)
+- ``GFRayInFovSearch`` (not implemented)
+- ``GFRangeRateSearch`` (not implemented)
+- ``GFPhaseAngleSearch`` (not implemented)
+- ``GFIlluminationAnglesSearch`` (not implemented)
 - :py:class:`TimeConversion`
 
 Import generic WebGeoCalc calculation object:
@@ -267,6 +279,12 @@ web portals.
    * - :py:class:`IlluminationAngles`
      - ``ILLUMINATION_ANGLES``
      - Illumination Angles
+   * - :py:class:`PhaseAngle`
+     - ``PHASE_ANGLE``
+     - Phase Angle
+   * - :py:class:`PointingDirection`
+     - ``POINTING_DIRECTION``
+     - Pointing Direction
    * - :py:class:`SubSolarPoint`
      - ``SUB_SOLAR_POINT``
      - Sub-solar Point
@@ -607,6 +625,80 @@ or the center of the bodies (if finite bodies). The range of the phase angle is 
         - :py:attr:`~Calculation.aberration_correction`: ``CN``
 
 .. autoclass:: PhaseAngle
+
+
+Pointing Direction
+------------------
+
+Calculates the pointing direction in a user specified reference frame and output
+it as a unit or full magnitude vector represented in a user specified coordinate system.
+
+The direction can be specified by the position or velocity of an object with respect
+to an observer, or by directly providing a vector, which could be specified as coordinate
+in a given frame, a frame axis, an instrument boresight, or as instrument FoV corner vectors.
+
+The output reference frame may be different than the one used for specification
+of the input vector (if such option is selected). If so, the orientations of both frames
+relative to the inertial space are computed at the same time taking into account the
+aberration corrections given in the direction specification.
+
+The output direction could be given as unit or non-unit vector in Rectangular,
+Azimuth/Elevation, Right Ascension/Declination/Range, Planetocentric, Cylindrical,
+or Spherical coordinates.
+
+.. testsetup::
+
+    from webgeocalc import PointingDirection
+
+>>> PointingDirection(
+...     kernels = 5,
+...     times = '2012-10-19T08:24:00.000',
+...     direction = {
+...         'direction_type': 'VECTOR',
+...         'observer': 'Cassini',
+...         'direction_vector_type': 'INSTRUMENT_FOV_BOUNDARY_VECTORS',
+...         'direction_instrument': 'CASSINI_ISS_NAC',
+...         'aberration_correction': 'CN',
+...     },
+...     reference_frame = 'J2000',
+...     coordinate_representation = 'RA_DEC',
+...     verbose = False,
+... ).run()
+{'DATE': ['2012-10-19 08:24:00.000000 UTC',
+  '2012-10-19 08:24:00.000000 UTC',
+  '2012-10-19 08:24:00.000000 UTC',
+  '2012-10-19 08:24:00.000000 UTC'],
+ 'BOUNDARY_POINT_NUMBER': [1.0, 2.0, 3.0, 4.0],
+ 'RIGHT_ASCENSION': [209.67659835, 209.39258312, 209.60578464, 209.88990474],
+ 'DECLINATION': [-9.57807208, -9.78811104, -10.06810257, -9.85788588],
+ 'RANGE': [1.0, 1.0, 1.0, 1.0]}
+
+
+.. important::
+
+    Calculation required parameters:
+        - :py:attr:`~Calculation.kernels` or/and :py:attr:`~Calculation.kernel_paths`
+        - :py:attr:`~Calculation.times` or :py:attr:`~Calculation.intervals` with :py:attr:`~Calculation.time_step` and :py:attr:`~Calculation.time_step_units`
+        - :py:attr:`~Calculation.direction`
+        - :py:attr:`~Calculation.reference_frame`
+
+    Default parameters:
+        - :py:attr:`~Calculation.vector_magnitude`: ``UNIT``
+        - :py:attr:`~Calculation.coordinate_representation`: ``RECTANGULAR``
+        - :py:attr:`~Calculation.time_system`: ``UTC``
+        - :py:attr:`~Calculation.time_format`: ``CALENDAR``
+
+    Additional required parameters for ``coordinate_representation='AZ_EL'``:
+        - :py:attr:`~Calculation.azccw_flag`
+        - :py:attr:`~Calculation.elplsz_flag`
+
+.. hint::
+
+    The direction can be specified either with an explicit :py:type:`dict`
+    or with a :py:class:`Direction` object (see :py:class:`AngularSeparation`
+    with ``TWO_DIRECTIONS``).
+
+.. autoclass:: PointingDirection
 
 
 Sub Solar Point

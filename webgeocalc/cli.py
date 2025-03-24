@@ -7,8 +7,8 @@ from .api import Api, ESA_API, JPL_API
 from .calculation_types import (AngularSeparation, AngularSize,
                                 Calculation, FrameTransformation, GFCoordinateSearch,
                                 IlluminationAngles, OsculatingElements, PhaseAngle,
-                                StateVector, SubObserverPoint, SubSolarPoint,
-                                SurfaceInterceptPoint, TimeConversion)
+                                PointingDirection, StateVector, SubObserverPoint,
+                                SubSolarPoint, SurfaceInterceptPoint, TimeConversion)
 from .errors import KernelSetNotFound, TooManyKernelSets
 
 
@@ -328,6 +328,11 @@ def cli_illumination_angles(argv=None):
 def cli_phase_angle(argv=None):
     """Submit phase angle calculation with the CLI."""
     cli_calculation(argv, PhaseAngle, desc='Phase Angle')
+
+
+def cli_pointing_direction(argv=None):
+    """Submit pointing direction calculation with the CLI."""
+    cli_calculation(argv, PointingDirection, desc='Pointing Direction')
 
 
 def cli_subsolar_point(argv=None):

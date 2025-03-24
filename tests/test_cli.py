@@ -4,7 +4,8 @@ from webgeocalc.cli import (_params, cli_angular_separation, cli_angular_size,
                             cli_bodies, cli_frame_transformation, cli_frames,
                             cli_gf_coordinate_search, cli_illumination_angles,
                             cli_instruments, cli_kernel_sets,
-                            cli_osculating_elements, cli_phase_angle, cli_state_vector,
+                            cli_osculating_elements, cli_phase_angle,
+                            cli_pointing_direction, cli_state_vector,
                             cli_subobserver_point, cli_subsolar_point,
                             cli_surface_intercept_point, cli_time_conversion)
 
@@ -385,6 +386,40 @@ def test_cli_phase_angle_dry_run(capsys):
     assert "observer: CASSINI" in captured.out
     assert "illuminator: SUN" in captured.out
     assert "aberrationCorrection: CN+S" in captured.out
+
+
+def test_cli_pointing_direction_dry_run(capsys):
+    """Test dry-run pointing direction calculation parameter with the CLI."""
+    argv = [
+        '--dry-run',
+        '--kernels', '5',
+        '--times', '2012-10-19T08:24:00',
+        '--direction', "'direction_type=VECTOR "
+        "observer=CASSINI "
+        "direction_vector_type=INSTRUMENT_FOV_BOUNDARY_VECTORS "
+        "direction_instrument=CASSINI_ISS_NAC "
+        "aberration_correction=CN'",
+        '--reference_frame', 'J2000',
+        '--coordinate_representation', 'RA_DEC',
+    ]
+
+    cli_pointing_direction(argv)
+    captured = capsys.readouterr()
+    assert 'Payload:' in captured.out
+    assert "calculationType: POINTING_DIRECTION," in captured.out
+    assert (
+        "direction: {"
+        "'directionType': 'VECTOR', "
+        "'observer': 'CASSINI', "
+        "'directionVectorType': 'INSTRUMENT_FOV_BOUNDARY_VECTORS', "
+        "'directionInstrument': 'CASSINI_ISS_NAC', "
+        "'aberrationCorrection': 'CN', "
+        "'antiVectorFlag': False"
+        "}"
+    ) in captured.out
+    assert "referenceFrame: J2000" in captured.out
+    assert "coordinateRepresentation: RA_DEC" in captured.out
+    assert "vectorMagnitude: UNIT" in captured.out
 
 
 def test_cli_subsolar_point_dry_run(capsys):
