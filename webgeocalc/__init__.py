@@ -4,7 +4,7 @@ from .api import API, Api, ESA_API, JPL_API
 from .calculation import Calculation
 from .calculation_types import (AngularSeparation, AngularSize,
                                 FrameTransformation, GFCoordinateSearch,
-                                IlluminationAngles, OsculatingElements,
+                                IlluminationAngles, OsculatingElements, PhaseAngle,
                                 StateVector, SubObserverPoint, SubSolarPoint,
                                 SurfaceInterceptPoint, TimeConversion)
 from .version import __version__
@@ -21,7 +21,7 @@ __all__ = [
     'AngularSize',
     'FrameTransformation',
     'IlluminationAngles',
-    # 'PhaseAngle',
+    'PhaseAngle',
     # 'PointingDirection',
     'SubSolarPoint',
     'SubObserverPoint',

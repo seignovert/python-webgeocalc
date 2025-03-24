@@ -4,7 +4,7 @@ from webgeocalc.cli import (_params, cli_angular_separation, cli_angular_size,
                             cli_bodies, cli_frame_transformation, cli_frames,
                             cli_gf_coordinate_search, cli_illumination_angles,
                             cli_instruments, cli_kernel_sets,
-                            cli_osculating_elements, cli_state_vector,
+                            cli_osculating_elements, cli_phase_angle, cli_state_vector,
                             cli_subobserver_point, cli_subsolar_point,
                             cli_surface_intercept_point, cli_time_conversion)
 
@@ -366,6 +366,25 @@ def test_cli_illumination_angles_dry_run(capsys):
     captured = capsys.readouterr()
     assert 'Payload:' in captured.out
     assert "calculationType: ILLUMINATION_ANGLES," in captured.out
+
+
+def test_cli_phase_angle_dry_run(capsys):
+    """Test dry-run phase angle calculation parameter with the CLI."""
+    argv = ('--dry-run '
+            '--kernels 5 '
+            '--times 2012-10-19T08:24:00.000 '
+            '--target ENCELADUS '
+            '--observer CASSINI '
+            '--aberration_correction CN+S ').split()
+
+    cli_phase_angle(argv)
+    captured = capsys.readouterr()
+    assert 'Payload:' in captured.out
+    assert "calculationType: PHASE_ANGLE," in captured.out
+    assert "target: ENCELADUS" in captured.out
+    assert "observer: CASSINI" in captured.out
+    assert "illuminator: SUN" in captured.out
+    assert "aberrationCorrection: CN+S" in captured.out
 
 
 def test_cli_subsolar_point_dry_run(capsys):

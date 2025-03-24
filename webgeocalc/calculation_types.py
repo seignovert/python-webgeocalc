@@ -390,6 +390,65 @@ class IlluminationAngles(Calculation):
         super().__init__(**kwargs)
 
 
+class PhaseAngle(Calculation):
+    """Phase angle calculation.
+
+    Calculate the phase angle defined by the centers of an illumination source,
+    a target and an observer.
+
+    The phase angle is computed using the location of the bodies (if point objects)
+    or the center of the bodies (if finite bodies).
+
+    The range of the phase angle is [0, pi].
+
+    Parameters
+    ----------
+    target: str or int
+        See: :py:attr:`target`
+    observer: str or int
+        See: :py:attr:`observer`
+    illuminator: str or int, optional
+        See: :py:attr:`illuminator` (default: ``SUN``)
+    aberration_correction: str, optional
+        See: :py:attr:`aberration_correction` (default: ``CN``)
+
+    Other Parameters
+    ----------------
+    kernels: str, int, [str or/and int]
+        See: :py:attr:`kernels`
+    kernel_paths: str, [str]
+        See: :py:attr:`kernel_paths`
+    times: str or [str]
+        See: :py:attr:`times`
+    intervals: [str, str] or {'startTime': str, 'endTime': str} or [interval, ...]
+        See: :py:attr:`intervals`
+    time_step: int
+        See: :py:attr:`time_step`
+    time_step_units: str
+        See: :py:attr:`time_step_units`
+    time_system: str
+        See: :py:attr:`time_system`
+    time_format: str
+        See: :py:attr:`time_format`
+
+    Raises
+    ------
+    CalculationRequiredAttr
+        If :py:attr:`target`, or :py:attr:`observer` are not provided.
+
+    """
+
+    REQUIRED = ('target', 'observer')
+
+    def __init__(self, illuminator='SUN', aberration_correction='CN', **kwargs):
+
+        kwargs['calculation_type'] = 'PHASE_ANGLE'
+        kwargs['illuminator'] = illuminator
+        kwargs['aberration_correction'] = aberration_correction
+
+        super().__init__(**kwargs)
+
+
 class SubSolarPoint(Calculation):
     """Sub-solar point calculation.
 

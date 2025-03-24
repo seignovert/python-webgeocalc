@@ -3,19 +3,20 @@ WebGeoCalc calculations
 
 .. currentmodule:: webgeocalc
 
-For now only the geometry/time calculations are implemented:
+For now only these geometry/time calculations are implemented:
 
 - :py:class:`StateVector`
 - :py:class:`AngularSeparation`
 - :py:class:`AngularSize`
 - :py:class:`FrameTransformation`
 - :py:class:`IlluminationAngles`
+- :py:class:`PhaseAngle`
 - :py:class:`SubSolarPoint`
 - :py:class:`SubObserverPoint`
 - :py:class:`SurfaceInterceptPoint`
 - :py:class:`OsculatingElements`
-- :py:class:`TimeConversion`
 - :py:class:`GFCoordinateSearch`
+- :py:class:`TimeConversion`
 
 Import generic WebGeoCalc calculation object:
 
@@ -566,6 +567,46 @@ target as seen from an observer.
         - :py:attr:`~Calculation.aberration_correction`: ``CN``
 
 .. autoclass:: IlluminationAngles
+
+
+Phase Angle
+-----------
+
+Calculate the phase angle defined by the centers of an illumination source,
+a target and an observer.
+
+The phase angle is computed using the location of the bodies (if point objects)
+or the center of the bodies (if finite bodies). The range of the phase angle is [0, pi].
+
+.. testsetup::
+
+    from webgeocalc import PhaseAngle
+
+>>> PhaseAngle(
+...    kernels = 5,
+...    times = '2012-10-19T08:24:00.000',
+...    target = 'ENCELADUS',
+...    target_frame = 'IAU_ENCELADUS',
+...    observer = 'CASSINI',
+...    illuminator = 'SUN',
+...    aberration_correction = 'CN+S',
+...    verbose = False,
+... ).run()
+{'DATE': '2012-10-19 08:24:00.000000 UTC', 'PHASE_ANGLE': 0.99571442}
+
+.. important::
+
+    Calculation required parameters:
+        - :py:attr:`~Calculation.kernels` or/and :py:attr:`~Calculation.kernel_paths`
+        - :py:attr:`~Calculation.times` or :py:attr:`~Calculation.intervals` with :py:attr:`~Calculation.time_step` and :py:attr:`~Calculation.time_step_units`
+        - :py:attr:`~Calculation.target`
+        - :py:attr:`~Calculation.observer`
+
+    Default parameters:
+        - :py:attr:`~Calculation.illuminator`: ``SUN``
+        - :py:attr:`~Calculation.aberration_correction`: ``CN``
+
+.. autoclass:: PhaseAngle
 
 
 Sub Solar Point

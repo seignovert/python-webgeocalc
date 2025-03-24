@@ -941,6 +941,21 @@ class Calculation(Payload):
         self.__observer = val if isinstance(val, int) else val.upper()
 
     @parameter
+    def illuminator(self, val):
+        """The illumination source.
+
+        Often, the illumination source is the Sun,
+        but it could be any other ephemeris object.
+
+        Parameters
+        ----------
+        illuminator: str or int
+            The observing body ``name`` or ``id`` from :py:func:`API.bodies`.
+
+        """
+        self.__illuminator = val if isinstance(val, int) else val.upper()
+
+    @parameter
     def reference_frame(self, val):
         """The reference frame.
 

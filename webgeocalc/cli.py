@@ -6,7 +6,7 @@ import re
 from .api import Api, ESA_API, JPL_API
 from .calculation_types import (AngularSeparation, AngularSize,
                                 Calculation, FrameTransformation, GFCoordinateSearch,
-                                IlluminationAngles, OsculatingElements,
+                                IlluminationAngles, OsculatingElements, PhaseAngle,
                                 StateVector, SubObserverPoint, SubSolarPoint,
                                 SurfaceInterceptPoint, TimeConversion)
 from .errors import KernelSetNotFound, TooManyKernelSets
@@ -323,6 +323,11 @@ def cli_frame_transformation(argv=None):
 def cli_illumination_angles(argv=None):
     """Submit illumination angles calculation with the CLI."""
     cli_calculation(argv, IlluminationAngles, desc='Illumination Angles')
+
+
+def cli_phase_angle(argv=None):
+    """Submit phase angle calculation with the CLI."""
+    cli_calculation(argv, PhaseAngle, desc='Phase Angle')
 
 
 def cli_subsolar_point(argv=None):
