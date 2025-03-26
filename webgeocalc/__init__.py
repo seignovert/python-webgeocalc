@@ -2,11 +2,11 @@
 
 from .api import API, Api, ESA_API, JPL_API
 from .calculation import Calculation
-from .calculation_types import (AngularSeparation, AngularSize,
-                                FrameTransformation, GFCoordinateSearch,
-                                IlluminationAngles, OsculatingElements, PhaseAngle,
-                                PointingDirection, StateVector, SubObserverPoint,
-                                SubSolarPoint, SurfaceInterceptPoint, TimeConversion)
+from .calculation_types import (AngularSeparation, AngularSize, FrameTransformation,
+                                GFCoordinateSearch, IlluminationAngles,
+                                OsculatingElements, PhaseAngle, PointingDirection,
+                                StateVector, SubObserverPoint, SubSolarPoint,
+                                SurfaceInterceptPoint, TangentPoint, TimeConversion)
 from .version import __version__
 
 
@@ -26,7 +26,7 @@ __all__ = [
     'SubSolarPoint',
     'SubObserverPoint',
     'SurfaceInterceptPoint',
-    # 'TangentPoint',
+    'TangentPoint',
     'OsculatingElements',
     'GFCoordinateSearch',
     # 'GFAngularSeparationSearch'

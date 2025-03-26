@@ -22,7 +22,7 @@ VALID_PARAMETERS = {
         'SUB_SOLAR_POINT',
         'SUB_OBSERVER_POINT',
         'SURFACE_INTERCEPT_POINT',
-        # 'TANGENT_POINT',
+        'TANGENT_POINT',
         'OSCULATING_ELEMENTS',
         'GF_COORDINATE_SEARCH',
         # 'GF_ANGULAR_SEPARATION_SEARCH',
@@ -112,6 +112,14 @@ VALID_PARAMETERS = {
         'S',
         'XS',
     ],
+    'VECTOR_AB_CORR': [
+        'NONE',
+        'STELLAR_ABERRATION_VECTOR',
+    ],
+    'CORRECTION_LOCUS': [
+        'TANGENT_POINT',
+        'SURFACE_POINT',
+    ],
     'SPEC_TYPE': [
         'TWO_TARGETS',
         'TWO_DIRECTIONS',
@@ -188,6 +196,15 @@ VALID_PARAMETERS = {
         'SPHERICAL',
         'AZ_EL',
     ],
+    'COORDINATE_REPRESENTATION_TANGENT_POINT': [
+        'RECTANGULAR',
+        'RA_DEC',
+        'LATITUDINAL',  # (planetocentric)
+        'PLANETODETIC',
+        'PLANETOGRAPHIC',
+        'CYLINDRICAL',
+        'SPHERICAL',
+    ],
     'SUB_POINT_TYPE': [
         'Near point: ellipsoid',
         'Intercept: ellipsoid',
@@ -257,9 +274,13 @@ VALID_PARAMETERS = {
         'VECTOR_IN_INSTRUMENT_FOV',
         'VECTOR_IN_REFERENCE_FRAME',
         'INSTRUMENT_FOV_BOUNDARY_VECTORS',
+        'DIRECTION_TO_OBJECT',
     ],
     'VECTOR_MAGNITUDE': [
         'UNIT',
         'PRESERVE_ORIGINAL',
-    ]
+    ],
+    'COMPUTATION_METHOD': [
+        'ELLIPSOID',
+    ],
 }

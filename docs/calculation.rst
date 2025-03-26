@@ -854,6 +854,124 @@ from an observer.
 .. autoclass:: SurfaceInterceptPoint
 
 
+Tangent Point
+-------------
+
+Calculate the tangent point for a given observer, ray emanating
+from the observer, and target.
+
+The tangent point is defined as the point on the ray nearest to the target's surface.
+This panel also computes the point on the target's surface nearest to
+the tangent point. The locations of both points are optionally corrected for
+light time and stellar aberration, and may be represented using either
+Rectangular, Ra/Dec, Planetocentric, Planetodetic, Planetographic, Spherical or
+Cylindrical coordinates.
+
+The target's surface shape is modeled as a triaxial ellipsoid.
+
+For remote sensing observations, for maximum accuracy, reception light time and
+stellar aberration corrections should be used. These corrections model
+observer-target-ray geometry as it is observed.
+
+For signal transmission applications, for maximum accuracy, transmission light
+time and stellar aberration corrections should be used. These corrections model
+the observer-target-ray geometry that applies to the transmitted signal.
+For example, these corrections are needed to calculate the minimum altitude
+of the signal's path over the target body.
+
+This calculation ignores differential aberration effects over the target
+body's surface: it computes corrections only at a user-specified point,
+which is called the "aberration correction locus."
+The user may select either the **Tangent point** or corresponding **Surface point**
+as the locus. In many cases, the differences between corrections for
+these points are very small.
+
+Additionally, the illumination angles (incidence, emission and phase),
+time and local true solar time at the target point (where the aberration
+correction locus is set -- or at the tangent point if no corrections are used),
+and the light time to that point, are computed.
+
+.. testsetup::
+
+    from webgeocalc import TangentPoint
+
+>>> TangentPoint(
+...     kernels = 5,
+...     times = '2010-11-30T14:02:00',
+...     target = 'ENCELADUS',
+...     target_frame = 'IAU_ENCELADUS',
+...     computation_method = 'ELLIPSOID',
+...     observer = 'CASSINI',
+...     direction_vector_type = 'INSTRUMENT_BORESIGHT',
+...     direction_instrument = 'CASSINI_UVIS_HSP',
+...     aberration_correction = 'CN+S',
+...     correction_locus = 'TANGENT_POINT',
+...     coordinate_representation = 'RECTANGULAR',
+...     verbose = False,
+... ).run()
+{'DATE': '2010-11-30 14:02:00.000000 UTC',
+ 'TANGENT_POINT_GEOMETRY': 'Ray above limb',
+ 'TANGENT_POINT_X': -9.48919159,
+ 'TANGENT_POINT_Y': 36.16728915,
+ 'TANGENT_POINT_Z': -330.78398864,
+ 'SURFACE_POINT_X': -7.19366254,
+ 'SURFACE_POINT_Y': 27.15497998,
+ 'SURFACE_POINT_Z': -247.12357543,
+ 'DISTANCE_TO_TANGENT_POINT': 49830.33175196,
+ 'TANGENT_POINT_ALTITUDE': 84.17574418,
+ 'INCIDENCE_ANGLE': 97.72660812,
+ 'EMISSION_ANGLE': 90.0185557,
+ 'PHASE_ANGLE': 14.11694399,
+ 'TIME_AT_POINT': '2010-11-30 14:01:59.833784 UTC',
+ 'LIGHT_TIME': 0.1662161,
+ 'LTST': '05:38:33'}
+
+
+.. important::
+
+    Calculation required parameters:
+        - :py:attr:`~Calculation.kernels` or/and :py:attr:`~Calculation.kernel_paths`
+        - :py:attr:`~Calculation.times` or :py:attr:`~Calculation.intervals` with :py:attr:`~Calculation.time_step` and :py:attr:`~Calculation.time_step_units`
+        - :py:attr:`~Calculation.target`
+        - :py:attr:`~Calculation.target_frame`
+        - :py:attr:`~Calculation.observer`
+        - :py:attr:`~Calculation.direction_vector_type` (see below the additional required parameters)
+
+    Default parameters:
+        - :py:attr:`~Calculation.computation_method`: ``ELLIPSOID``
+        - :py:attr:`~Calculation.vector_ab_corr`: ``NONE`` (only used for ``VECTOR_IN_REFERENCE_FRAME``)
+        - :py:attr:`~Calculation.aberration_correction`: ``CN``
+        - :py:attr:`~Calculation.coordinate_representation`: ``RECTANGULAR``
+        - :py:attr:`~Calculation.time_system`: ``UTC``
+        - :py:attr:`~Calculation.time_format`: ``CALENDAR``
+
+    Additional required parameters for :py:attr:`~Calculation.direction_vector_type` is ``INSTRUMENT_BORESIGHT`` or ``INSTRUMENT_FOV_BOUNDARY_VECTORS``:
+        - :py:attr:`~Calculation.direction_instrument`
+
+    Additional required parameters for :py:attr:`~Calculation.direction_vector_type` is ``REFERENCE_FRAME_AXIS``:
+        - :py:attr:`~Calculation.direction_frame`
+        - :py:attr:`~Calculation.direction_frame_axis`
+
+    Additional required parameters for :py:attr:`~Calculation.direction_vector_type` is ``VECTOR_IN_INSTRUMENT_FOV``:
+        - :py:attr:`~Calculation.direction_instrument`
+        - either :py:attr:`~Calculation.direction_vector_x`, :py:attr:`~Calculation.direction_vector_y` and :py:attr:`~Calculation.direction_vector_z`
+        - or :py:attr:`~Calculation.direction_vector_ra` and :py:attr:`~Calculation.direction_vector_dec`
+        - or :py:attr:`~Calculation.direction_vector_az`, :py:attr:`~Calculation.direction_vector_el`, :py:attr:`~Direction.azccw_flag` and :py:attr:`~Direction.elplsz_flag`,
+
+    Additional required parameters for :py:attr:`~Calculation.direction_vector_type` is ``VECTOR_IN_REFERENCE_FRAME``:
+        - :py:attr:`~Calculation.vector_ab_corr`
+        - :py:attr:`~Calculation.direction_frame`
+        - either :py:attr:`~Calculation.direction_vector_x`, :py:attr:`~Calculation.direction_vector_y` and :py:attr:`~Calculation.direction_vector_z`
+        - or :py:attr:`~Calculation.direction_vector_ra` and :py:attr:`~Calculation.direction_vector_dec`
+        - or :py:attr:`~Calculation.direction_vector_az`, :py:attr:`~Calculation.direction_vector_el`, :py:attr:`~Direction.azccw_flag` and :py:attr:`~Direction.elplsz_flag`,
+
+    Additional required parameters for :py:attr:`~Calculation.direction_vector_type` is ``DIRECTION_TO_OBJECT``:
+        - :py:attr:`~Calculation.direction_object`
+
+
+.. autoclass:: TangentPoint
+
+
 Osculating Elements
 -------------------
 

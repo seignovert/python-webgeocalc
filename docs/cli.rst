@@ -248,6 +248,7 @@ Here is the list of all the calculation entry points available on the CLI:
 - ``wgc-subsolar-point``
 - ``wgc-subobserver-point``
 - ``wgc-surface-intercept-point``
+- ``wgc-tangent-point``
 - ``wgc-osculating-elements``
 - ``wgc-time-conversion``
 - ``wgc-gf-coordinate-search``

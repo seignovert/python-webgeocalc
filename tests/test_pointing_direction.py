@@ -23,7 +23,7 @@ def test_pointing_direction_payload():
         coordinate_representation='AZ_EL',
         azccw_flag='FALSE',
         elplsz_flag='false',
-    ).payload == {
+    ) == {
         "kernels": [{"type": "KERNEL_SET", "id": 5}],
         "timeSystem": "UTC",
         "timeFormat": "CALENDAR",

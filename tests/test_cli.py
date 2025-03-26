@@ -3,11 +3,11 @@
 from webgeocalc.cli import (_params, cli_angular_separation, cli_angular_size,
                             cli_bodies, cli_frame_transformation, cli_frames,
                             cli_gf_coordinate_search, cli_illumination_angles,
-                            cli_instruments, cli_kernel_sets,
-                            cli_osculating_elements, cli_phase_angle,
-                            cli_pointing_direction, cli_state_vector,
+                            cli_instruments, cli_kernel_sets, cli_osculating_elements,
+                            cli_phase_angle, cli_pointing_direction, cli_state_vector,
                             cli_subobserver_point, cli_subsolar_point,
-                            cli_surface_intercept_point, cli_time_conversion)
+                            cli_surface_intercept_point, cli_tangent_point,
+                            cli_time_conversion)
 
 
 def test_cli_kernel_sets(capsys):
@@ -471,6 +471,36 @@ def test_cli_surface_intercept_point_dry_run(capsys):
     captured = capsys.readouterr()
     assert 'Payload:' in captured.out
     assert "calculationType: SURFACE_INTERCEPT_POINT," in captured.out
+
+
+def test_cli_tangent_point_dry_run(capsys):
+    """Test dry-run tangent point calculation parameter with the CLI."""
+    argv = [
+        '--dry-run',
+        '--kernels', '5',
+        '--times', '2010-11-30T14:02:00',
+        '--target', 'ENCELADUS',
+        '--target_frame', 'IAU_ENCELADUS',
+        '--computation_method', 'ELLIPSOID',
+        '--observer', 'CASSINI',
+        '--direction_vector_type', 'INSTRUMENT_BORESIGHT',
+        '--direction_instrument', 'CASSINI_UVIS_HSP',
+        '--aberration_correction', 'CN+S',
+        '--correction_locus', 'TANGENT_POINT',
+    ]
+
+    cli_tangent_point(argv)
+    captured = capsys.readouterr()
+    assert 'Payload:' in captured.out
+    assert "calculationType: TANGENT_POINT," in captured.out
+    assert "target: ENCELADUS" in captured.out
+    assert "targetFrame: IAU_ENCELADUS" in captured.out
+    assert "observer: CASSINI" in captured.out
+    assert "directionVectorType: INSTRUMENT_BORESIGHT" in captured.out
+    assert "directionInstrument: CASSINI_UVIS_HSP" in captured.out
+    assert "aberrationCorrection: CN+S" in captured.out
+    assert "correctionLocus: TANGENT_POINT" in captured.out
+    assert "coordinateRepresentation: RECTANGULAR" in captured.out
 
 
 def test_cli_osculating_elements_dry_run(capsys):

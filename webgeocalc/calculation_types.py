@@ -770,6 +770,185 @@ class SurfaceInterceptPoint(Calculation):
         super().__init__(**kwargs)
 
 
+class TangentPoint(Calculation):
+    """Tangent point calculation.
+
+    Calculate the tangent point for a given observer, ray emanating
+    from the observer, and target.
+
+    The tangent point is defined as the point on the ray nearest to the target's surface.
+    This panel also computes the point on the target's surface nearest to
+    the tangent point. The locations of both points are optionally corrected for
+    light time and stellar aberration, and may be represented using either
+    Rectangular, Ra/Dec, Planetocentric, Planetodetic, Planetographic, Spherical or
+    Cylindrical coordinates.
+
+    The target's surface shape is modeled as a triaxial ellipsoid.
+
+    For remote sensing observations, for maximum accuracy, reception light time and
+    stellar aberration corrections should be used. These corrections model
+    observer-target-ray geometry as it is observed.
+
+    For signal transmission applications, for maximum accuracy, transmission light
+    time and stellar aberration corrections should be used. These corrections model
+    the observer-target-ray geometry that applies to the transmitted signal.
+    For example, these corrections are needed to calculate the minimum altitude
+    of the signal's path over the target body.
+
+    This calculation ignores differential aberration effects over the target
+    body's surface: it computes corrections only at a user-specified point,
+    which is called the "aberration correction locus."
+    The user may select either the **Tangent point** or corresponding **Surface point**
+    as the locus. In many cases, the differences between corrections for
+    these points are very small.
+
+    Additionally, the illumination angles (incidence, emission and phase),
+    time and local true solar time at the target point (where the aberration
+    correction locus is set -- or at the tangent point if no corrections are used),
+    and the light time to that point, are computed.
+
+    Parameters
+    ----------
+    target: str or int
+        See: :py:attr:`target`
+    target_frame: str or int
+        See: :py:attr:`target_frame`
+    observer: str or int
+        See: :py:attr:`observer`
+    direction_vector_type: str
+        See: :py:attr:`direction_vector_type`
+
+    direction_object: str or int
+        See: :py:attr:`direction_object`.
+        Only when :py:attr:`direction_vector_type` is ``DIRECTION_TO_OBJECT``
+
+    direction_instrument: str or int
+        See: :py:attr:`direction_instrument`.
+        Only when :py:attr:`direction_vector_type` is
+        ``INSTRUMENT_BORESIGHT, ``INSTRUMENT_FOV_BOUNDARY_VECTORS``
+        or ``VECTOR_IN_INSTRUMENT_FOV``
+
+    direction_frame: str
+        See: :py:attr:`direction_frame`.
+        Only when :py:attr:`direction_vector_type` is
+        ``REFERENCE_FRAME_AXIS`` or ``VECTOR_IN_REFERENCE_FRAME``
+
+    direction_frame_axis: str
+        See: :py:attr:`direction_frame_axis`.
+        Only when :py:attr:`direction_vector_type` is
+        ``REFERENCE_FRAME_AXIS``.
+
+    direction_vector_x: float
+        See: :py:attr:`direction_vector_x`.
+        Only when :py:attr:`direction_vector_type` is
+        ``VECTOR_IN_INSTRUMENT_FOV`` or ``VECTOR_IN_REFERENCE_FRAME``
+
+    direction_vector_y: float
+        See: :py:attr:`direction_vector_y`.
+        Only when :py:attr:`direction_vector_type` is
+        ``VECTOR_IN_INSTRUMENT_FOV`` or ``VECTOR_IN_REFERENCE_FRAME``
+
+    direction_vector_z: float
+        See: :py:attr:`direction_vector_z`.
+        Only when :py:attr:`direction_vector_type` is
+        ``VECTOR_IN_INSTRUMENT_FOV`` or ``VECTOR_IN_REFERENCE_FRAME``
+
+    direction_vector_ra: float
+        See: :py:attr:`direction_vector_ra`
+        Only when :py:attr:`direction_vector_type` is
+        ``VECTOR_IN_INSTRUMENT_FOV`` or ``VECTOR_IN_REFERENCE_FRAME``
+
+    direction_vector_dec: float
+        See: :py:attr:`direction_vector_dec`
+        Only when :py:attr:`direction_vector_type` is
+        ``VECTOR_IN_INSTRUMENT_FOV`` or ``VECTOR_IN_REFERENCE_FRAME``
+
+    direction_vector_az: float
+        See: :py:attr:`direction_vector_az`
+        Only when :py:attr:`direction_vector_type` is
+        ``VECTOR_IN_INSTRUMENT_FOV`` or ``VECTOR_IN_REFERENCE_FRAME``
+
+    direction_vector_el: float
+        See: :py:attr:`direction_vector_el`
+        Only when :py:attr:`direction_vector_type` is
+        ``VECTOR_IN_INSTRUMENT_FOV`` or ``VECTOR_IN_REFERENCE_FRAME``
+
+    azccw_flag: bool or str
+        See: :py:attr:`azccw_flag`.
+        Only when :py:attr:`direction_vector_az` is provided.
+
+    elplsz_flag: bool or str
+        See: :py:attr:`elplsz_flag`.
+        Only when :py:attr:`direction_vector_el` is provided.
+
+    computation_method: str, optional
+        See: :py:attr:`computation_method` (default: ``ELLIPSOID``)
+    vector_ab_corr: str, optional
+        See: :py:attr:`vector_ab_corr` (default: ``NONE``)
+    aberration_correction: str, optional
+        See: :py:attr:`aberration_correction` (default: ``CN``)
+    correction_locus: str, optional
+        See: :py:attr:`correction_locus`
+        (required if :py:attr:`aberration_correction` is not ``NONE``)
+    coordinate_representation: str, optional
+        See: :py:attr:`coordinate_representation` (default: ``RECTANGULAR``)
+
+    Other Parameters
+    ----------------
+    kernels: str, int, [str or/and int]
+        See: :py:attr:`kernels`
+    kernel_paths: str, [str]
+        See: :py:attr:`kernel_paths`
+    times: str or [str]
+        See: :py:attr:`times`
+    intervals: [str, str] or {'startTime': str, 'endTime': str} or [interval, ...]
+        See: :py:attr:`intervals`
+    time_step: int
+        See: :py:attr:`time_step`
+    time_step_units: str
+        See: :py:attr:`time_step_units`
+    time_system: str
+        See: :py:attr:`time_system`
+    time_format: str
+        See: :py:attr:`time_format`
+
+    Raises
+    ------
+    CalculationRequiredAttr
+        If :py:attr:`target`, :py:attr:`reference_frame`, :py:attr:`observer`
+        or :py:attr:`direction_vector_type` are not provided.
+    CalculationRequiredAttr
+        If :py:attr:`aberration_correction` is not ``NONE`` and
+        :py:attr:`correction_locus` is not provided.
+
+    """
+
+    REQUIRED = ('target', 'target_frame', 'observer', 'direction_vector_type')
+
+    def __init__(self, computation_method='ELLIPSOID',
+                 vector_ab_corr='NONE', aberration_correction='CN',
+                 coordinate_representation='RECTANGULAR', **kwargs):
+
+        if aberration_correction != 'NONE':
+            self.REQUIRED += ('correction_locus',)
+
+        valid = VALID_PARAMETERS['COORDINATE_REPRESENTATION_TANGENT_POINT']
+        if coordinate_representation not in valid:
+            raise CalculationInvalidAttr(
+                'coordinate_representation', coordinate_representation, valid)
+
+        kwargs['calculation_type'] = 'TANGENT_POINT'
+        kwargs['computation_method'] = computation_method
+
+        if kwargs.get('direction_vector_type') == 'VECTOR_IN_REFERENCE_FRAME':
+            kwargs['vector_ab_corr'] = vector_ab_corr
+
+        kwargs['aberration_correction'] = aberration_correction
+        kwargs['coordinate_representation'] = coordinate_representation
+
+        super().__init__(**kwargs)
+
+
 class OsculatingElements(Calculation):
     """Osculating elements calculation.
 

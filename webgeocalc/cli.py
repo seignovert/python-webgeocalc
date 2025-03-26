@@ -4,11 +4,12 @@ import argparse
 import re
 
 from .api import Api, ESA_API, JPL_API
-from .calculation_types import (AngularSeparation, AngularSize,
-                                Calculation, FrameTransformation, GFCoordinateSearch,
+from .calculation_types import (AngularSeparation, AngularSize, Calculation,
+                                FrameTransformation, GFCoordinateSearch,
                                 IlluminationAngles, OsculatingElements, PhaseAngle,
                                 PointingDirection, StateVector, SubObserverPoint,
-                                SubSolarPoint, SurfaceInterceptPoint, TimeConversion)
+                                SubSolarPoint, SurfaceInterceptPoint, TangentPoint,
+                                TimeConversion)
 from .errors import KernelSetNotFound, TooManyKernelSets
 
 
@@ -348,6 +349,11 @@ def cli_subobserver_point(argv=None):
 def cli_surface_intercept_point(argv=None):
     """Submit surface intercept point calculation with the CLI."""
     cli_calculation(argv, SurfaceInterceptPoint, desc='Surface Intercept Point')
+
+
+def cli_tangent_point(argv=None):
+    """Submit tangent point calculation with the CLI."""
+    cli_calculation(argv, TangentPoint, desc='Tangent Point')
 
 
 def cli_osculating_elements(argv=None):
