@@ -243,17 +243,32 @@ Here is the list of all the calculation entry points available on the CLI:
 - ``wgc-angular-size``
 - ``wgc-frame-transformation``
 - ``wgc-illumination-angles``
+- ``wgc-phase-angle``
+- ``wgc-pointing_direction``
 - ``wgc-subsolar-point``
 - ``wgc-subobserver-point``
 - ``wgc-surface-intercept-point``
+- ``wgc-tangent-point``
 - ``wgc-osculating-elements``
 - ``wgc-time-conversion``
 - ``wgc-gf-coordinate-search``
+- ``wgc-gf-angular-separation-search`` (not implemented)
+- ``wgc-gf-distance-search`` (not implemented)
+- ``wgc-gf-sub-point-search`` (not implemented)
+- ``wgc-gf-occultation-search`` (not implemented)
+- ``wgc-gf-surface-intercept-point-search`` (not implemented)
+- ``wgc-gf-target-in-instrument-fov-search`` (not implemented)
+- ``wgc-gf-ray-in-fov-search`` (not implemented)
+- ``wgc-gf-range-rate-search`` (not implemented)
+- ``wgc-gf-phase-angle-search`` (not implemented)
+- ``wgc-gf-illumination-angles-search`` (not implemented)
+
 
 .. hint::
 
     If you need to provide a :py:class:`~webgeocalc.direction.Direction`
-    (eg. an :py:class:`~webgeocalc.AngularSeparation` calculation with ``TWO_DIRECTIONS``).
+    (eg. an :py:class:`~webgeocalc.AngularSeparation` calculation with ``TWO_DIRECTIONS`` or
+    for :py:class:`~webgeocalc.PointingDirection`).
     You need to encapsulate the nested parameters into single (``'``) or double (``"``) quotes
     separated with spaces:
 

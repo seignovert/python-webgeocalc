@@ -3,19 +3,32 @@ WebGeoCalc calculations
 
 .. currentmodule:: webgeocalc
 
-For now only the geometry/time calculations are implemented:
+For now only these geometry/time calculations are implemented:
 
 - :py:class:`StateVector`
 - :py:class:`AngularSeparation`
 - :py:class:`AngularSize`
 - :py:class:`FrameTransformation`
 - :py:class:`IlluminationAngles`
+- :py:class:`PhaseAngle`
+- :py:class:`PointingDirection`
 - :py:class:`SubSolarPoint`
 - :py:class:`SubObserverPoint`
 - :py:class:`SurfaceInterceptPoint`
+- :py:class:`TangentPoint`
 - :py:class:`OsculatingElements`
-- :py:class:`TimeConversion`
 - :py:class:`GFCoordinateSearch`
+- :py:class:`GFAngularSeparationSearch` (not implemented)
+- :py:class:`GFDistanceSearch` (not implemented)
+- :py:class:`GFSubPointSearch` (not implemented)
+- :py:class:`GFOccultationSearch` (not implemented)
+- :py:class:`GFSurfaceInterceptPointSearch` (not implemented)
+- :py:class:`GFTargetInInstrumentFovSearch` (not implemented)
+- :py:class:`GFRayInFovSearch` (not implemented)
+- :py:class:`GFRangeRateSearch` (not implemented)
+- :py:class:`GFPhaseAngleSearch` (not implemented)
+- :py:class:`GFIlluminationAnglesSearch` (not implemented)
+- :py:class:`TimeConversion`
 
 Import generic WebGeoCalc calculation object:
 
@@ -266,6 +279,12 @@ web portals.
    * - :py:class:`IlluminationAngles`
      - ``ILLUMINATION_ANGLES``
      - Illumination Angles
+   * - :py:class:`PhaseAngle`
+     - ``PHASE_ANGLE``
+     - Phase Angle
+   * - :py:class:`PointingDirection`
+     - ``POINTING_DIRECTION``
+     - Pointing Direction
    * - :py:class:`SubSolarPoint`
      - ``SUB_SOLAR_POINT``
      - Sub-solar Point
@@ -568,6 +587,120 @@ target as seen from an observer.
 .. autoclass:: IlluminationAngles
 
 
+Phase Angle
+-----------
+
+Calculate the phase angle defined by the centers of an illumination source,
+a target and an observer.
+
+The phase angle is computed using the location of the bodies (if point objects)
+or the center of the bodies (if finite bodies). The range of the phase angle is [0, pi].
+
+.. testsetup::
+
+    from webgeocalc import PhaseAngle
+
+>>> PhaseAngle(
+...    kernels = 5,
+...    times = '2012-10-19T08:24:00.000',
+...    target = 'ENCELADUS',
+...    target_frame = 'IAU_ENCELADUS',
+...    observer = 'CASSINI',
+...    illuminator = 'SUN',
+...    aberration_correction = 'CN+S',
+...    verbose = False,
+... ).run()
+{'DATE': '2012-10-19 08:24:00.000000 UTC', 'PHASE_ANGLE': 0.99571442}
+
+.. important::
+
+    Calculation required parameters:
+        - :py:attr:`~Calculation.kernels` or/and :py:attr:`~Calculation.kernel_paths`
+        - :py:attr:`~Calculation.times` or :py:attr:`~Calculation.intervals` with :py:attr:`~Calculation.time_step` and :py:attr:`~Calculation.time_step_units`
+        - :py:attr:`~Calculation.target`
+        - :py:attr:`~Calculation.observer`
+
+    Default parameters:
+        - :py:attr:`~Calculation.illuminator`: ``SUN``
+        - :py:attr:`~Calculation.aberration_correction`: ``CN``
+
+.. autoclass:: PhaseAngle
+
+
+Pointing Direction
+------------------
+
+Calculates the pointing direction in a user specified reference frame and output
+it as a unit or full magnitude vector represented in a user specified coordinate system.
+
+The direction can be specified by the position or velocity of an object with respect
+to an observer, or by directly providing a vector, which could be specified as coordinate
+in a given frame, a frame axis, an instrument boresight, or as instrument FoV corner vectors.
+
+The output reference frame may be different than the one used for specification
+of the input vector (if such option is selected). If so, the orientations of both frames
+relative to the inertial space are computed at the same time taking into account the
+aberration corrections given in the direction specification.
+
+The output direction could be given as unit or non-unit vector in Rectangular,
+Azimuth/Elevation, Right Ascension/Declination/Range, Planetocentric, Cylindrical,
+or Spherical coordinates.
+
+.. testsetup::
+
+    from webgeocalc import PointingDirection
+
+>>> PointingDirection(
+...     kernels = 5,
+...     times = '2012-10-19T08:24:00.000',
+...     direction = {
+...         'direction_type': 'VECTOR',
+...         'observer': 'Cassini',
+...         'direction_vector_type': 'INSTRUMENT_FOV_BOUNDARY_VECTORS',
+...         'direction_instrument': 'CASSINI_ISS_NAC',
+...         'aberration_correction': 'CN',
+...     },
+...     reference_frame = 'J2000',
+...     coordinate_representation = 'RA_DEC',
+...     verbose = False,
+... ).run()
+{'DATE': ['2012-10-19 08:24:00.000000 UTC',
+  '2012-10-19 08:24:00.000000 UTC',
+  '2012-10-19 08:24:00.000000 UTC',
+  '2012-10-19 08:24:00.000000 UTC'],
+ 'BOUNDARY_POINT_NUMBER': [1.0, 2.0, 3.0, 4.0],
+ 'RIGHT_ASCENSION': [209.67659835, 209.39258312, 209.60578464, 209.88990474],
+ 'DECLINATION': [-9.57807208, -9.78811104, -10.06810257, -9.85788588],
+ 'RANGE': [1.0, 1.0, 1.0, 1.0]}
+
+
+.. important::
+
+    Calculation required parameters:
+        - :py:attr:`~Calculation.kernels` or/and :py:attr:`~Calculation.kernel_paths`
+        - :py:attr:`~Calculation.times` or :py:attr:`~Calculation.intervals` with :py:attr:`~Calculation.time_step` and :py:attr:`~Calculation.time_step_units`
+        - :py:attr:`~Calculation.direction`
+        - :py:attr:`~Calculation.reference_frame`
+
+    Default parameters:
+        - :py:attr:`~Calculation.vector_magnitude`: ``UNIT``
+        - :py:attr:`~Calculation.coordinate_representation`: ``RECTANGULAR``
+        - :py:attr:`~Calculation.time_system`: ``UTC``
+        - :py:attr:`~Calculation.time_format`: ``CALENDAR``
+
+    Additional required parameters for ``coordinate_representation='AZ_EL'``:
+        - :py:attr:`~Calculation.azccw_flag`
+        - :py:attr:`~Calculation.elplsz_flag`
+
+.. hint::
+
+    The direction can be specified either with an explicit :py:type:`dict`
+    or with a :py:class:`Direction` object (see :py:class:`AngularSeparation`
+    with ``TWO_DIRECTIONS``).
+
+.. autoclass:: PointingDirection
+
+
 Sub Solar Point
 ---------------
 
@@ -721,6 +854,124 @@ from an observer.
 .. autoclass:: SurfaceInterceptPoint
 
 
+Tangent Point
+-------------
+
+Calculate the tangent point for a given observer, ray emanating
+from the observer, and target.
+
+The tangent point is defined as the point on the ray nearest to the target's surface.
+This panel also computes the point on the target's surface nearest to
+the tangent point. The locations of both points are optionally corrected for
+light time and stellar aberration, and may be represented using either
+Rectangular, Ra/Dec, Planetocentric, Planetodetic, Planetographic, Spherical or
+Cylindrical coordinates.
+
+The target's surface shape is modeled as a triaxial ellipsoid.
+
+For remote sensing observations, for maximum accuracy, reception light time and
+stellar aberration corrections should be used. These corrections model
+observer-target-ray geometry as it is observed.
+
+For signal transmission applications, for maximum accuracy, transmission light
+time and stellar aberration corrections should be used. These corrections model
+the observer-target-ray geometry that applies to the transmitted signal.
+For example, these corrections are needed to calculate the minimum altitude
+of the signal's path over the target body.
+
+This calculation ignores differential aberration effects over the target
+body's surface: it computes corrections only at a user-specified point,
+which is called the "aberration correction locus."
+The user may select either the **Tangent point** or corresponding **Surface point**
+as the locus. In many cases, the differences between corrections for
+these points are very small.
+
+Additionally, the illumination angles (incidence, emission and phase),
+time and local true solar time at the target point (where the aberration
+correction locus is set -- or at the tangent point if no corrections are used),
+and the light time to that point, are computed.
+
+.. testsetup::
+
+    from webgeocalc import TangentPoint
+
+>>> TangentPoint(
+...     kernels = 5,
+...     times = '2010-11-30T14:02:00',
+...     target = 'ENCELADUS',
+...     target_frame = 'IAU_ENCELADUS',
+...     computation_method = 'ELLIPSOID',
+...     observer = 'CASSINI',
+...     direction_vector_type = 'INSTRUMENT_BORESIGHT',
+...     direction_instrument = 'CASSINI_UVIS_HSP',
+...     aberration_correction = 'CN+S',
+...     correction_locus = 'TANGENT_POINT',
+...     coordinate_representation = 'RECTANGULAR',
+...     verbose = False,
+... ).run()
+{'DATE': '2010-11-30 14:02:00.000000 UTC',
+ 'TANGENT_POINT_GEOMETRY': 'Ray above limb',
+ 'TANGENT_POINT_X': -9.48919159,
+ 'TANGENT_POINT_Y': 36.16728915,
+ 'TANGENT_POINT_Z': -330.78398864,
+ 'SURFACE_POINT_X': -7.19366254,
+ 'SURFACE_POINT_Y': 27.15497998,
+ 'SURFACE_POINT_Z': -247.12357543,
+ 'DISTANCE_TO_TANGENT_POINT': 49830.33175196,
+ 'TANGENT_POINT_ALTITUDE': 84.17574418,
+ 'INCIDENCE_ANGLE': 97.72660812,
+ 'EMISSION_ANGLE': 90.0185557,
+ 'PHASE_ANGLE': 14.11694399,
+ 'TIME_AT_POINT': '2010-11-30 14:01:59.833784 UTC',
+ 'LIGHT_TIME': 0.1662161,
+ 'LTST': '05:38:33'}
+
+
+.. important::
+
+    Calculation required parameters:
+        - :py:attr:`~Calculation.kernels` or/and :py:attr:`~Calculation.kernel_paths`
+        - :py:attr:`~Calculation.times` or :py:attr:`~Calculation.intervals` with :py:attr:`~Calculation.time_step` and :py:attr:`~Calculation.time_step_units`
+        - :py:attr:`~Calculation.target`
+        - :py:attr:`~Calculation.target_frame`
+        - :py:attr:`~Calculation.observer`
+        - :py:attr:`~Calculation.direction_vector_type` (see below the additional required parameters)
+
+    Default parameters:
+        - :py:attr:`~Calculation.computation_method`: ``ELLIPSOID``
+        - :py:attr:`~Calculation.vector_ab_corr`: ``NONE`` (only used for ``VECTOR_IN_REFERENCE_FRAME``)
+        - :py:attr:`~Calculation.aberration_correction`: ``CN``
+        - :py:attr:`~Calculation.coordinate_representation`: ``RECTANGULAR``
+        - :py:attr:`~Calculation.time_system`: ``UTC``
+        - :py:attr:`~Calculation.time_format`: ``CALENDAR``
+
+    Additional required parameters for :py:attr:`~Calculation.direction_vector_type` is ``INSTRUMENT_BORESIGHT`` or ``INSTRUMENT_FOV_BOUNDARY_VECTORS``:
+        - :py:attr:`~Calculation.direction_instrument`
+
+    Additional required parameters for :py:attr:`~Calculation.direction_vector_type` is ``REFERENCE_FRAME_AXIS``:
+        - :py:attr:`~Calculation.direction_frame`
+        - :py:attr:`~Calculation.direction_frame_axis`
+
+    Additional required parameters for :py:attr:`~Calculation.direction_vector_type` is ``VECTOR_IN_INSTRUMENT_FOV``:
+        - :py:attr:`~Calculation.direction_instrument`
+        - either :py:attr:`~Calculation.direction_vector_x`, :py:attr:`~Calculation.direction_vector_y` and :py:attr:`~Calculation.direction_vector_z`
+        - or :py:attr:`~Calculation.direction_vector_ra` and :py:attr:`~Calculation.direction_vector_dec`
+        - or :py:attr:`~Calculation.direction_vector_az`, :py:attr:`~Calculation.direction_vector_el`, :py:attr:`~Direction.azccw_flag` and :py:attr:`~Direction.elplsz_flag`,
+
+    Additional required parameters for :py:attr:`~Calculation.direction_vector_type` is ``VECTOR_IN_REFERENCE_FRAME``:
+        - :py:attr:`~Calculation.vector_ab_corr`
+        - :py:attr:`~Calculation.direction_frame`
+        - either :py:attr:`~Calculation.direction_vector_x`, :py:attr:`~Calculation.direction_vector_y` and :py:attr:`~Calculation.direction_vector_z`
+        - or :py:attr:`~Calculation.direction_vector_ra` and :py:attr:`~Calculation.direction_vector_dec`
+        - or :py:attr:`~Calculation.direction_vector_az`, :py:attr:`~Calculation.direction_vector_el`, :py:attr:`~Direction.azccw_flag` and :py:attr:`~Direction.elplsz_flag`,
+
+    Additional required parameters for :py:attr:`~Calculation.direction_vector_type` is ``DIRECTION_TO_OBJECT``:
+        - :py:attr:`~Calculation.direction_object`
+
+
+.. autoclass:: TangentPoint
+
+
 Osculating Elements
 -------------------
 
@@ -858,3 +1109,38 @@ Find time intervals when a coordinate of an observer-target position vector sati
         - :py:attr:`~Calculation.interval_filtering`: ``NO_FILTERING``
 
 .. autoclass:: GFCoordinateSearch
+
+Geometry Finder: other searches
+-------------------------------
+
+At the moment, the following geometry finder search calculation are not implemented:
+
+- :py:class:`GFAngularSeparationSearch`
+- :py:class:`GFDistanceSearch`
+- :py:class:`GFSubPointSearch`
+- :py:class:`GFOccultationSearch`
+- :py:class:`GFSurfaceInterceptPointSearch`
+- :py:class:`GFTargetInInstrumentFovSearch`
+- :py:class:`GFRayInFovSearch`
+- :py:class:`GFRangeRateSearch`
+- :py:class:`GFPhaseAngleSearch`
+- :py:class:`GFIlluminationAnglesSearch`
+
+.. note::
+
+    You might be able to run some of them with a regular :py:class:`Calculation` object but is not tested yet.
+    If you want to implement them, contributions are always welcome
+    (don't forget to submit a merge request on the `main project`_).
+
+.. _`main project`: https://github.com/seignovert/python-webgeocalc
+
+.. autoclass:: GFAngularSeparationSearch
+.. autoclass:: GFDistanceSearch
+.. autoclass:: GFSubPointSearch
+.. autoclass:: GFOccultationSearch
+.. autoclass:: GFSurfaceInterceptPointSearch
+.. autoclass:: GFTargetInInstrumentFovSearch
+.. autoclass:: GFRayInFovSearch
+.. autoclass:: GFRangeRateSearch
+.. autoclass:: GFPhaseAngleSearch
+.. autoclass:: GFIlluminationAnglesSearch

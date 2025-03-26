@@ -4,11 +4,17 @@ import argparse
 import re
 
 from .api import Api, ESA_API, JPL_API
-from .calculation_types import (AngularSeparation, AngularSize,
-                                Calculation, FrameTransformation, GFCoordinateSearch,
-                                IlluminationAngles, OsculatingElements,
-                                StateVector, SubObserverPoint, SubSolarPoint,
-                                SurfaceInterceptPoint, TimeConversion)
+from .calculation_types import (AngularSeparation, AngularSize, Calculation,
+                                FrameTransformation, GFAngularSeparationSearch,
+                                GFCoordinateSearch, GFDistanceSearch,
+                                GFIlluminationAnglesSearch, GFOccultationSearch,
+                                GFPhaseAngleSearch, GFRangeRateSearch, GFRayInFovSearch,
+                                GFSubPointSearch, GFSurfaceInterceptPointSearch,
+                                GFTargetInInstrumentFovSearch,
+                                IlluminationAngles, OsculatingElements, PhaseAngle,
+                                PointingDirection, StateVector, SubObserverPoint,
+                                SubSolarPoint, SurfaceInterceptPoint, TangentPoint,
+                                TimeConversion)
 from .errors import KernelSetNotFound, TooManyKernelSets
 
 
@@ -325,6 +331,16 @@ def cli_illumination_angles(argv=None):
     cli_calculation(argv, IlluminationAngles, desc='Illumination Angles')
 
 
+def cli_phase_angle(argv=None):
+    """Submit phase angle calculation with the CLI."""
+    cli_calculation(argv, PhaseAngle, desc='Phase Angle')
+
+
+def cli_pointing_direction(argv=None):
+    """Submit pointing direction calculation with the CLI."""
+    cli_calculation(argv, PointingDirection, desc='Pointing Direction')
+
+
 def cli_subsolar_point(argv=None):
     """Submit sub-solar point calculation with the CLI."""
     cli_calculation(argv, SubSolarPoint, desc='Sub-Solar Point')
@@ -340,6 +356,11 @@ def cli_surface_intercept_point(argv=None):
     cli_calculation(argv, SurfaceInterceptPoint, desc='Surface Intercept Point')
 
 
+def cli_tangent_point(argv=None):
+    """Submit tangent point calculation with the CLI."""
+    cli_calculation(argv, TangentPoint, desc='Tangent Point')
+
+
 def cli_osculating_elements(argv=None):
     """Submit osculating elements calculation with the CLI."""
     cli_calculation(argv, OsculatingElements, desc='Osculating Elements')
@@ -353,3 +374,57 @@ def cli_time_conversion(argv=None):
 def cli_gf_coordinate_search(argv=None):
     """Submit geometry finder coordinate search with the CLI."""
     cli_calculation(argv, GFCoordinateSearch, desc='Position Event Finder')
+
+
+def cli_gf_angular_separation_search(argv=None):
+    """Submit angular separation search geometry finder with the CLI."""
+    cli_calculation(argv, GFAngularSeparationSearch,
+                    desc='Angular separation search geometry finder')
+
+
+def cli_gf_distance_search(argv=None):
+    """Submit distance search geometry finder with the CLI."""
+    cli_calculation(argv, GFDistanceSearch, desc='Distance search geometry finder')
+
+
+def cli_gf_sub_point_search(argv=None):
+    """Submit sub-point search geometry finder with the CLI."""
+    cli_calculation(argv, GFSubPointSearch, desc='Sub-point search geometry finder')
+
+
+def cli_gf_occultation_search(argv=None):
+    """Submit occultation search geometry finder with the CLI."""
+    cli_calculation(argv, GFOccultationSearch, desc='Occultation search geometry finder')
+
+
+def cli_gf_surface_intercept_point_search(argv=None):
+    """Submit surface intercept point search geometry finder with the CLI."""
+    cli_calculation(argv, GFSurfaceInterceptPointSearch,
+                    desc='Surface intercept point search geometry finder')
+
+
+def cli_gf_target_in_instrument_fov_search(argv=None):
+    """Submit target in instrument fov search geometry finder with the CLI."""
+    cli_calculation(argv, GFTargetInInstrumentFovSearch,
+                    desc='Target in instrument fov search geometry finder')
+
+
+def cli_gf_ray_in_fov_search(argv=None):
+    """Submit ray in fov search geometry finder with the CLI."""
+    cli_calculation(argv, GFRayInFovSearch, desc='Ray in fov search geometry finder')
+
+
+def cli_gf_range_rate_search(argv=None):
+    """Submit range rate search geometry finder with the CLI."""
+    cli_calculation(argv, GFRangeRateSearch, desc='Range rate search geometry finder')
+
+
+def cli_gf_phase_angle_search(argv=None):
+    """Submit phase angle search geometry finder with the CLI."""
+    cli_calculation(argv, GFPhaseAngleSearch, desc='Phase angle search geometry finder')
+
+
+def cli_gf_illumination_angles_search(argv=None):
+    """Submit illumination angles search geometry finder with the CLI."""
+    cli_calculation(argv, GFIlluminationAnglesSearch,
+                    desc='Illumination angles search geometry finder')

@@ -84,6 +84,8 @@ class Calculation(Payload):
         See: :py:attr:`shape_2`
     observer: str or int
         See: :py:attr:`observer`
+    illuminator: str
+        See: :py:attr:`illuminator`
     reference_frame: str or int
         See: :py:attr:`reference_frame`
     frame_1: str ot int
@@ -96,12 +98,22 @@ class Calculation(Payload):
         See: :py:attr:`center_body`
     aberration_correction: str
         See: :py:attr:`aberration_correction`
+    vector_ab_corr: str
+        See: :py:attr:`vector_ab_corr`
+    correction_locus: str
+        See: :py:attr:`correction_locus`
     spec_type: str
         See: :py:attr:`spec_type`
-    direction_1: str
+    direction: dict or Direction
+        See: :py:attr:`direction`
+    direction_1: dict or Direction
         See: :py:attr:`direction_1`
-    direction_2: str
+    direction_2: dict or Direction
         See: :py:attr:`direction_2`
+    vector_magnitude: str
+        See: :py:attr:`vector_magnitude`
+    computation_method: str
+        See: :py:attr:`computation_method`
     state_representation: str
         See: :py:attr:`state_representation`
     time_location: str
@@ -128,8 +140,10 @@ class Calculation(Payload):
         See: :py:attr:`longitude`
     sub_point_type: str
         See: :py:attr:`sub_point_type`
-    direction_vector_type: str
+    direction_vector_type: str or int
         See: :py:attr:`direction_vector_type`
+    direction_object: str
+        See: :py:attr:`direction_object`
     direction_instrument: str or int
         See: :py:attr:`direction_instrument`
     direction_frame: str
@@ -146,6 +160,42 @@ class Calculation(Payload):
         See: :py:attr:`direction_vector_ra`
     direction_vector_dec: float
         See: :py:attr:`direction_vector_dec`
+    direction_vector_az: float
+        See :py:attr:`direction_vector_az`
+    direction_vector_el: float
+        See :py:attr:`direction_vector_el`
+    azccw_flag: bool or str
+        See :py:attr:`azccw_flag`
+    elplsz_flag: bool or str
+        See :py:attr:`elplsz_flag`
+    output_duration_units: float
+        See :py:attr:`output_duration_units`
+    should_complement_window: bool
+        See :py:attr:`should_complement_window`
+    interval_adjustment: str
+        See :py:attr:`interval_adjustment`
+    interval_adjustment_amount: float
+        See :py:attr:`interval_adjustment_amount`
+    interval_adjustment_units: str
+        See :py:attr:`interval_adjustment_units`
+    interval_filtering: str
+        See :py:attr:`interval_filtering`
+    interval_filtering_threshold: float
+        See :py:attr:`interval_filtering_threshold`
+    interval_filtering_threshold_units: str
+        See :py:attr:`interval_filtering_threshold_units`
+    coordinate_system: str
+        See :py:attr:`coordinate_system`
+    coordinate: str
+        See :py:attr:`coordinate`
+    relational_condition: str
+        See :py:attr:`relational_condition`
+    reference_value: float
+        See :py:attr:`reference_value`
+    upper_limit: float
+        See :py:attr:`upper_limit`
+    adjustment_value: float
+        See :py:attr:`adjustment_value`
 
     Raises
     ------
@@ -327,7 +377,7 @@ class Calculation(Payload):
         return {column.outputID: value for column, value in zip(self.columns, data)}
 
     def run(self, timeout=30, sleep=1):
-        """Submit, update and retrive calculation results at once.
+        """Submit, update and retrieve calculation results at once.
 
         See: :py:func:`submit`, :py:func:`update` and :py:attr:`results`.
 
@@ -941,6 +991,21 @@ class Calculation(Payload):
         self.__observer = val if isinstance(val, int) else val.upper()
 
     @parameter
+    def illuminator(self, val):
+        """The illumination source.
+
+        Often, the illumination source is the Sun,
+        but it could be any other ephemeris object.
+
+        Parameters
+        ----------
+        illuminator: str or int
+            The illumination body ``name`` or ``id`` from :py:func:`API.bodies`.
+
+        """
+        self.__illuminator = val if isinstance(val, int) else val.upper()
+
+    @parameter
     def reference_frame(self, val):
         """The reference frame.
 
@@ -1010,15 +1075,23 @@ class Calculation(Payload):
         aberration_correction: str
             The SPICE aberration correction string. One of:
 
-            - NONE
-            - LT
-            - LT+S
-            - CN
-            - CN+S
-            - XLT
-            - XLT+S
-            - XCN
-            - XCN+S
+            - ``NONE``
+            - ``LT``
+            - ``LT+S``
+            - ``CN``
+            - ``CN+S``
+            - ``XLT``
+            - ``XLT+S``
+            - ``XCN``
+            - ``XCN+S``
+
+        Warning
+        -------
+        In ``TANGENT_POINT`` calculation, the selected aberration correction applies
+        both to the point set by :py:attr:`correction_locus` and the direction vector
+        if :py:attr:`direction_vector_type` is ``DIRECTION_TO_OBJECT``.
+        For any other :py:attr:`direction_vector_type`, the selected aberration correction
+        only applies to the point set by :py:attr:`correction_locus`.
 
         Raises
         ------
@@ -1027,6 +1100,93 @@ class Calculation(Payload):
 
         """
         self.__aberrationCorrection = val
+
+    @parameter(only='VECTOR_AB_CORR')
+    def vector_ab_corr(self, val):
+        """Type of aberration correction.
+
+        Parameters
+        ----------
+        vector_ab_corr: str
+            Type of aberration correction to be applied to the specified vector.
+            Only required if :py:attr:`directionVectorType` is
+            ``VECTOR_IN_REFERENCE_FRAME``. One of:
+
+            - ``NONE``
+            - ``STELLAR_ABERRATION_VECTOR``
+
+        Note
+        ----
+        Use ``NONE`` to compute geometry without aberration corrections,
+        and ``STELLAR_ABERRATION_VECTOR`` to correct the vector's direction
+        for stellar aberration, taking into account the velocity of the observer
+        with respect to the solar system barycenter. The direction of stellar
+        aberration correction is determined by the light time direction selected
+        in :py:attr:``aberration_correction``.
+
+        For backward compatibility, if not provided, it is assumed to be ``NONE``.
+
+        Raises
+        ------
+        CalculationInvalidAttr
+            If the value provided is invalid.
+        CalculationUndefinedAttr
+            If :py:attr:`direction_vector_type` is not supplied.
+        CalculationIncompatibleAttr
+            If :py:attr:`direction_vector_type` is not ``VECTOR_IN_REFERENCE_FRAME``.
+
+        """
+        if 'direction_vector_type' not in self.params:
+            raise CalculationUndefinedAttr('vector_ab_corr', val, 'direction_vector_type')
+
+        if self.params['direction_vector_type'] != 'VECTOR_IN_REFERENCE_FRAME':
+            raise CalculationIncompatibleAttr(
+                'vector_ab_corr', val, 'direction_vector_type',
+                self.params['direction_vector_type'], ['VECTOR_IN_REFERENCE_FRAME'])
+
+        self.__vectorAbCorr = val
+
+    @parameter(only='CORRECTION_LOCUS')
+    def correction_locus(self, val):
+        """Aberration correction locus.
+
+        Parameters
+        ----------
+        correction_locus: str
+            Aberration correction *locus*, which is the fixed point in the reference frame
+            for which light time and stellar aberration corrections are computed. One of:
+
+            - ``TANGENT_POINT``
+            - ``SURFACE_POINT``
+
+            Required only when :py:attr:`aberration_correction` is not ``NONE``.
+
+            Differential aberration effects across the surface of the target body are not
+            considered. When aberration corrections are used, the effective positions of
+            the observer and target, and the orientation of the target, are computed
+            according to the corrections determined for the aberration correction locus.
+
+            The light time used to determine the position and orientation of the target
+            body is that between the aberration correction locus and the observer.
+
+            The stellar aberration correction applied to the position of the target is
+            that computed for the aberration correction locus.
+
+            Use ``TANGENT_POINT`` to compute corrections at the "tangent point."
+            Use ``SURFACE_POINT`` to compute corrections at the point on the target's
+            surface nearest to the tangent point.
+
+            When :py:attr:`aberration_correction` is ``NONE``, the illumination angles,
+            time, local true solar time and light time are computed with respect to the
+            tangent point.
+
+        Raises
+        ------
+        CalculationInvalidAttr
+            If the value provided is invalid.
+
+        """
+        self.__correctionLocus = val
 
     @parameter(only='SPEC_TYPE')
     def spec_type(self, val):
@@ -1047,6 +1207,21 @@ class Calculation(Payload):
         self.__specType = val
 
     @parameter
+    def direction(self, val):
+        """The direction specification object.
+
+        Parameters
+        ----------
+        direction: dict or Direction
+            Direction position/velocity/vector. See: :py:class:`Direction`.
+
+        """
+        if not isinstance(val, Direction):
+            val = Direction(**val)
+
+        self.__direction = val.payload
+
+    @parameter
     def direction_1(self, val):
         """The first direction object.
 
@@ -1056,7 +1231,7 @@ class Calculation(Payload):
         Parameters
         ----------
         direction_1: dict or Direction
-            Direction vector. See: :py:class:`Direction`.
+            Direction position/velocity/vector. See: :py:class:`Direction`.
 
         """
         if not isinstance(val, Direction):
@@ -1074,13 +1249,43 @@ class Calculation(Payload):
         Parameters
         ----------
         direction_2: dict or Direction
-            Direction vector. See: :py:class:`Direction`.
+            Direction position/velocity/vector. See: :py:class:`Direction`.
 
         """
         if not isinstance(val, Direction):
             val = Direction(**val)
 
         self.__direction2 = val.payload
+
+    @parameter(only='VECTOR_MAGNITUDE')
+    def vector_magnitude(self, val):
+        """Magnitude of the output vector representation.
+
+        One of:
+
+        - ``UNIT``
+        - ``PRESERVE_ORIGINAL``
+
+        Use ``UNIT`` to represent the output direction vector
+        as a unit vector, and ``PRESERVE_ORIGINAL`` to output
+        the direction vector with its computed magnitude.
+
+        """
+        self.__vectorMagnitude = val
+
+    @parameter(only='COMPUTATION_METHOD')
+    def computation_method(self, val):
+        """The computation method for TANGENT_POINT calculation.
+
+        Only:
+
+        - ``ELLIPSOID``
+
+        Currently, it is restricted to ELLIPSOID.
+        This value indicates that the target shape is modeled as a triaxial ellipsoid.
+
+        """
+        self.__computationMethod = val
 
     @parameter(only='STATE_REPRESENTATION')
     def state_representation(self, val):
@@ -1347,16 +1552,27 @@ class Calculation(Payload):
 
     @parameter(only='COORDINATE_REPRESENTATION')
     def coordinate_representation(self, val):
-        """Coordinate Representation.
+        """Coordinate representation.
 
         Parameters
         ----------
         coordinate_representation: str
             One of:
 
-            - LATITUDINAL *(planetocentric)*
-            - PLANETODETIC
-            - PLANETOGRAPHIC
+            - ``RECTANGULAR``
+            - ``RA_DEC``
+            - ``LATITUDINAL``    *(planetocentric)*
+            - ``PLANETODETIC``    (not for ``POINTING_DIRECTION``)
+            - ``PLANETOGRAPHIC``  (not for ``POINTING_DIRECTION``)
+            - ``CYLINDRICAL``
+            - ``SPHERICAL``
+            - ``AZ_EL``           (not for ``TANGENT_POINT``)
+
+        Note
+        ----
+        For ``TANGENT_POINT`` calculation, it corresponds to the
+        coordinate system to represent both the Tangent point and
+        the point on the surface's target nearest to the target point.
 
         Raises
         ------
@@ -1436,15 +1652,22 @@ class Calculation(Payload):
         Parameters
         ----------
         direction_vector_type: str
-            Type of vector to be used as the ray direction. One of:
+            Type of vector to be used as the ray direction: the instrument boresight
+            vector, the instrument field-of-view boundary vectors, an axis of the
+            specified reference frame, a vector in the reference frame of the specified
+            instrument, a vector in the specified reference frame, or a vector defined
+            by the position of a given object as seen from the observer.
 
-            - INSTRUMENT_BORESIGHT *(the instrument boresight vector)*
-            - INSTRUMENT_FOV_BOUNDARY_VECTORS *(the instrument field-of-view
+            One of:
+
+            - ``INSTRUMENT_BORESIGHT`` *(the instrument boresight vector)*
+            - ``INSTRUMENT_FOV_BOUNDARY_VECTORS`` *(the instrument field-of-view
               boundary vectors)*
-            - REFERENCE_FRAME_AXIS *(an axis of the specified reference frame)*
-            - VECTOR_IN_INSTRUMENT_FOV *(a vector in the reference frame of the
+            - ``REFERENCE_FRAME_AXIS`` *(an axis of the specified reference frame)*
+            - ``VECTOR_IN_INSTRUMENT_FOV`` *(a vector in the reference frame of the
               specified instrument)*
-            - VECTOR_IN_REFERENCE_FRAME *(a vector in the specified reference frame)*
+            - ``VECTOR_IN_REFERENCE_FRAME`` *(a vector in the specified reference frame)*
+            - ``DIRECTION_TO_OBJECT`` *(only for ``TANGENT_POINT`` calculation)*
 
         Raises
         ------
@@ -1460,6 +1683,12 @@ class Calculation(Payload):
         CalculationRequiredAttr
             If this parameter is ``REFERENCE_FRAME_AXIS`` but
             :py:attr:`direction_frame_axis` is not provided.
+        CalculationRequiredAttr
+            If this parameter is ``DIRECTION_TO_OBJECT``
+            but :py:attr:`direction_object` is not provided.
+        CalculationIncompatibleAttr
+            If this parameter is ``DIRECTION_TO_OBJECT`` but
+            but :py:attr:`calculation_type` is not ``TANGENT_POINT``.
         CalculationUndefinedAttr
             If this parameter is ``VECTOR_IN_INSTRUMENT_FOV``
             or ``VECTOR_IN_REFERENCE_FRAME`` but neither :py:attr:`direction_vector_x`,
@@ -1470,14 +1699,33 @@ class Calculation(Payload):
         """
         self.__directionVectorType = val
 
-        if val in ['INSTRUMENT_BORESIGHT', 'INSTRUMENT_FOV_BOUNDARY_VECTORS',
-                   'VECTOR_IN_INSTRUMENT_FOV']:
-            self._required('direction_instrument')
+        match val:
+            case (
+                'INSTRUMENT_BORESIGHT' |
+                'INSTRUMENT_FOV_BOUNDARY_VECTORS' |
+                'VECTOR_IN_INSTRUMENT_FOV'
+            ):
+                self._required('direction_instrument')
 
-        elif val in ['REFERENCE_FRAME_AXIS', 'VECTOR_IN_REFERENCE_FRAME']:
-            self._required('direction_frame')
-            if val == 'REFERENCE_FRAME_AXIS':
-                self._required('direction_frame_axis')
+            case (
+                'REFERENCE_FRAME_AXIS' | 'VECTOR_IN_REFERENCE_FRAME'
+            ):
+                self._required('direction_frame')
+
+                if val == 'REFERENCE_FRAME_AXIS':
+                    self._required('direction_frame_axis')
+
+            case 'DIRECTION_TO_OBJECT':
+                self._required('direction_object')
+
+                if self.params['calculation_type'] != 'TANGENT_POINT':
+                    raise CalculationIncompatibleAttr(
+                        'direction_vector_type', val, 'calculation_type',
+                        self.params['calculation_type'], [
+                            v for v in VALID_PARAMETERS['DIRECTION_VECTOR_TYPE']
+                            if v != 'DIRECTION_TO_OBJECT'
+                        ]
+                    )
 
         keys = self.params.keys()
         if val in ['VECTOR_IN_INSTRUMENT_FOV', 'VECTOR_IN_REFERENCE_FRAME']:
@@ -1488,10 +1736,45 @@ class Calculation(Payload):
             ) and not (
                 'direction_vector_ra' in keys and
                 'direction_vector_dec' in keys
+            ) and not (
+                'direction_vector_az' in keys and
+                'direction_vector_el' in keys and
+                'azccw_flag' in keys and
+                'elplsz_flag' in keys
             ):
                 raise CalculationUndefinedAttr(
                     'direction_vector_type', val,
                     "direction_vector_x/y/z' or 'direction_vector_ra/dec")
+
+    @parameter
+    def direction_object(self, val):
+        """Direction object.
+
+        Parameters
+        ----------
+        direction_object: str or int
+            The ephemeris object ``name`` or ``id``.
+            Required only if :py:attr:`direction_vector_type`
+            is ``DIRECTION_TO_OBJECT``.
+
+        Raises
+        ------
+        CalculationUndefinedAttr
+            If :py:attr:`direction_vector_type` is not provided.
+        CalculationIncompatibleAttr
+            If :py:attr:`direction_vector_type` not in ``DIRECTION_TO_OBJECT``.
+
+        """
+        if 'direction_vector_type' not in self.params:
+            raise CalculationUndefinedAttr(
+                'direction_object', val, 'direction_vector_type')
+
+        if self.params['direction_vector_type'] != 'DIRECTION_TO_OBJECT':
+            raise CalculationIncompatibleAttr(
+                'direction_object', val, 'direction_vector_type',
+                self.params['direction_vector_type'], ['DIRECTION_TO_OBJECT'])
+
+        self.__directionObject = val if isinstance(val, int) else val.upper()
 
     @parameter
     def direction_instrument(self, val):
@@ -1677,6 +1960,86 @@ class Calculation(Payload):
 
         """
         self.__directionVectorDec = self.direction_vector('dec', val)
+
+    @parameter
+    def direction_vector_az(self, val):
+        """The azimuth ray's direction vector coordinate.
+
+        Parameters
+        ----------
+        direction_vector_az: float
+            Direction Azimuth-coordinate. See :py:func:`direction_vector`.
+
+        """
+        self._required('azccw_flag')
+        self.__directionVectorAz = self.direction_vector('az', val)
+
+    @parameter
+    def direction_vector_el(self, val):
+        """The elevation ray's direction vector coordinate.
+
+        Parameters
+        ----------
+        direction_vector_el: float
+            Direction elevation-coordinate. See :py:func:`direction_vector`.
+
+        """
+        self._required('elplsz_flag')
+        self.__directionVectorEl = self.direction_vector('el', val)
+
+    @parameter(only='BOOLEAN')
+    def azccw_flag(self, val):
+        """Flag indicating how azimuth is measured.
+
+        If ``azccw_flag`` is ``True``, azimuth increases in the counterclockwise
+        direction; otherwise it increases in the clockwise direction.
+
+        Required only when :py:attr:`coordinate_representation` is set to ``AZ_EL``
+        in ``POINTING_DIRECTION`` calculation or
+        :py:attr:`direction_vector_az` is set in ``TANGENT_POINT`` calculation.
+
+        Parameters
+        ----------
+        azccw_flag: bool or str
+            Azimuth orientation.
+
+        Raises
+        ------
+        CalculationInvalidValue
+            If ``azccw_flag`` not a boolean.
+
+        """
+        if isinstance(val, str):
+            val = val.upper() == 'TRUE'
+
+        self.__azccwFlag = val
+
+    @parameter(only='BOOLEAN')
+    def elplsz_flag(self, val):
+        """Flag indicating how elevation is measured.
+
+        If ``elplsz_flag`` is ``True``, elevation increases from the XY plane
+        toward +Z; otherwise toward -Z.
+
+        Required only when :py:attr:`coordinate_representation` is set to ``AZ_EL``
+        in ``POINTING_DIRECTION`` calculation or
+        :py:attr:`direction_vector_el` is set in ``TANGENT_POINT`` calculation.
+
+        Parameters
+        ----------
+        elplsz_flag: bool or str
+            Azimuth orientation.
+
+        Raises
+        ------
+        CalculationInvalidValue
+            If ``elplsz_flag`` not a boolean.
+
+        """
+        if isinstance(val, str):
+            val = val.upper() == 'TRUE'
+
+        self.__elplszFlag = val
 
     @parameter(only='TIME_UNITS')
     def output_duration_units(self, val):

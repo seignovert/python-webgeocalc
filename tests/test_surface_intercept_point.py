@@ -273,22 +273,22 @@ def payload_4(kernels, time, target, target_frame, observer, direction_vector_ty
 
 def test_surface_direction_point_payload_boresight(params_1, payload_1):
     """Test surface direction point payload with INSTRUMENT_BORESIGHT."""
-    assert SurfaceInterceptPoint(**params_1).payload == payload_1
+    assert SurfaceInterceptPoint(**params_1) == payload_1
 
 
 def test_surface_direction_point_payload_reference_frame_axis(params_2, payload_2):
     """Test surface direction point payload with REFERENCE_FRAME_AXIS."""
-    assert SurfaceInterceptPoint(**params_2).payload == payload_2
+    assert SurfaceInterceptPoint(**params_2) == payload_2
 
 
 def test_surface_direction_point_payload_vector_in_instrument_fov(params_3, payload_3):
     """Test surface direction point payload with VECTOR_IN_INSTRUMENT_FOV."""
-    assert SurfaceInterceptPoint(**params_3).payload == payload_3
+    assert SurfaceInterceptPoint(**params_3) == payload_3
 
 
 def test_surface_direction_point_payload_vector_in_reference_frame(params_4, payload_4):
     """Test surface direction point payload with VECTOR_IN_REFERENCE_FRAME."""
-    assert SurfaceInterceptPoint(**params_4).payload == payload_4
+    assert SurfaceInterceptPoint(**params_4) == payload_4
 
 
 def test_surface_direction_point_attr_error(params_1):

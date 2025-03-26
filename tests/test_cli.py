@@ -3,10 +3,11 @@
 from webgeocalc.cli import (_params, cli_angular_separation, cli_angular_size,
                             cli_bodies, cli_frame_transformation, cli_frames,
                             cli_gf_coordinate_search, cli_illumination_angles,
-                            cli_instruments, cli_kernel_sets,
-                            cli_osculating_elements, cli_state_vector,
+                            cli_instruments, cli_kernel_sets, cli_osculating_elements,
+                            cli_phase_angle, cli_pointing_direction, cli_state_vector,
                             cli_subobserver_point, cli_subsolar_point,
-                            cli_surface_intercept_point, cli_time_conversion)
+                            cli_surface_intercept_point, cli_tangent_point,
+                            cli_time_conversion)
 
 
 def test_cli_kernel_sets(capsys):
@@ -368,6 +369,59 @@ def test_cli_illumination_angles_dry_run(capsys):
     assert "calculationType: ILLUMINATION_ANGLES," in captured.out
 
 
+def test_cli_phase_angle_dry_run(capsys):
+    """Test dry-run phase angle calculation parameter with the CLI."""
+    argv = ('--dry-run '
+            '--kernels 5 '
+            '--times 2012-10-19T08:24:00.000 '
+            '--target ENCELADUS '
+            '--observer CASSINI '
+            '--aberration_correction CN+S ').split()
+
+    cli_phase_angle(argv)
+    captured = capsys.readouterr()
+    assert 'Payload:' in captured.out
+    assert "calculationType: PHASE_ANGLE," in captured.out
+    assert "target: ENCELADUS" in captured.out
+    assert "observer: CASSINI" in captured.out
+    assert "illuminator: SUN" in captured.out
+    assert "aberrationCorrection: CN+S" in captured.out
+
+
+def test_cli_pointing_direction_dry_run(capsys):
+    """Test dry-run pointing direction calculation parameter with the CLI."""
+    argv = [
+        '--dry-run',
+        '--kernels', '5',
+        '--times', '2012-10-19T08:24:00',
+        '--direction', "'direction_type=VECTOR "
+        "observer=CASSINI "
+        "direction_vector_type=INSTRUMENT_FOV_BOUNDARY_VECTORS "
+        "direction_instrument=CASSINI_ISS_NAC "
+        "aberration_correction=CN'",
+        '--reference_frame', 'J2000',
+        '--coordinate_representation', 'RA_DEC',
+    ]
+
+    cli_pointing_direction(argv)
+    captured = capsys.readouterr()
+    assert 'Payload:' in captured.out
+    assert "calculationType: POINTING_DIRECTION," in captured.out
+    assert (
+        "direction: {"
+        "'directionType': 'VECTOR', "
+        "'observer': 'CASSINI', "
+        "'directionVectorType': 'INSTRUMENT_FOV_BOUNDARY_VECTORS', "
+        "'directionInstrument': 'CASSINI_ISS_NAC', "
+        "'aberrationCorrection': 'CN', "
+        "'antiVectorFlag': False"
+        "}"
+    ) in captured.out
+    assert "referenceFrame: J2000" in captured.out
+    assert "coordinateRepresentation: RA_DEC" in captured.out
+    assert "vectorMagnitude: UNIT" in captured.out
+
+
 def test_cli_subsolar_point_dry_run(capsys):
     """Test dry-run sub-solar point calculation parameter with the CLI."""
     argv = ('--dry-run '
@@ -417,6 +471,36 @@ def test_cli_surface_intercept_point_dry_run(capsys):
     captured = capsys.readouterr()
     assert 'Payload:' in captured.out
     assert "calculationType: SURFACE_INTERCEPT_POINT," in captured.out
+
+
+def test_cli_tangent_point_dry_run(capsys):
+    """Test dry-run tangent point calculation parameter with the CLI."""
+    argv = [
+        '--dry-run',
+        '--kernels', '5',
+        '--times', '2010-11-30T14:02:00',
+        '--target', 'ENCELADUS',
+        '--target_frame', 'IAU_ENCELADUS',
+        '--computation_method', 'ELLIPSOID',
+        '--observer', 'CASSINI',
+        '--direction_vector_type', 'INSTRUMENT_BORESIGHT',
+        '--direction_instrument', 'CASSINI_UVIS_HSP',
+        '--aberration_correction', 'CN+S',
+        '--correction_locus', 'TANGENT_POINT',
+    ]
+
+    cli_tangent_point(argv)
+    captured = capsys.readouterr()
+    assert 'Payload:' in captured.out
+    assert "calculationType: TANGENT_POINT," in captured.out
+    assert "target: ENCELADUS" in captured.out
+    assert "targetFrame: IAU_ENCELADUS" in captured.out
+    assert "observer: CASSINI" in captured.out
+    assert "directionVectorType: INSTRUMENT_BORESIGHT" in captured.out
+    assert "directionInstrument: CASSINI_UVIS_HSP" in captured.out
+    assert "aberrationCorrection: CN+S" in captured.out
+    assert "correctionLocus: TANGENT_POINT" in captured.out
+    assert "coordinateRepresentation: RECTANGULAR" in captured.out
 
 
 def test_cli_osculating_elements_dry_run(capsys):

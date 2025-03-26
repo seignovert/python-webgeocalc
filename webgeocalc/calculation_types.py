@@ -1,7 +1,7 @@
 """Webgeocalc calculations types."""
 
 from .calculation import Calculation
-from .errors import CalculationInvalidAttr
+from .errors import CalculationInvalidAttr, CalculationNotImplemented
 from .vars import VALID_PARAMETERS
 
 
@@ -234,21 +234,21 @@ class FrameTransformation(Calculation):
     angular_velocity_units: str, optional
         See: :py:attr:`angular_velocity_units`
 
-        Warning
-        -------
-        Attribute :py:attr:`aberration_correction` must be ``NONE``, `LT``, ``CN``,
-        ``XLT`` or ``XCN``.
+    Warning
+    -------
+    Attribute :py:attr:`aberration_correction` must be ``NONE``, `LT``, ``CN``,
+    ``XLT`` or ``XCN``.
 
-        Attributes :py:attr:`axis_1`, :py:attr:`axis_2` and :py:attr:`axis_3`
-        are imported only if :py:attr:`orientation_representation` is ``EULER_ANGLES``.
+    Attributes :py:attr:`axis_1`, :py:attr:`axis_2` and :py:attr:`axis_3`
+    are imported only if :py:attr:`orientation_representation` is ``EULER_ANGLES``.
 
-        Attribute :py:attr:`angular_units` is imported only
-        if :py:attr:`orientation_representation` is ``EULER_ANGLES``
-        or ``ANGLE_AND_AXIS``.
+    Attribute :py:attr:`angular_units` is imported only
+    if :py:attr:`orientation_representation` is ``EULER_ANGLES``
+    or ``ANGLE_AND_AXIS``.
 
-        Attribute :py:attr:`angular_velocity_units` is imported only if
-        :py:attr:`angular_velocity_representation` is ``VECTOR_IN_FRAME1``,
-        ``VECTOR_IN_FRAME2`` or ``EULER_ANGLE_DERIVATIVES``.
+    Attribute :py:attr:`angular_velocity_units` is imported only if
+    :py:attr:`angular_velocity_representation` is ``VECTOR_IN_FRAME1``,
+    ``VECTOR_IN_FRAME2`` or ``EULER_ANGLE_DERIVATIVES``.
 
     Other Parameters
     ----------------
@@ -390,6 +390,150 @@ class IlluminationAngles(Calculation):
         super().__init__(**kwargs)
 
 
+class PhaseAngle(Calculation):
+    """Phase angle calculation.
+
+    Calculate the phase angle defined by the centers of an illumination source,
+    a target and an observer.
+
+    The phase angle is computed using the location of the bodies (if point objects)
+    or the center of the bodies (if finite bodies).
+
+    The range of the phase angle is [0, pi].
+
+    Parameters
+    ----------
+    target: str or int
+        See: :py:attr:`target`
+    observer: str or int
+        See: :py:attr:`observer`
+    illuminator: str or int, optional
+        See: :py:attr:`illuminator` (default: ``SUN``)
+    aberration_correction: str, optional
+        See: :py:attr:`aberration_correction` (default: ``CN``)
+
+    Other Parameters
+    ----------------
+    kernels: str, int, [str or/and int]
+        See: :py:attr:`kernels`
+    kernel_paths: str, [str]
+        See: :py:attr:`kernel_paths`
+    times: str or [str]
+        See: :py:attr:`times`
+    intervals: [str, str] or {'startTime': str, 'endTime': str} or [interval, ...]
+        See: :py:attr:`intervals`
+    time_step: int
+        See: :py:attr:`time_step`
+    time_step_units: str
+        See: :py:attr:`time_step_units`
+    time_system: str
+        See: :py:attr:`time_system`
+    time_format: str
+        See: :py:attr:`time_format`
+
+    Raises
+    ------
+    CalculationRequiredAttr
+        If :py:attr:`target` or :py:attr:`observer` are not provided.
+
+    """
+
+    REQUIRED = ('target', 'observer')
+
+    def __init__(self, illuminator='SUN', aberration_correction='CN', **kwargs):
+
+        kwargs['calculation_type'] = 'PHASE_ANGLE'
+        kwargs['illuminator'] = illuminator
+        kwargs['aberration_correction'] = aberration_correction
+
+        super().__init__(**kwargs)
+
+
+class PointingDirection(Calculation):
+    """Pointing direction calculation.
+
+    Calculates the pointing direction in a user specified reference frame and
+    output it as a unit or full magnitude vector represented in a user
+    specified coordinate system.
+
+    The direction can be specified by the position or velocity of an object
+    with respect to an observer, or by directly providing a vector,
+    which could be specified as coordinates in a given frame, a frame axis,
+    an instrument boresight, or as instrument FoV corner vectors.
+
+    The output reference frame may be different than the one used for specification
+    of the input vector (if such option is selected). If so, the orientations
+    of both frames relative to the inertial space are computed at the same time
+    taking into account the aberration corrections given in the direction specification.
+
+    The output direction could be given as unit or non-unit vector in
+    Rectangular, Azimuth/Elevation, Right Ascension/Declination/Range,
+    Planetocentric, Cylindrical, or Spherical coordinates.
+
+    Parameters
+    ----------
+    direction: dict or Direction
+        See: :py:attr:`direction`
+    reference_frame: str or int
+        See: :py:attr:`reference_frame`
+    vector_magnitude: str, optional
+        See: :py:attr:`vector_magnitude` (default: ``UNIT``)
+    coordinate_representation: str, optional
+        See: :py:attr:`coordinate_representation` (default: ``RECTANGULAR``)
+
+    Other Parameters
+    ----------------
+    kernels: str, int, [str or/and int]
+        See: :py:attr:`kernels`
+    kernel_paths: str, [str]
+        See: :py:attr:`kernel_paths`
+    times: str or [str]
+        See: :py:attr:`times`
+    intervals: [str, str] or {'startTime': str, 'endTime': str} or [interval, ...]
+        See: :py:attr:`intervals`
+    time_step: int
+        See: :py:attr:`time_step`
+    time_step_units: str
+        See: :py:attr:`time_step_units`
+    time_system: str
+        See: :py:attr:`time_system`
+    time_format: str
+        See: :py:attr:`time_format`
+
+    Required parameters `AZ_EL`
+
+    azccw_flag: bool or str
+        See: :py:attr:`azccw_flag`
+    elplsz_flag: bool or str
+        See: :py:attr:`elplsz_flag`
+
+    Raises
+    ------
+    CalculationRequiredAttr
+        If :py:attr:`target` or :py:attr:`reference_frame` are not provided.
+
+    """
+
+    REQUIRED = ('direction', 'reference_frame')
+
+    def __init__(self, vector_magnitude='UNIT',
+                 coordinate_representation='RECTANGULAR', **kwargs):
+
+        valid = VALID_PARAMETERS['COORDINATE_REPRESENTATION_POINTING_DIRECTION']
+        if coordinate_representation not in valid:
+            raise CalculationInvalidAttr(
+                'coordinate_representation', coordinate_representation, valid)
+
+        if coordinate_representation == 'AZ_EL':
+            self.REQUIRED += ('azccw_flag', 'elplsz_flag')
+
+        kwargs['calculation_type'] = 'POINTING_DIRECTION'
+        kwargs['vector_magnitude'] = vector_magnitude
+        kwargs['coordinate_representation'] = coordinate_representation
+
+        super().__init__(**kwargs)
+
+
 class SubSolarPoint(Calculation):
     """Sub-solar point calculation.
 
@@ -404,10 +548,10 @@ class SubSolarPoint(Calculation):
     state_representation: str, optional
         See: :py:attr:`state_representation`
 
-        Warning
-        -------
-        Attribute :py:attr:`aberration_correction` must be ``NONE``, `LT``, ``LT+S``,
-        ``CN`` or ``CN+S``.
+    Warning
+    -------
+    Attribute :py:attr:`aberration_correction` must be ``NONE``, `LT``, ``LT+S``,
+    ``CN`` or ``CN+S``.
 
     Other Parameters
     ----------------
@@ -581,21 +725,21 @@ class SurfaceInterceptPoint(Calculation):
     direction_vector_dec: float
         See: :py:attr:`direction_vector_dec`
 
-        Warnings
-        --------
-        Attributes :py:attr:`direction_instrument` is needed only if
-        :py:attr:`direction_vector_type` is ``INSTRUMENT_BORESIGHT``,
-        ``INSTRUMENT_FOV_BOUNDARY_VECTORS`` or ``VECTOR_IN_INSTRUMENT_FOV``.
+    Warnings
+    --------
+    Attributes :py:attr:`direction_instrument` is needed only if
+    :py:attr:`direction_vector_type` is ``INSTRUMENT_BORESIGHT``,
+    ``INSTRUMENT_FOV_BOUNDARY_VECTORS`` or ``VECTOR_IN_INSTRUMENT_FOV``.
 
-        Attributes :py:attr:`direction_frame` is needed only if
-        :py:attr:`direction_vector_type` is ``REFERENCE_FRAME_AXIS`` or
-        ``VECTOR_IN_REFERENCE_FRAME``.
+    Attributes :py:attr:`direction_frame` is needed only if
+    :py:attr:`direction_vector_type` is ``REFERENCE_FRAME_AXIS`` or
+    ``VECTOR_IN_REFERENCE_FRAME``.
 
-        Attributes :py:attr:`direction_vector_x` + :py:attr:`direction_vector_y` +
-        :py:attr:`direction_vector_z` or :py:attr:`direction_vector_ra` +
-        :py:attr:`direction_vector_dec` is needed only if
-        :py:attr:`direction_vector_type` is ``VECTOR_IN_INSTRUMENT_FOV`` or
-        ``VECTOR_IN_REFERENCE_FRAME``.
+    Attributes :py:attr:`direction_vector_x` + :py:attr:`direction_vector_y` +
+    :py:attr:`direction_vector_z` or :py:attr:`direction_vector_ra` +
+    :py:attr:`direction_vector_dec` is needed only if
+    :py:attr:`direction_vector_type` is ``VECTOR_IN_INSTRUMENT_FOV`` or
+    ``VECTOR_IN_REFERENCE_FRAME``.
 
     Raises
     ------
@@ -622,6 +766,185 @@ class SurfaceInterceptPoint(Calculation):
             kwargs['shape_1'] = shape_1
         else:
             raise CalculationInvalidAttr('shape_1', shape_1, ['ELLIPSOID', 'DSK'])
+
+        super().__init__(**kwargs)
+
+
+class TangentPoint(Calculation):
+    """Tangent point calculation.
+
+    Calculate the tangent point for a given observer, ray emanating
+    from the observer, and target.
+
+    The tangent point is defined as the point on the ray nearest to the target's surface.
+    This panel also computes the point on the target's surface nearest to
+    the tangent point. The locations of both points are optionally corrected for
+    light time and stellar aberration, and may be represented using either
+    Rectangular, Ra/Dec, Planetocentric, Planetodetic, Planetographic, Spherical or
+    Cylindrical coordinates.
+
+    The target's surface shape is modeled as a triaxial ellipsoid.
+
+    For remote sensing observations, for maximum accuracy, reception light time and
+    stellar aberration corrections should be used. These corrections model
+    observer-target-ray geometry as it is observed.
+
+    For signal transmission applications, for maximum accuracy, transmission light
+    time and stellar aberration corrections should be used. These corrections model
+    the observer-target-ray geometry that applies to the transmitted signal.
+    For example, these corrections are needed to calculate the minimum altitude
+    of the signal's path over the target body.
+
+    This calculation ignores differential aberration effects over the target
+    body's surface: it computes corrections only at a user-specified point,
+    which is called the "aberration correction locus."
+    The user may select either the **Tangent point** or corresponding **Surface point**
+    as the locus. In many cases, the differences between corrections for
+    these points are very small.
+
+    Additionally, the illumination angles (incidence, emission and phase),
+    time and local true solar time at the target point (where the aberration
+    correction locus is set -- or at the tangent point if no corrections are used),
+    and the light time to that point, are computed.
+
+    Parameters
+    ----------
+    target: str or int
+        See: :py:attr:`target`
+    target_frame: str or int
+        See: :py:attr:`target_frame`
+    observer: str or int
+        See: :py:attr:`observer`
+    direction_vector_type: str
+        See: :py:attr:`direction_vector_type`
+
+    direction_object: str or int
+        See: :py:attr:`direction_object`.
+        Only when :py:attr:`direction_vector_type` is ``DIRECTION_TO_OBJECT``
+
+    direction_instrument: str or int
+        See: :py:attr:`direction_instrument`.
+        Only when :py:attr:`direction_vector_type` is
+        ``INSTRUMENT_BORESIGHT, ``INSTRUMENT_FOV_BOUNDARY_VECTORS``
+        or ``VECTOR_IN_INSTRUMENT_FOV``
+
+    direction_frame: str
+        See: :py:attr:`direction_frame`.
+        Only when :py:attr:`direction_vector_type` is
+        ``REFERENCE_FRAME_AXIS`` or ``VECTOR_IN_REFERENCE_FRAME``
+
+    direction_frame_axis: str
+        See: :py:attr:`direction_frame_axis`.
+        Only when :py:attr:`direction_vector_type` is
+        ``REFERENCE_FRAME_AXIS``.
+
+    direction_vector_x: float
+        See: :py:attr:`direction_vector_x`.
+        Only when :py:attr:`direction_vector_type` is
+        ``VECTOR_IN_INSTRUMENT_FOV`` or ``VECTOR_IN_REFERENCE_FRAME``
+
+    direction_vector_y: float
+        See: :py:attr:`direction_vector_y`.
+        Only when :py:attr:`direction_vector_type` is
+        ``VECTOR_IN_INSTRUMENT_FOV`` or ``VECTOR_IN_REFERENCE_FRAME``
+
+    direction_vector_z: float
+        See: :py:attr:`direction_vector_z`.
+        Only when :py:attr:`direction_vector_type` is
+        ``VECTOR_IN_INSTRUMENT_FOV`` or ``VECTOR_IN_REFERENCE_FRAME``
+
+    direction_vector_ra: float
+        See: :py:attr:`direction_vector_ra`
+        Only when :py:attr:`direction_vector_type` is
+        ``VECTOR_IN_INSTRUMENT_FOV`` or ``VECTOR_IN_REFERENCE_FRAME``
+
+    direction_vector_dec: float
+        See: :py:attr:`direction_vector_dec`
+        Only when :py:attr:`direction_vector_type` is
+        ``VECTOR_IN_INSTRUMENT_FOV`` or ``VECTOR_IN_REFERENCE_FRAME``
+
+    direction_vector_az: float
+        See: :py:attr:`direction_vector_az`
+        Only when :py:attr:`direction_vector_type` is
+        ``VECTOR_IN_INSTRUMENT_FOV`` or ``VECTOR_IN_REFERENCE_FRAME``
+
+    direction_vector_el: float
+        See: :py:attr:`direction_vector_el`
+        Only when :py:attr:`direction_vector_type` is
+        ``VECTOR_IN_INSTRUMENT_FOV`` or ``VECTOR_IN_REFERENCE_FRAME``
+
+    azccw_flag: bool or str
+        See: :py:attr:`azccw_flag`.
+        Only when :py:attr:`direction_vector_az` is provided.
+
+    elplsz_flag: bool or str
+        See: :py:attr:`elplsz_flag`.
+        Only when :py:attr:`direction_vector_el` is provided.
+
+    computation_method: str, optional
+        See: :py:attr:`computation_method` (default: ``ELLIPSOID``)
+    vector_ab_corr: str, optional
+        See: :py:attr:`vector_ab_corr` (default: ``NONE``)
+    aberration_correction: str, optional
+        See: :py:attr:`aberration_correction` (default: ``CN``)
+    correction_locus: str, optional
+        See: :py:attr:`correction_locus`
+        (required if :py:attr:`aberration_correction` is not ``NONE``)
+    coordinate_representation: str, optional
+        See: :py:attr:`coordinate_representation` (default: ``RECTANGULAR``)
+
+    Other Parameters
+    ----------------
+    kernels: str, int, [str or/and int]
+        See: :py:attr:`kernels`
+    kernel_paths: str, [str]
+        See: :py:attr:`kernel_paths`
+    times: str or [str]
+        See: :py:attr:`times`
+    intervals: [str, str] or {'startTime': str, 'endTime': str} or [interval, ...]
+        See: :py:attr:`intervals`
+    time_step: int
+        See: :py:attr:`time_step`
+    time_step_units: str
+        See: :py:attr:`time_step_units`
+    time_system: str
+        See: :py:attr:`time_system`
+    time_format: str
+        See: :py:attr:`time_format`
+
+    Raises
+    ------
+    CalculationRequiredAttr
+        If :py:attr:`target`, :py:attr:`reference_frame`, :py:attr:`observer`
+        or :py:attr:`direction_vector_type` are not provided.
+    CalculationRequiredAttr
+        If :py:attr:`aberration_correction` is not ``NONE`` and
+        :py:attr:`correction_locus` is not provided.
+
+    """
+
+    REQUIRED = ('target', 'target_frame', 'observer', 'direction_vector_type')
+
+    def __init__(self, computation_method='ELLIPSOID',
+                 vector_ab_corr='NONE', aberration_correction='CN',
+                 coordinate_representation='RECTANGULAR', **kwargs):
+
+        if aberration_correction != 'NONE':
+            self.REQUIRED += ('correction_locus',)
+
+        valid = VALID_PARAMETERS['COORDINATE_REPRESENTATION_TANGENT_POINT']
+        if coordinate_representation not in valid:
+            raise CalculationInvalidAttr(
+                'coordinate_representation', coordinate_representation, valid)
+
+        kwargs['calculation_type'] = 'TANGENT_POINT'
+        kwargs['computation_method'] = computation_method
+
+        if kwargs.get('direction_vector_type') == 'VECTOR_IN_REFERENCE_FRAME':
+            kwargs['vector_ab_corr'] = vector_ab_corr
+
+        kwargs['aberration_correction'] = aberration_correction
+        kwargs['coordinate_representation'] = coordinate_representation
 
         super().__init__(**kwargs)
 
@@ -713,13 +1036,13 @@ class TimeConversion(Calculation):
     output_time_custom_format: str
         See: :py:attr:`output_time_custom_format`
 
-        Warnings
-        --------
-        Attributes :py:attr:`output_sclk_id` is needed only if
-        :py:attr:`output_time_system` is ``SPACECRAFT_CLOCK``.
+    Warnings
+    --------
+    Attributes :py:attr:`output_sclk_id` is needed only if
+    :py:attr:`output_time_system` is ``SPACECRAFT_CLOCK``.
 
-        Attributes :py:attr:`output_time_custom_format` is needed only if
-        :py:attr:`output_time_format` is ``CUSTOM``.
+    Attributes :py:attr:`output_time_custom_format` is needed only if
+    :py:attr:`output_time_format` is ``CUSTOM``.
 
     """
 
@@ -788,17 +1111,17 @@ class GFCoordinateSearch(Calculation):
     reference_frame: str or int
         See: :py:attr:`reference_frame`
 
-        Warnings
-        --------
-        Attributes :py:attr:`upper_limit` is needed only if
-        :py:attr:`relational_condition` is ``RANGE``.
+    Warnings
+    --------
+    Attributes :py:attr:`upper_limit` is needed only if
+    :py:attr:`relational_condition` is ``RANGE``.
 
-        Attributes :py:attr:`adjustment_value` is needed only if
-        :py:attr:`relational_condition` is ``ABSMIN`` or ``ABSMAX``.
+    Attributes :py:attr:`adjustment_value` is needed only if
+    :py:attr:`relational_condition` is ``ABSMIN`` or ``ABSMAX``.
 
-        Attribute :py:attr:`reference_value` is needed only if
-        :py:attr:`relational_condition` is ``=``, ``<``, ``>`` or
-        ``RANGE``.
+    Attribute :py:attr:`reference_value` is needed only if
+    :py:attr:`relational_condition` is ``=``, ``<``, ``>`` or
+    ``RANGE``.
 
     Raises
     ------
@@ -826,3 +1149,95 @@ class GFCoordinateSearch(Calculation):
         kwargs['interval_filtering'] = interval_filtering
 
         super().__init__(**kwargs)
+
+
+# pylint: disable=abstract-method
+class GFAngularSeparationSearch(CalculationNotImplemented):
+    """Angular separation search geometry finder.
+
+    Find time intervals when the angle between two bodies,
+    as seen by an observer, satisfies a condition.
+
+    """
+
+
+class GFDistanceSearch(CalculationNotImplemented):
+    """Distance search geometry finder.
+
+    Find time intervals when the distance between a target
+    and observer satisfies a condition.
+
+    """
+
+
+class GFSubPointSearch(CalculationNotImplemented):
+    """Sub-point search geometry finder.
+
+    Find time intervals when a coordinate of the sub-observer point
+    on a target satisfies a condition.
+
+    """
+
+
+class GFOccultationSearch(CalculationNotImplemented):
+    """Occultation search geometry finder.
+
+    Find time intervals when an observer sees one target occulted by,
+    or in transit across, another.
+
+    """
+
+
+class GFSurfaceInterceptPointSearch(CalculationNotImplemented):
+    """Surface intercept point search geometry finder.
+
+    Find time intervals when a coordinate of a surface intercept vector
+    satisfies a condition.
+
+    """
+
+
+class GFTargetInInstrumentFovSearch(CalculationNotImplemented):
+    """Target in instrument fov search geometry finder.
+
+    Find time intervals when a target intersects the space bounded by
+    the field-of-view of an instrument.
+
+    """
+
+
+class GFRayInFovSearch(CalculationNotImplemented):
+    """Ray in fov search geometry finder.
+
+    Find time intervals when a specified ray is contained in the space bounded
+    by an instrument's field-of-view.
+
+    """
+
+
+class GFRangeRateSearch(CalculationNotImplemented):
+    """Range rate search geometry finder.
+
+    Find time intervals when the range rate between a target and observer
+    satisfies a condition.
+
+    """
+
+
+class GFPhaseAngleSearch(CalculationNotImplemented):
+    """Phase angle search geometry finder.
+
+    Find time intervals for which a specified constraint on the phase angle defined
+    by an illumination source, a target, and an observer body centers is met.
+
+    """
+
+
+class GFIlluminationAnglesSearch(CalculationNotImplemented):
+    """Illumination angles search geometry finder.
+
+    Find the time intervals, within a specified time window, when one of the illumination
+    angles — phase, incidence or emission — at the specified target body surface point
+    as seen from an observer satisfies a given constraint.
+
+    """

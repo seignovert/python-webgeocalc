@@ -256,10 +256,67 @@ def test_calculation_aberration_correction_error(params):
         Calculation(aberration_correction='WRONG', **params)
 
 
+def test_calculation_vector_ab_corr_error(params):
+    """Test type of aberration correction errors."""
+    # Missing `direction_vector_type`
+    with raises(CalculationUndefinedAttr, match='direction_vector_type'):
+        Calculation(vector_ab_corr='NONE', **params)
+
+    # Invalid `direction_vector_type` (not `VECTOR_IN_REFERENCE_FRAME`)
+    with raises(CalculationIncompatibleAttr, match='VECTOR_IN_REFERENCE_FRAME'):
+        Calculation(direction_vector_type='INSTRUMENT_BORESIGHT',
+                    direction_instrument='CASSINI_ISS_NAC',
+                    vector_ab_corr='NONE', **params)
+
+    # Invalid attribute
+    with raises(CalculationInvalidAttr):
+        Calculation(direction_vector_type='VECTOR_IN_REFERENCE_FRAME',
+                    direction_frame='J2000',
+                    direction_vector_ra=210,
+                    direction_vector_dec=-10,
+                    vector_ab_corr='WRONG', **params)
+
+
+def test_calculation_correction_locus_error(params):
+    """Test aberration correction locus errors."""
+    with raises(CalculationInvalidAttr):
+        Calculation(correction_locus='WRONG', **params)
+
+
+def test_calculation_spec_type_error(params):
+    """Test angular separation computation type errors."""
+    with raises(CalculationInvalidAttr):
+        Calculation(spec_type='WRONG', **params)
+
+
+def test_calculation_vector_magnitude_error(params):
+    """Test vector magnitude errors."""
+    with raises(CalculationInvalidAttr):
+        Calculation(vector_magnitude='WRONG', **params)
+
+
+def test_calculation_computation_method_error(params):
+    """Test computation method (for TANGENT POINT) errors."""
+    with raises(CalculationInvalidAttr):
+        Calculation(computation_method='WRONG', **params)
+
+
 def test_calculation_state_representation_error(params):
     """Test error if state representation is invalid."""
     with raises(CalculationInvalidAttr):
         Calculation(state_representation='WRONG', **params)
+
+
+def test_calculation_time_location_error(params):
+    """Test frame for the input times errors."""
+    with raises(CalculationInvalidAttr):
+        Calculation(time_location='WRONG', **params)
+
+
+def test_calculation_orientation_representation_error(params):
+    """Test representation of the result transformation errors."""
+    with raises(CalculationInvalidAttr):
+        Calculation(orientation_representation='WRONG', **params)
 
 
 def test_calculation_shape_error(params):
@@ -283,6 +340,9 @@ def test_calculation_axis_error(params):
 
 def test_calculation_angular_units_error(params):
     """Test errors if angular units are invalid."""
+    with raises(CalculationInvalidAttr):
+        Calculation(angular_units='WRONG', **params)
+
     with raises(CalculationUndefinedAttr):
         Calculation(angular_units='deg', **params)  # Missing `orientation_representation`
 
@@ -292,8 +352,17 @@ def test_calculation_angular_units_error(params):
                     angular_units='deg', **params)
 
 
+def test_calculation_angular_velocity_representation_error(params):
+    """Test angular velocity representation errors."""
+    with raises(CalculationInvalidAttr):
+        Calculation(angular_velocity_representation='WRONG', **params)
+
+
 def test_calculation_angular_velocity_units_error(params):
     """Test errors with angular velocity units."""
+    with raises(CalculationInvalidAttr):
+        Calculation(angular_velocity_units='WRONG', **params)
+
     with raises(CalculationUndefinedAttr):
         # Missing `angular_velocity_representation`
         Calculation(angular_velocity_units='deg/s', **params)
@@ -304,14 +373,51 @@ def test_calculation_angular_velocity_units_error(params):
                     angular_velocity_units='deg/s', **params)
 
 
+def test_calculation_coordinate_representation_error(params):
+    """Test Coordinate representation errors."""
+    with raises(CalculationInvalidAttr):
+        Calculation(coordinate_representation='WRONG', **params)
+
+
+def test_calculation_sub_point_type_error(params):
+    """Test sub-observer point errors."""
+    with raises(CalculationInvalidAttr):
+        Calculation(sub_point_type='WRONG', **params)
+
+
 def test_calculation_direction_vector_type_error(params):
-    """Test error if intercept vector type is invalid."""
+    """Test error if direction vector type is invalid."""
     with raises(CalculationInvalidAttr):
         Calculation(direction_vector_type='WRONG', **params)
 
+    # Missing `direction_object` attribute
+    with raises(CalculationRequiredAttr, match='direction_object'):
+        Calculation(direction_vector_type='DIRECTION_TO_OBJECT', **params)
+
+    # DIRECTION_TO_OBJECT can only be used with `TANGENT_POINT` calculation
+    with raises(CalculationIncompatibleAttr, match='direction_vector_type'):
+        Calculation(
+            direction_vector_type='DIRECTION_TO_OBJECT',
+            direction_object='ANY',
+            **params
+        )
+
+
+def test_calculation_direction_object_error(params):
+    """Test errors when direction object is invalid."""
+    # Missing `direction_vector_type`
+    with raises(CalculationUndefinedAttr, match='direction_vector_type'):
+        Calculation(direction_object='CASSINI_ISS_NAC', **params)
+
+    # Invalid `direction_vector_type` (only `DIRECTION_TO_OBJECT`)
+    with raises(CalculationIncompatibleAttr, match='direction_object'):
+        Calculation(direction_vector_type='INSTRUMENT_BORESIGHT',
+                    direction_instrument='CASSINI_ISS_NAC',
+                    direction_object='ANY', **params)
+
 
 def test_calculation_direction_instrument_error(params):
-    """Test errors when intercept instrument is invalid."""
+    """Test errors when direction instrument is invalid."""
     with raises(CalculationUndefinedAttr):
         # Missing `direction_vector_type`
         Calculation(direction_instrument='CASSINI_ISS_NAC', **params)
@@ -323,7 +429,7 @@ def test_calculation_direction_instrument_error(params):
 
 
 def test_calculation_direction_frame_error(params):
-    """Test errors when intercept frame is invalid."""
+    """Test errors when direction frame is invalid."""
     with raises(CalculationUndefinedAttr):
         # Missing 'direction_vector_type'
         Calculation(direction_frame='CASSINI_ISS_NAC', **params)
@@ -335,7 +441,7 @@ def test_calculation_direction_frame_error(params):
 
 
 def test_calculation_direction_frame_axis_error(params):
-    """Test errors when intercept frame axis is invalid."""
+    """Test errors when direction frame axis is invalid."""
     with raises(CalculationUndefinedAttr):
         # Missing 'direction_frame'
         Calculation(direction_frame_axis='Z', **params)
@@ -352,7 +458,7 @@ def test_calculation_direction_frame_axis_error(params):
 
 
 def test_calculation_direction_vector_error(params):
-    """Test errors when intercept vector is invalid."""
+    """Test errors when direction vector is invalid."""
     with raises(CalculationUndefinedAttr):
         # Missing 'direction_vector_type'
         Calculation(direction_vector_x=0, **params)
@@ -361,6 +467,60 @@ def test_calculation_direction_vector_error(params):
         # Wrong 'direction_vector_type'
         Calculation(direction_vector_x=0,
                     direction_vector_type='INSTRUMENT_BORESIGHT', **params)
+
+
+def test_calculation_direction_vector_az_el_error(params):
+    """Test errors when direction vector azimuth/elevation are invalid."""
+    with raises(CalculationRequiredAttr, match='azccw_flag'):
+        Calculation(direction_vector_az='WRONG', **params)
+
+    with raises(CalculationRequiredAttr, match='elplsz_flag'):
+        Calculation(direction_vector_el='WRONG', **params)
+
+
+def test_calculation_azccw_elplsz_flag_error(params):
+    """Test errors when azimuth or elevation flags are invalid."""
+    with raises(CalculationInvalidAttr):
+        Calculation(azccw_flag='WRONG', **params)
+
+    with raises(CalculationInvalidAttr):
+        Calculation(elplsz_flag='WRONG', **params)
+
+
+def test_calculation_output_duration_units_error(params):
+    """Test errors when output duration units is invalid."""
+    with raises(CalculationInvalidAttr):
+        Calculation(output_duration_units='WRONG', **params)
+
+
+def test_calculation_interval_adjustment_errors(params):
+    """Test errors when interval parameters are invalid."""
+    with raises(CalculationInvalidAttr):
+        Calculation(interval_adjustment='WRONG', **params)
+
+    with raises(CalculationInvalidAttr):
+        Calculation(interval_adjustment_units='WRONG', **params)
+
+    with raises(CalculationInvalidAttr):
+        Calculation(interval_filtering='WRONG', **params)
+
+    with raises(CalculationInvalidAttr):
+        Calculation(interval_filtering='WRONG', **params)
+
+    with raises(CalculationInvalidAttr):
+        Calculation(interval_filtering_threshold_units='WRONG', **params)
+
+
+def test_calculation_coordinate_errors(params):
+    """Test errors when coordinate are invalid."""
+    with raises(CalculationInvalidAttr):
+        Calculation(coordinate_system='WRONG', **params)
+
+    with raises(CalculationInvalidAttr):
+        Calculation(coordinate='WRONG', **params)
+
+    with raises(CalculationInvalidAttr):
+        Calculation(relational_condition='WRONG', **params)
 
 
 def test_calculation_output_time_system_error(params):

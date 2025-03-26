@@ -1,5 +1,5 @@
-Python package for NAIF WebGeoCalc API
-======================================
+🐍 Python package for NAIF WebGeoCalc API
+=========================================
 
 |Docs| |Build| |Coverage| |CodeFactor|
 
@@ -47,8 +47,8 @@ calculations through this API.
 .. _Documentation: https://wgc2.jpl.nasa.gov:8443/webgeocalc/documents/api-info.html
 .. _`JavaScript examples`: https://wgc2.jpl.nasa.gov:8443/webgeocalc/example/perform-calculation.html
 
-Note the user
--------------
+⚠️ Caution
+----------
 
     `WebGeoCalc`_ is not design to handle heavy calculation.
     If you need to make intensive queries, use `Spiceypy`_ or `SpiceMiner`_
@@ -59,8 +59,8 @@ Note the user
 .. _`SpiceMiner`: https://github.com/DaRasch/spiceminer
 
 
-Install
--------
+📦 Install
+----------
 With ``pip``:
 
 .. code:: bash
@@ -68,8 +68,8 @@ With ``pip``:
     $ pip install webgeocalc
 
 
-Usage
------
+🚀 Usage
+--------
 
 .. code:: python
 
@@ -155,8 +155,9 @@ More details can be found in the `docs`_ and in the `Jupyter Notebooks`_.
 .. _`docs`: https://webgeocalc.readthedocs.io/en/stable/calculation.html
 .. _`Jupyter Notebooks`: https://nbviewer.jupyter.org/github/seignovert/python-webgeocalc/blob/main/examples/calculation.ipynb
 
-Command Line Interface (cli)
-----------------------------
+
+⚙️ Command Line Interface (cli)
+-------------------------------
 
 The webgeocalc API can be call directly from the command line interface:
 
@@ -212,8 +213,8 @@ More examples can be found in here_.
 .. _here: https://webgeocalc.readthedocs.io/en/stable/cli.html
 
 
-Local development and testing
------------------------------
+🧪 Local development and testing
+--------------------------------
 
 Setup:
 
@@ -244,7 +245,8 @@ Docs:
     sphinx-build docs docs/_build --color -W -bdoctest
 
 
-Disclaimer
-----------
+📣 Disclaimer
+-------------
+
 This project is not supported or endorsed by either JPL, NAIF or NASA.
 The code is provided *"as is"*, use at your own risk.

@@ -36,7 +36,7 @@ setup(
         'License :: OSI Approved :: MIT License',
         'Natural Language :: English',
         'Programming Language :: Python',
-        'Programming Language :: Python :: 3.8',
+        'Programming Language :: Python :: 3.11',
         'Topic :: Scientific/Engineering',
         'Topic :: Scientific/Engineering :: Astronomy',
     ],
@@ -54,12 +54,29 @@ setup(
             'wgc-angular-size = webgeocalc.cli:cli_angular_size',
             'wgc-frame-transformation = webgeocalc.cli:cli_frame_transformation',
             'wgc-illumination-angles = webgeocalc.cli:cli_illumination_angles',
+            'wgc-phase-angle = webgeocalc.cli:cli_phase_angle',
+            'wgc-pointing-direction = webgeocalc.cli:cli_pointing_direction',
             'wgc-subsolar-point = webgeocalc.cli:cli_subsolar_point',
             'wgc-subobserver-point = webgeocalc.cli:cli_subobserver_point',
             'wgc-surface-intercept-point = webgeocalc.cli:cli_surface_intercept_point',
+            'wgc-tangent-point = webgeocalc.cli:cli_tangent_point',
             'wgc-osculating-elements = webgeocalc.cli:cli_osculating_elements',
             'wgc-time-conversion = webgeocalc.cli:cli_time_conversion',
             'wgc-gf-coordinate-search = webgeocalc.cli:cli_gf_coordinate_search',
+            'wgc-gf-angular-separation-search = '
+            'webgeocalc.cli:cli_gf_angular_separation_search',
+            'wgc-gf-distance-search = webgeocalc.cli:cli_gf_distance_search',
+            'wgc-gf-sub-point-search = webgeocalc.cli:cli_gf_sub_point_search',
+            'wgc-gf-occultation-search = webgeocalc.cli:cli_gf_occultation_search',
+            'wgc-gf-surface-intercept-point-search = '
+            'webgeocalc.cli:cli_gf_surface_intercept_point_search',
+            'wgc-gf-target-in-instrument-fov-search = '
+            'webgeocalc.cli:cli_gf_target_in_instrument_fov_search',
+            'wgc-gf-ray-in-fov-search = webgeocalc.cli:cli_gf_ray_in_fov_search',
+            'wgc-gf-range-rate-search = webgeocalc.cli:cli_gf_range_rate_search',
+            'wgc-gf-phase-angle-search = webgeocalc.cli:cli_gf_phase_angle_search',
+            'wgc-gf-illumination-angles-search = '
+            'webgeocalc.cli:cli_gf_illumination_angles_search',
         ],
     },
 )
