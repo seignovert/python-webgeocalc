@@ -1,13 +1,13 @@
 {
     "title": "Python package for NAIF WebGeoCalc API",
-    "description": "<p>In december 2018, <a href=\"https://naif.jpl.nasa.gov/naif/webgeocalc.html\">JPL/NAIF</a> announced an <em>experimental</em> <a href=\"https://naif.jpl.nasa.gov/naif/WebGeocalc_announcement.pdf\">API RESTful interface</a> for their new <a href=\"https://wgc2.jpl.nasa.gov:8443/webgeocalc\">WebGeoCalc server</a> (which make online SPICE calculations). <a href=\"https://wgc2.jpl.nasa.gov:8443/webgeocalc/documents/api-info.html\">Documentation</a> and<a href=\"https://wgc2.jpl.nasa.gov:8443/webgeocalc/example/perform-calculation.html\">JavaScript examples</a> are already available.</p><p>This package provides a Python interface to make SPICE calculation through this API.</p><strong>Note the user</strong><blockquote><a href=\"https://wgc.jpl.nasa.gov:8443/webgeocalc\">WebGeoCalc</a> is not design to handle heavy calculation. If you need to make intensive queries, use <a href=\"https://github.com/AndrewAnnex/Spiceypy\">Spiceypy</a> or <a href=\"https://github.com/DaRasch/spiceminer\">SpiceMiner</a> package with locally hosted kernels.</blockquote><strong>Disclaimer</strong><p>This project is not supported or endorsed by either JPL, NAIF or NASA. The code is provided <em>&quot;as is&quot;</em>, use at your own risk.</p>",
+    "description": "<p>In December 2018, <a href=\"https://naif.jpl.nasa.gov/naif/webgeocalc.html\">JPL/NAIF</a> announced an <em>experimental</em> <a href=\"https://naif.jpl.nasa.gov/naif/WebGeocalc_announcement.pdf\">API RESTful interface</a> for their new <a href=\"https://wgc2.jpl.nasa.gov:8443/webgeocalc\">WebGeoCalc server</a> (which make online SPICE calculations). <a href=\"https://wgc2.jpl.nasa.gov:8443/webgeocalc/documents/api-info.html\">Documentation</a> and<a href=\"https://wgc2.jpl.nasa.gov:8443/webgeocalc/example/perform-calculation.html\">JavaScript examples</a> are already available.</p><p>This package provides a Python interface to make SPICE calculation through this API.</p><strong>Note the user</strong><blockquote><a href=\"https://wgc.jpl.nasa.gov:8443/webgeocalc\">WebGeoCalc</a> is not design to handle heavy calculation. If you need to make intensive queries, use <a href=\"https://github.com/AndrewAnnex/Spiceypy\">Spiceypy</a> or <a href=\"https://github.com/DaRasch/spiceminer\">SpiceMiner</a> package with locally hosted kernels.</blockquote><strong>Disclaimer</strong><p>This project is not supported or endorsed by either JPL, NAIF or NASA. The code is provided <em>&quot;as is&quot;</em>, use at your own risk.</p>",
     "license": "MIT",
     "upload_type": "software",
     "access_right": "open",
     "creators": [
         {
             "name": "Seignovert, Benoît",
-            "affiliation": "LPG - Université de Nantes",
+            "affiliation": "Osuna - CNRS UAR 3281 - Université de Nantes",
             "orcid": "0000-0001-6533-275X"
         },
         {
