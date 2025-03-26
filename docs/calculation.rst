@@ -294,6 +294,9 @@ web portals.
    * - :py:class:`SurfaceInterceptPoint`
      - ``SURFACE_INTERCEPT_POINT``
      - Surface Intercept Point
+   * - :py:class:`TangentPoint`
+     - ``TANGENT_POINT``
+     - Tangent Point
    * - :py:class:`OsculatingElements`
      - ``OSCULATING_ELEMENTS``
      - Orbital Elements
@@ -302,7 +305,37 @@ web portals.
      - Time Conversion
    * - :py:class:`GFCoordinateSearch`
      - ``GF_COORDINATE_SEARCH``
-     - Position Event Finder
+     - Coordinate Geometry Finder
+   * - :py:class:`GFAngularSeparationSearch`
+     - ``GF_ANGULAR_SEPARATION_SEARCH``
+     - Angular separation Geometry Finder
+   * - :py:class:`GFDistanceSearch`
+     - ``GF_DISTANCE_SEARCH``
+     - Distance Geometry Finder
+   * - :py:class:`GFSubPointSearch`
+     - ``GF_SUB_POINT_SEARCH``
+     - Sub-point Geometry Finder
+   * - :py:class:`GFOccultationSearch`
+     - ``GF_OCCULTATION_SEARCH``
+     - Occultation Geometry Finder
+   * - :py:class:`GFSurfaceInterceptPointSearch`
+     - ``GF_SURFACE_INTERCEPT_POINT_SEARCH``
+     - Surface Intercept Point Geometry Finder
+   * - :py:class:`GFTargetInInstrumentFovSearch`
+     - ``GF_TARGET_IN_INSTRUMENT_FOV_SEARCH``
+     - Target in Instrument FOV Geometry Finder
+   * - :py:class:`GFRayInFovSearch`
+     - ``GF_RAY_IN_FOV_SEARCH``
+     - Ray in FOV Geometry Finder
+   * - :py:class:`GFRangeRateSearch`
+     - ``GF_RANGE_RATE_SEARCH``
+     - Range Rate Geometry Finder
+   * - :py:class:`GFPhaseAngleSearch`
+     - ``GF_PHASE_ANGLE_SEARCH``
+     - Phase Angle Geometry Finder
+   * - :py:class:`GFIlluminationAnglesSearch`
+     - ``GF_ILLUMINATION_ANGLES_SEARCH``
+     - Illumination Angles Geometry Finder
 
 
 Generic calculation
