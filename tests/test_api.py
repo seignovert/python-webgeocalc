@@ -140,8 +140,8 @@ def test_api_metadata():
     assert API['documentation'] == \
         'https://wgc2.jpl.nasa.gov:8443/webgeocalc/documents/api-info.html'
     assert API['contact'] == 'Boris Semenov <Boris.Semenov@jpl.nasa.gov>'
-    assert API['version'] == '2.7.6'
-    assert API['build_id'] == '5363 N67 29-JAN-2025'
+    assert API['version'] == '2.8.2'
+    assert API['build_id'] == '5392 N67 24-MAR-2025'
 
     with raises(KeyError):
         _ = API['foo']
