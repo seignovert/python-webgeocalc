@@ -283,6 +283,18 @@ def test_calculation_correction_locus_error(params):
         Calculation(correction_locus='WRONG', **params)
 
 
+def test_calculation_spec_type_error(params):
+    """Test angular separation computation type errors."""
+    with raises(CalculationInvalidAttr):
+        Calculation(spec_type='WRONG', **params)
+
+
+def test_calculation_vector_magnitude_error(params):
+    """Test vector magnitude errors."""
+    with raises(CalculationInvalidAttr):
+        Calculation(vector_magnitude='WRONG', **params)
+
+
 def test_calculation_computation_method_error(params):
     """Test computation method (for TANGENT POINT) errors."""
     with raises(CalculationInvalidAttr):
@@ -293,6 +305,18 @@ def test_calculation_state_representation_error(params):
     """Test error if state representation is invalid."""
     with raises(CalculationInvalidAttr):
         Calculation(state_representation='WRONG', **params)
+
+
+def test_calculation_time_location_error(params):
+    """Test frame for the input times errors."""
+    with raises(CalculationInvalidAttr):
+        Calculation(time_location='WRONG', **params)
+
+
+def test_calculation_orientation_representation_error(params):
+    """Test representation of the result transformation errors."""
+    with raises(CalculationInvalidAttr):
+        Calculation(orientation_representation='WRONG', **params)
 
 
 def test_calculation_shape_error(params):
@@ -316,6 +340,9 @@ def test_calculation_axis_error(params):
 
 def test_calculation_angular_units_error(params):
     """Test errors if angular units are invalid."""
+    with raises(CalculationInvalidAttr):
+        Calculation(angular_units='WRONG', **params)
+
     with raises(CalculationUndefinedAttr):
         Calculation(angular_units='deg', **params)  # Missing `orientation_representation`
 
@@ -325,8 +352,17 @@ def test_calculation_angular_units_error(params):
                     angular_units='deg', **params)
 
 
+def test_calculation_angular_velocity_representation_error(params):
+    """Test angular velocity representation errors."""
+    with raises(CalculationInvalidAttr):
+        Calculation(angular_velocity_representation='WRONG', **params)
+
+
 def test_calculation_angular_velocity_units_error(params):
     """Test errors with angular velocity units."""
+    with raises(CalculationInvalidAttr):
+        Calculation(angular_velocity_units='WRONG', **params)
+
     with raises(CalculationUndefinedAttr):
         # Missing `angular_velocity_representation`
         Calculation(angular_velocity_units='deg/s', **params)
@@ -335,6 +371,18 @@ def test_calculation_angular_velocity_units_error(params):
         # Wrong `angular_velocity_representation` with `angular_velocity_units`
         Calculation(angular_velocity_representation='NOT_INCLUDED',
                     angular_velocity_units='deg/s', **params)
+
+
+def test_calculation_coordinate_representation_error(params):
+    """Test Coordinate representation errors."""
+    with raises(CalculationInvalidAttr):
+        Calculation(coordinate_representation='WRONG', **params)
+
+
+def test_calculation_sub_point_type_error(params):
+    """Test sub-observer point errors."""
+    with raises(CalculationInvalidAttr):
+        Calculation(sub_point_type='WRONG', **params)
 
 
 def test_calculation_direction_vector_type_error(params):
@@ -437,6 +485,42 @@ def test_calculation_azccw_elplsz_flag_error(params):
 
     with raises(CalculationInvalidAttr):
         Calculation(elplsz_flag='WRONG', **params)
+
+
+def test_calculation_output_duration_units_error(params):
+    """Test errors when output duration units is invalid."""
+    with raises(CalculationInvalidAttr):
+        Calculation(output_duration_units='WRONG', **params)
+
+
+def test_calculation_interval_adjustment_errors(params):
+    """Test errors when interval parameters are invalid."""
+    with raises(CalculationInvalidAttr):
+        Calculation(interval_adjustment='WRONG', **params)
+
+    with raises(CalculationInvalidAttr):
+        Calculation(interval_adjustment_units='WRONG', **params)
+
+    with raises(CalculationInvalidAttr):
+        Calculation(interval_filtering='WRONG', **params)
+
+    with raises(CalculationInvalidAttr):
+        Calculation(interval_filtering='WRONG', **params)
+
+    with raises(CalculationInvalidAttr):
+        Calculation(interval_filtering_threshold_units='WRONG', **params)
+
+
+def test_calculation_coordinate_errors(params):
+    """Test errors when coordinate are invalid."""
+    with raises(CalculationInvalidAttr):
+        Calculation(coordinate_system='WRONG', **params)
+
+    with raises(CalculationInvalidAttr):
+        Calculation(coordinate='WRONG', **params)
+
+    with raises(CalculationInvalidAttr):
+        Calculation(relational_condition='WRONG', **params)
 
 
 def test_calculation_output_time_system_error(params):

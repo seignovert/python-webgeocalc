@@ -234,21 +234,21 @@ class FrameTransformation(Calculation):
     angular_velocity_units: str, optional
         See: :py:attr:`angular_velocity_units`
 
-        Warning
-        -------
-        Attribute :py:attr:`aberration_correction` must be ``NONE``, `LT``, ``CN``,
-        ``XLT`` or ``XCN``.
+    Warning
+    -------
+    Attribute :py:attr:`aberration_correction` must be ``NONE``, `LT``, ``CN``,
+    ``XLT`` or ``XCN``.
 
-        Attributes :py:attr:`axis_1`, :py:attr:`axis_2` and :py:attr:`axis_3`
-        are imported only if :py:attr:`orientation_representation` is ``EULER_ANGLES``.
+    Attributes :py:attr:`axis_1`, :py:attr:`axis_2` and :py:attr:`axis_3`
+    are imported only if :py:attr:`orientation_representation` is ``EULER_ANGLES``.
 
-        Attribute :py:attr:`angular_units` is imported only
-        if :py:attr:`orientation_representation` is ``EULER_ANGLES``
-        or ``ANGLE_AND_AXIS``.
+    Attribute :py:attr:`angular_units` is imported only
+    if :py:attr:`orientation_representation` is ``EULER_ANGLES``
+    or ``ANGLE_AND_AXIS``.
 
-        Attribute :py:attr:`angular_velocity_units` is imported only if
-        :py:attr:`angular_velocity_representation` is ``VECTOR_IN_FRAME1``,
-        ``VECTOR_IN_FRAME2`` or ``EULER_ANGLE_DERIVATIVES``.
+    Attribute :py:attr:`angular_velocity_units` is imported only if
+    :py:attr:`angular_velocity_representation` is ``VECTOR_IN_FRAME1``,
+    ``VECTOR_IN_FRAME2`` or ``EULER_ANGLE_DERIVATIVES``.
 
     Other Parameters
     ----------------
@@ -548,10 +548,10 @@ class SubSolarPoint(Calculation):
     state_representation: str, optional
         See: :py:attr:`state_representation`
 
-        Warning
-        -------
-        Attribute :py:attr:`aberration_correction` must be ``NONE``, `LT``, ``LT+S``,
-        ``CN`` or ``CN+S``.
+    Warning
+    -------
+    Attribute :py:attr:`aberration_correction` must be ``NONE``, `LT``, ``LT+S``,
+    ``CN`` or ``CN+S``.
 
     Other Parameters
     ----------------
@@ -725,21 +725,21 @@ class SurfaceInterceptPoint(Calculation):
     direction_vector_dec: float
         See: :py:attr:`direction_vector_dec`
 
-        Warnings
-        --------
-        Attributes :py:attr:`direction_instrument` is needed only if
-        :py:attr:`direction_vector_type` is ``INSTRUMENT_BORESIGHT``,
-        ``INSTRUMENT_FOV_BOUNDARY_VECTORS`` or ``VECTOR_IN_INSTRUMENT_FOV``.
+    Warnings
+    --------
+    Attributes :py:attr:`direction_instrument` is needed only if
+    :py:attr:`direction_vector_type` is ``INSTRUMENT_BORESIGHT``,
+    ``INSTRUMENT_FOV_BOUNDARY_VECTORS`` or ``VECTOR_IN_INSTRUMENT_FOV``.
 
-        Attributes :py:attr:`direction_frame` is needed only if
-        :py:attr:`direction_vector_type` is ``REFERENCE_FRAME_AXIS`` or
-        ``VECTOR_IN_REFERENCE_FRAME``.
+    Attributes :py:attr:`direction_frame` is needed only if
+    :py:attr:`direction_vector_type` is ``REFERENCE_FRAME_AXIS`` or
+    ``VECTOR_IN_REFERENCE_FRAME``.
 
-        Attributes :py:attr:`direction_vector_x` + :py:attr:`direction_vector_y` +
-        :py:attr:`direction_vector_z` or :py:attr:`direction_vector_ra` +
-        :py:attr:`direction_vector_dec` is needed only if
-        :py:attr:`direction_vector_type` is ``VECTOR_IN_INSTRUMENT_FOV`` or
-        ``VECTOR_IN_REFERENCE_FRAME``.
+    Attributes :py:attr:`direction_vector_x` + :py:attr:`direction_vector_y` +
+    :py:attr:`direction_vector_z` or :py:attr:`direction_vector_ra` +
+    :py:attr:`direction_vector_dec` is needed only if
+    :py:attr:`direction_vector_type` is ``VECTOR_IN_INSTRUMENT_FOV`` or
+    ``VECTOR_IN_REFERENCE_FRAME``.
 
     Raises
     ------
@@ -1036,13 +1036,13 @@ class TimeConversion(Calculation):
     output_time_custom_format: str
         See: :py:attr:`output_time_custom_format`
 
-        Warnings
-        --------
-        Attributes :py:attr:`output_sclk_id` is needed only if
-        :py:attr:`output_time_system` is ``SPACECRAFT_CLOCK``.
+    Warnings
+    --------
+    Attributes :py:attr:`output_sclk_id` is needed only if
+    :py:attr:`output_time_system` is ``SPACECRAFT_CLOCK``.
 
-        Attributes :py:attr:`output_time_custom_format` is needed only if
-        :py:attr:`output_time_format` is ``CUSTOM``.
+    Attributes :py:attr:`output_time_custom_format` is needed only if
+    :py:attr:`output_time_format` is ``CUSTOM``.
 
     """
 
@@ -1111,17 +1111,17 @@ class GFCoordinateSearch(Calculation):
     reference_frame: str or int
         See: :py:attr:`reference_frame`
 
-        Warnings
-        --------
-        Attributes :py:attr:`upper_limit` is needed only if
-        :py:attr:`relational_condition` is ``RANGE``.
+    Warnings
+    --------
+    Attributes :py:attr:`upper_limit` is needed only if
+    :py:attr:`relational_condition` is ``RANGE``.
 
-        Attributes :py:attr:`adjustment_value` is needed only if
-        :py:attr:`relational_condition` is ``ABSMIN`` or ``ABSMAX``.
+    Attributes :py:attr:`adjustment_value` is needed only if
+    :py:attr:`relational_condition` is ``ABSMIN`` or ``ABSMAX``.
 
-        Attribute :py:attr:`reference_value` is needed only if
-        :py:attr:`relational_condition` is ``=``, ``<``, ``>`` or
-        ``RANGE``.
+    Attribute :py:attr:`reference_value` is needed only if
+    :py:attr:`relational_condition` is ``=``, ``<``, ``>`` or
+    ``RANGE``.
 
     Raises
     ------

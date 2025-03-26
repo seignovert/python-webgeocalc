@@ -84,6 +84,8 @@ class Calculation(Payload):
         See: :py:attr:`shape_2`
     observer: str or int
         See: :py:attr:`observer`
+    illuminator: str
+        See: :py:attr:`illuminator`
     reference_frame: str or int
         See: :py:attr:`reference_frame`
     frame_1: str ot int
@@ -102,10 +104,14 @@ class Calculation(Payload):
         See: :py:attr:`correction_locus`
     spec_type: str
         See: :py:attr:`spec_type`
-    direction_1: str
+    direction: dict or Direction
+        See: :py:attr:`direction`
+    direction_1: dict or Direction
         See: :py:attr:`direction_1`
-    direction_2: str
+    direction_2: dict or Direction
         See: :py:attr:`direction_2`
+    vector_magnitude: str
+        See: :py:attr:`vector_magnitude`
     computation_method: str
         See: :py:attr:`computation_method`
     state_representation: str
@@ -162,6 +168,34 @@ class Calculation(Payload):
         See :py:attr:`azccw_flag`
     elplsz_flag: bool or str
         See :py:attr:`elplsz_flag`
+    output_duration_units: float
+        See :py:attr:`output_duration_units`
+    should_complement_window: bool
+        See :py:attr:`should_complement_window`
+    interval_adjustment: str
+        See :py:attr:`interval_adjustment`
+    interval_adjustment_amount: float
+        See :py:attr:`interval_adjustment_amount`
+    interval_adjustment_units: str
+        See :py:attr:`interval_adjustment_units`
+    interval_filtering: str
+        See :py:attr:`interval_filtering`
+    interval_filtering_threshold: float
+        See :py:attr:`interval_filtering_threshold`
+    interval_filtering_threshold_units: str
+        See :py:attr:`interval_filtering_threshold_units`
+    coordinate_system: str
+        See :py:attr:`coordinate_system`
+    coordinate: str
+        See :py:attr:`coordinate`
+    relational_condition: str
+        See :py:attr:`relational_condition`
+    reference_value: float
+        See :py:attr:`reference_value`
+    upper_limit: float
+        See :py:attr:`upper_limit`
+    adjustment_value: float
+        See :py:attr:`adjustment_value`
 
     Raises
     ------
@@ -966,7 +1000,7 @@ class Calculation(Payload):
         Parameters
         ----------
         illuminator: str or int
-            The observing body ``name`` or ``id`` from :py:func:`API.bodies`.
+            The illumination body ``name`` or ``id`` from :py:func:`API.bodies`.
 
         """
         self.__illuminator = val if isinstance(val, int) else val.upper()

@@ -109,19 +109,24 @@ object:
           ``INSTRUMENT_BORESIGHT``, ``REFERENCE_FRAME_AXIS``, ``VECTOR_IN_INSTRUMENT_FOV``,
           ``VECTOR_IN_REFERENCE_FRAME`` or ``INSTRUMENT_FOV_BOUNDARY_VECTORS``
 
-    Direction ``VECTOR + INSTRUMENT_BORESIGHT`` required parameters:
+    Direction vector ``INSTRUMENT_BORESIGHT`` or ``INSTRUMENT_FOV_BOUNDARY_VECTORS`` required parameters:
         - :py:attr:`~Direction.direction_instrument`
 
-    Direction ``VECTOR + REFERENCE_FRAME_AXIS`` required parameters:
+    Direction vector ``REFERENCE_FRAME_AXIS`` required parameters:
         - :py:attr:`~Direction.direction_frame`
         - :py:attr:`~Direction.direction_frame_axis`
 
-    Direction ``VECTOR + VECTOR_IN_INSTRUMENT_FOV`` required parameters:
+    Direction vector ``VECTOR_IN_INSTRUMENT_FOV`` required parameters:
         - :py:attr:`~Direction.direction_instrument`
-        - :py:attr:`~Direction.direction_vector_x`, :py:attr:`~Direction.direction_vector_y` and :py:attr:`~Direction.direction_vector_z`
-          or :py:attr:`~Direction.direction_vector_ra` and :py:attr:`~Direction.direction_vector_dec`
-          or :py:attr:`~Direction.direction_vector_az`, :py:attr:`~Direction.direction_vector_el`, :py:attr:`~Direction.azccw_flag`
-          and :py:attr:`~Direction.elplsz_flag`,
+        - either :py:attr:`~Direction.direction_vector_x`, :py:attr:`~Direction.direction_vector_y` and :py:attr:`~Direction.direction_vector_z`
+        - or :py:attr:`~Direction.direction_vector_ra` and :py:attr:`~Direction.direction_vector_dec`
+        - or :py:attr:`~Direction.direction_vector_az`, :py:attr:`~Direction.direction_vector_el`, :py:attr:`~Direction.azccw_flag` and :py:attr:`~Direction.elplsz_flag`,
+
+    Direction vector ``VECTOR_IN_REFERENCE_FRAME`` required parameters:
+        - :py:attr:`~Direction.direction_frame`
+        - either :py:attr:`~Direction.direction_vector_x`, :py:attr:`~Direction.direction_vector_y` and :py:attr:`~Direction.direction_vector_z`
+        - or :py:attr:`~Direction.direction_vector_ra` and :py:attr:`~Direction.direction_vector_dec`
+        - or :py:attr:`~Direction.direction_vector_az`, :py:attr:`~Direction.direction_vector_el`, :py:attr:`~Direction.azccw_flag` and :py:attr:`~Direction.elplsz_flag`,
 
     Default parameters:
         - :py:attr:`~Direction.aberration_correction`: ``NONE``
