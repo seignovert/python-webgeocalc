@@ -3,7 +3,12 @@
 from .api import API, Api, ESA_API, JPL_API
 from .calculation import Calculation
 from .calculation_types import (AngularSeparation, AngularSize, FrameTransformation,
-                                GFCoordinateSearch, IlluminationAngles,
+                                GFAngularSeparationSearch,
+                                GFCoordinateSearch, GFDistanceSearch,
+                                GFIlluminationAnglesSearch, GFOccultationSearch,
+                                GFPhaseAngleSearch, GFRangeRateSearch, GFRayInFovSearch,
+                                GFSubPointSearch, GFSurfaceInterceptPointSearch,
+                                GFTargetInInstrumentFovSearch, IlluminationAngles,
                                 OsculatingElements, PhaseAngle, PointingDirection,
                                 StateVector, SubObserverPoint, SubSolarPoint,
                                 SurfaceInterceptPoint, TangentPoint, TimeConversion)
@@ -29,16 +34,16 @@ __all__ = [
     'TangentPoint',
     'OsculatingElements',
     'GFCoordinateSearch',
-    # 'GFAngularSeparationSearch'
-    # 'GFDistanceSearch'
-    # 'GFSubPointSearch'
-    # 'GFOccultationSearch'
-    # 'GFSurfaceInterceptPointSearch'
-    # 'GFTargetInInstrumentFovSearch'
-    # 'GFRayInFovSearch'
-    # 'GFRangeRateSearch'
-    # 'GFPhaseAngleSearch'
-    # 'GFIlluminationAnglesSearch'
+    'GFAngularSeparationSearch',
+    'GFDistanceSearch',
+    'GFSubPointSearch',
+    'GFOccultationSearch',
+    'GFSurfaceInterceptPointSearch',
+    'GFTargetInInstrumentFovSearch',
+    'GFRayInFovSearch',
+    'GFRangeRateSearch',
+    'GFPhaseAngleSearch',
+    'GFIlluminationAnglesSearch',
     'TimeConversion',
     '__version__',
 ]

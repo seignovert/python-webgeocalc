@@ -18,16 +18,16 @@ For now only these geometry/time calculations are implemented:
 - :py:class:`TangentPoint`
 - :py:class:`OsculatingElements`
 - :py:class:`GFCoordinateSearch`
-- ``GFAngularSeparationSearch`` (not implemented)
-- ``GFDistanceSearch`` (not implemented)
-- ``GFSubPointSearch`` (not implemented)
-- ``GFOccultationSearch`` (not implemented)
-- ``GFSurfaceInterceptPointSearch`` (not implemented)
-- ``GFTargetInInstrumentFovSearch`` (not implemented)
-- ``GFRayInFovSearch`` (not implemented)
-- ``GFRangeRateSearch`` (not implemented)
-- ``GFPhaseAngleSearch`` (not implemented)
-- ``GFIlluminationAnglesSearch`` (not implemented)
+- :py:class:`GFAngularSeparationSearch` (not implemented)
+- :py:class:`GFDistanceSearch` (not implemented)
+- :py:class:`GFSubPointSearch` (not implemented)
+- :py:class:`GFOccultationSearch` (not implemented)
+- :py:class:`GFSurfaceInterceptPointSearch` (not implemented)
+- :py:class:`GFTargetInInstrumentFovSearch` (not implemented)
+- :py:class:`GFRayInFovSearch` (not implemented)
+- :py:class:`GFRangeRateSearch` (not implemented)
+- :py:class:`GFPhaseAngleSearch` (not implemented)
+- :py:class:`GFIlluminationAnglesSearch` (not implemented)
 - :py:class:`TimeConversion`
 
 Import generic WebGeoCalc calculation object:
@@ -1109,3 +1109,38 @@ Find time intervals when a coordinate of an observer-target position vector sati
         - :py:attr:`~Calculation.interval_filtering`: ``NO_FILTERING``
 
 .. autoclass:: GFCoordinateSearch
+
+Geometry Finder: other searches
+-------------------------------
+
+At the moment, the following geometry finder search calculation are not implemented:
+
+- :py:class:`GFAngularSeparationSearch`
+- :py:class:`GFDistanceSearch`
+- :py:class:`GFSubPointSearch`
+- :py:class:`GFOccultationSearch`
+- :py:class:`GFSurfaceInterceptPointSearch`
+- :py:class:`GFTargetInInstrumentFovSearch`
+- :py:class:`GFRayInFovSearch`
+- :py:class:`GFRangeRateSearch`
+- :py:class:`GFPhaseAngleSearch`
+- :py:class:`GFIlluminationAnglesSearch`
+
+.. note::
+
+    You might be able to run some of them with a regular :py:class:`Calculation` object but is not tested yet.
+    If you want to implement them, contributions are always welcome
+    (don't forget to submit a merge request on the `main project`_).
+
+.. _`main project`: https://github.com/seignovert/python-webgeocalc
+
+.. autoclass:: GFAngularSeparationSearch
+.. autoclass:: GFDistanceSearch
+.. autoclass:: GFSubPointSearch
+.. autoclass:: GFOccultationSearch
+.. autoclass:: GFSurfaceInterceptPointSearch
+.. autoclass:: GFTargetInInstrumentFovSearch
+.. autoclass:: GFRayInFovSearch
+.. autoclass:: GFRangeRateSearch
+.. autoclass:: GFPhaseAngleSearch
+.. autoclass:: GFIlluminationAnglesSearch

@@ -136,3 +136,17 @@ class CalculationTimeOut(IOError):
         msg = f'Calculation time-out after {timeout} seconds' + \
               f' ({int(timeout / sleep)} attempts)'
         super().__init__(msg)
+
+
+class CalculationNotImplemented:
+    """Not implemented calculation.
+
+    Only raise ``NotImplementedError``.
+
+    """
+
+    def __init__(self, *_, **__):
+        raise NotImplementedError(
+            f'Calculation {self.__class__.__name__} is not yet implemented. '
+            'Feel free to implement it and submit a merge request.'
+        )

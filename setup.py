@@ -63,6 +63,20 @@ setup(
             'wgc-osculating-elements = webgeocalc.cli:cli_osculating_elements',
             'wgc-time-conversion = webgeocalc.cli:cli_time_conversion',
             'wgc-gf-coordinate-search = webgeocalc.cli:cli_gf_coordinate_search',
+            'wgc-gf-angular-separation-search = '
+            'webgeocalc.cli:cli_gf_angular_separation_search',
+            'wgc-gf-distance-search = webgeocalc.cli:cli_gf_distance_search',
+            'wgc-gf-sub-point-search = webgeocalc.cli:cli_gf_sub_point_search',
+            'wgc-gf-occultation-search = webgeocalc.cli:cli_gf_occultation_search',
+            'wgc-gf-surface-intercept-point-search = '
+            'webgeocalc.cli:cli_gf_surface_intercept_point_search',
+            'wgc-gf-target-in-instrument-fov-search = '
+            'webgeocalc.cli:cli_gf_target_in_instrument_fov_search',
+            'wgc-gf-ray-in-fov-search = webgeocalc.cli:cli_gf_ray_in_fov_search',
+            'wgc-gf-range-rate-search = webgeocalc.cli:cli_gf_range_rate_search',
+            'wgc-gf-phase-angle-search = webgeocalc.cli:cli_gf_phase_angle_search',
+            'wgc-gf-illumination-angles-search = '
+            'webgeocalc.cli:cli_gf_illumination_angles_search',
         ],
     },
 )

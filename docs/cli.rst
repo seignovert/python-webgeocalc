@@ -252,6 +252,17 @@ Here is the list of all the calculation entry points available on the CLI:
 - ``wgc-osculating-elements``
 - ``wgc-time-conversion``
 - ``wgc-gf-coordinate-search``
+- ``wgc-gf-angular-separation-search`` (not implemented)
+- ``wgc-gf-distance-search`` (not implemented)
+- ``wgc-gf-sub-point-search`` (not implemented)
+- ``wgc-gf-occultation-search`` (not implemented)
+- ``wgc-gf-surface-intercept-point-search`` (not implemented)
+- ``wgc-gf-target-in-instrument-fov-search`` (not implemented)
+- ``wgc-gf-ray-in-fov-search`` (not implemented)
+- ``wgc-gf-range-rate-search`` (not implemented)
+- ``wgc-gf-phase-angle-search`` (not implemented)
+- ``wgc-gf-illumination-angles-search`` (not implemented)
+
 
 .. hint::
 

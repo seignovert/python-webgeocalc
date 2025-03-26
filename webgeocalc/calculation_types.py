@@ -1,7 +1,7 @@
 """Webgeocalc calculations types."""
 
 from .calculation import Calculation
-from .errors import CalculationInvalidAttr
+from .errors import CalculationInvalidAttr, CalculationNotImplemented
 from .vars import VALID_PARAMETERS
 
 
@@ -1149,3 +1149,95 @@ class GFCoordinateSearch(Calculation):
         kwargs['interval_filtering'] = interval_filtering
 
         super().__init__(**kwargs)
+
+
+# pylint: disable=abstract-method
+class GFAngularSeparationSearch(CalculationNotImplemented):
+    """Angular separation search geometry finder.
+
+    Find time intervals when the angle between two bodies,
+    as seen by an observer, satisfies a condition.
+
+    """
+
+
+class GFDistanceSearch(CalculationNotImplemented):
+    """Distance search geometry finder.
+
+    Find time intervals when the distance between a target
+    and observer satisfies a condition.
+
+    """
+
+
+class GFSubPointSearch(CalculationNotImplemented):
+    """Sub-point search geometry finder.
+
+    Find time intervals when a coordinate of the sub-observer point
+    on a target satisfies a condition.
+
+    """
+
+
+class GFOccultationSearch(CalculationNotImplemented):
+    """Occultation search geometry finder.
+
+    Find time intervals when an observer sees one target occulted by,
+    or in transit across, another.
+
+    """
+
+
+class GFSurfaceInterceptPointSearch(CalculationNotImplemented):
+    """Surface intercept point search geometry finder.
+
+    Find time intervals when a coordinate of a surface intercept vector
+    satisfies a condition.
+
+    """
+
+
+class GFTargetInInstrumentFovSearch(CalculationNotImplemented):
+    """Target in instrument fov search geometry finder.
+
+    Find time intervals when a target intersects the space bounded by
+    the field-of-view of an instrument.
+
+    """
+
+
+class GFRayInFovSearch(CalculationNotImplemented):
+    """Ray in fov search geometry finder.
+
+    Find time intervals when a specified ray is contained in the space bounded
+    by an instrument's field-of-view.
+
+    """
+
+
+class GFRangeRateSearch(CalculationNotImplemented):
+    """Range rate search geometry finder.
+
+    Find time intervals when the range rate between a target and observer
+    satisfies a condition.
+
+    """
+
+
+class GFPhaseAngleSearch(CalculationNotImplemented):
+    """Phase angle search geometry finder.
+
+    Find time intervals for which a specified constraint on the phase angle defined
+    by an illumination source, a target, and an observer body centers is met.
+
+    """
+
+
+class GFIlluminationAnglesSearch(CalculationNotImplemented):
+    """Illumination angles search geometry finder.
+
+    Find the time intervals, within a specified time window, when one of the illumination
+    angles — phase, incidence or emission — at the specified target body surface point
+    as seen from an observer satisfies a given constraint.
+
+    """
