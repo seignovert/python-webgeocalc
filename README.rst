@@ -3,7 +3,7 @@
 
 |Docs| |Build| |Coverage| |CodeFactor|
 
-|PyPI|  |Python| |Version| |Status|
+|PyPI|  |Conda-Forge|  |Python| |Version| |Status|
 
 |DOI| |License|
 
@@ -19,6 +19,8 @@
                 :target: https://www.codefactor.io/repository/github/seignovert/python-webgeocalc/overview/main
 .. |PyPI| image:: https://img.shields.io/badge/PyPI-webgeocalc-blue.svg?logo=python&logoColor=white
         :target: https://pypi.org/project/webgeocalc
+.. |Conda-Forge| image:: https://img.shields.io/badge/conda--forge-webgeocalc-blue.svg?logo=condaforge&logoColor=white
+        :target: https://anaconda.org/conda-forge/webgeocalc
 .. |Python| image:: https://img.shields.io/pypi/pyversions/webgeocalc.svg?label=Python
         :target: https://pypi.org/project/webgeocalc
 .. |Version| image:: https://img.shields.io/pypi/v/webgeocalc.svg?label=Version
@@ -66,6 +68,12 @@ With ``pip``:
 .. code:: bash
 
     $ pip install webgeocalc
+
+With ``mamba/conda`` (on `conda-forge`):
+
+.. code:: bash
+
+    $ mamba install -c conda-forge webgeocalc
 
 
 🚀 Usage

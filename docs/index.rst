@@ -3,7 +3,7 @@ Python package for NAIF WebGeoCalc API
 
 |Docs| |Build| |Coverage| |CodeFactor|
 
-|PyPI| |Conda|
+|PyPI| |Conda-Forge|
 
 |Python| |Version| |Status| |Conda Platform|
 
@@ -21,8 +21,8 @@ Python package for NAIF WebGeoCalc API
                 :target: https://www.codefactor.io/repository/github/seignovert/python-webgeocalc/overview/main
 .. |PyPI| image:: https://img.shields.io/badge/PyPI-webgeocalc-blue.svg?logo=python&logoColor=white
         :target: https://pypi.org/project/webgeocalc
-.. |Conda| image:: https://img.shields.io/badge/conda|seignovert-webgeocalc-blue.svg?logo=python&logoColor=white
-        :target: https://anaconda.org/seignovert/webgeocalc
+.. |Conda-Forge| image:: https://img.shields.io/badge/conda--forge-webgeocalc-blue.svg?logo=condaforge&logoColor=white
+        :target: https://anaconda.org/conda-forge/webgeocalc
 .. |Python| image:: https://img.shields.io/pypi/pyversions/webgeocalc.svg?label=Python
         :target: https://pypi.org/project/webgeocalc
 .. |Conda Platform| image:: https://img.shields.io/conda/pn/seignovert/webgeocalc.svg
@@ -72,19 +72,11 @@ With ``pip``:
 
     $ pip install webgeocalc
 
-With ``conda``:
+With ``mamba/conda`` (on `conda-forge`):
 
 .. code:: bash
 
-    $ conda install -c seignovert webgeocalc
-
-From the sources:
-
-.. code:: bash
-
-    $ git clone https://github.com/seignovert/python-webgeocalc.git webgeocalc
-    $ cd webgeocalc
-    $ python setup.py install
+    $ mamba install -c conda-forge webgeocalc
 
 
 Documentation
